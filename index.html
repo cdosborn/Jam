@@ -4,8 +4,21 @@
         <title>My Sample Project</title>
         <!-- data-main attribute tells require.js to load
              scripts/main.js after require.js loads. -->
-        <script data-main="src/Jam.js" src="lib/require.js"></script>
+        <style type="text/css">
+            body {
+                width  : 1280px;
+                margin : auto;
+                margin-top : 2em;
+            }
+        </style>
     </head>
     <body>
+        <canvas id="canvas"></canvas>
     </body>
+    <script src="src/ButtonSequencer.js"></script>
+    <script src="lib/coquette.js"></script>
+    <script src="src/Platform.js"></script>
+    <script src="src/Player.js"></script>
+    <script src="src/main.js"></script>
+
 </html>

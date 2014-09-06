@@ -5,18 +5,19 @@
 
         return {
             update: function(interval, button) {
+                var success = false;
                 for (var i = 0; i < sequences.length; i++) {
                     var seq = sequences[i];
-                    //console.log(C.ticker.clock - seq.timestamp);
 
-                    if (C.ticker.clock - seq.timestamp > 150) {
+                    if (C.ticker.clock - seq.timestamp > 150) { // not updated recently
                        seq.reset();
                     } 
 
                     if (seq.check(button)) {
-                        seq.next();
+                        success = seq.next();
                     }
                 }
+                return success; //The update notifies the caller when seq was completed
             },
 
         // doesn't make sense to have these methods separated
@@ -33,10 +34,11 @@
                         return this.buttons[this.index] === button;
                     },
                     next: function () {
-                        this.index === this.buttons.length - 1 ? cb() : undefined; // optionally call the callback
+                        var success = this.index === this.buttons.length - 1;
+                        success ? cb() : undefined; // optionally call the callback
                         this.index = (this.index + 1) % (buttons.length);
-                        //console.log(id);
                         this.stamp();
+                        return success; // returns whether next completed a sequence
                     },
                     reset: function() {
                         this.index = 0;
