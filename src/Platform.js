@@ -1,6 +1,7 @@
 ;(function(exports) {
     exports.Platform = function(game, settings) {
-        var that = this;
+        var that = this,
+            C = game.c;
         for (var i in settings) {
           this[i] = settings[i];
         }

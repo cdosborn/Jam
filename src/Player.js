@@ -1,12 +1,13 @@
 var FRIC,GRAV, BOOST_X, BOOST_Y;
 FRIC = 0.5;
-GRAV = 0.5;
+GRAV = 1;
 BOOST_X = 20;
-BOOST_Y = 20;
+BOOST_Y = 15;
 WALK_X = 5;
 ;(function(exports) {
     exports.Player = function(game, settings) {
-        var self = this;
+        var self = this,
+            C = game.c;
         for (var i in settings) {
           this[i] = settings[i];
         }
@@ -50,38 +51,27 @@ WALK_X = 5;
         this.center = { x:10, y:110 };
         this.color="#f07";
 
-        C.inputter.bindKey(C.inputter.D, function() {
+///     game.sequencer.bindKey(C.inputter.D, function() {
 //          self.motion = motions.WALK_RIGHT 
-    //      if (self.vel.x > 0) {
-    //          self.vel.x = Math.max(WALK_X, self.vel.x);
-    //      } else {
-                self.vel.x = WALK_X;
-    //      }
-        }); 
-        C.inputter.bindKey(C.inputter.A, function() {
-    //      if (self.vel.x < 0) {
-    //          self.vel.x = Math.min(-WALK_X, self.vel.x);
-    //      } else {
-                self.vel.x = -WALK_X;
-    //      }        
-        }); 
+//  //      if (self.vel.x > 0) {
+//  //          self.vel.x = Math.max(WALK_X, self.vel.x);
+//  //      } else {
+//              self.vel.x = WALK_X;
+//  //      }
+//      }); 
+//      C.inputter.bindKey(C.inputter.A, function() {
+//  //      if (self.vel.x < 0) {
+//  //          self.vel.x = Math.min(-WALK_X, self.vel.x);
+//  //      } else {
+//              self.vel.x = -WALK_X;
+//  //      }        
+//      }); 
 
-        C.inputter.bindSequence(combos.BOOST_UP, [C.inputter.W, -C.inputter.W, C.inputter.W], function() {
-            self.vel.y += -BOOST_Y;
-        }); 
-        C.inputter.bindSequence(combos.BOOST_DOWN, [C.inputter.S, -C.inputter.S, C.inputter.S], function() { 
-            self.vel.y += BOOST_Y;
-        }); 
-        C.inputter.bindSequence(combos.BOOST_RIGHT, [C.inputter.D, -C.inputter.D, C.inputter.D], function() { 
-            console.log("BOOST");
-            self.vel.x += BOOST_X
-        }); 
-        C.inputter.bindSequence(combos.BOOST_LEFT, [C.inputter.A, -C.inputter.A, C.inputter.A], function() { 
-            self.vel.x += -BOOST_X
-        }); 
-        C.inputter.bindSequence(combos.BLIP, [C.inputter.H], function() { 
-            self.action = motions.BLIP; 
-        }); 
+        game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
+        game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
+        game.sequencer.bind("BOOST_RIGHT", [C.inputter.D, -C.inputter.D, C.inputter.D]); 
+        game.sequencer.bind("BOOST_LEFT", [C.inputter.A, -C.inputter.A, C.inputter.A]);
+        //game.sequencer.bind("BLIP", [C.inputter.H]);
         
         // reduce ought to be moved to a utils file
 
@@ -100,24 +90,35 @@ WALK_X = 5;
         this.update = function(delta) {
             //console.log(this.motion === motions.BOOST_RIGHT ? "BOOST" : (this.motion === motions.WALK_RIGHT ? "WALK" : ""));
 
-//          if (this.motion === motions.BOOST_UP) {
-//              this.vel.y = -BOOST_Y;
-//          }
-//          if (this.motion === motions.BOOST_DOWN) {
-//              this.vel.y = BOOST_Y;
-//          }
-//          if (this.motion === motions.BOOST_RIGHT) {
-//              this.vel.x = BOOST_X;
-//          }
-//          if (this.motion === motions.BOOST_LEFT) {
-//              this.vel.x = -BOOST_X;
-//          }
+            if (game.sequencer.isPressed("BOOST_UP")) {
+                this.vel.y += -BOOST_Y;
+            }
 
-//          if (this.motion === motions.WALK_RIGHT) {
-//              this.vel.x = WALK_X;
-//          } else if (this.motion === motions.WALK_LEFT) {
-//              this.vel.x = -WALK_X;
-//          }
+            if (game.sequencer.isPressed("BOOST_DOWN")) {
+                this.vel.y += BOOST_Y;
+            }
+
+            if (game.sequencer.isPressed("BOOST_RIGHT")) {
+                this.vel.x += BOOST_X
+            }
+            if (game.sequencer.isPressed("BOOST_LEFT")) {
+                this.vel.x += -BOOST_X
+            }
+
+            if (C.inputter.isDown(C.inputter.D)) {
+                if (self.vel.x > 0) {
+                    self.vel.x = Math.max(WALK_X, self.vel.x);
+                } else {
+                    self.vel.x = WALK_X;
+                }
+            }
+            if (C.inputter.isDown(C.inputter.A)) {
+                if (self.vel.x < 0) {
+                    self.vel.x = Math.min(-WALK_X, self.vel.x);
+                } else {
+                    self.vel.x = -WALK_X;
+                }        
+            }
 
 
             this.center.y += this.vel.y
@@ -130,7 +131,7 @@ WALK_X = 5;
             }
 
 
-            console.log(this.vel.x);
+            //console.log(this.vel.x);
             if (!C.inputter.isDown(C.inputter.W) && !C.inputter.isDown(C.inputter.W)) {
                 this.vel.y = (Math.abs(this.vel.x) > 5) ? 0 : this.vel.y + GRAV;
             }
