@@ -13,7 +13,10 @@
         });
 
 
+        this.count = 0;
         this.update = function(interval) { 
+            this.count += 1;
+            console.log(this.totalTime/this.count);
             this.totalTime += interval;
             this.sequencer.update(interval, this.c.inputter.getEvents());
             //this.sequencer.reset();

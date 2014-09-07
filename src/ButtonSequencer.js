@@ -1,4 +1,3 @@
-var durp;
 ;(function(exports) { 
     var Sequence = function(buttons) { 
         this.timestamp = 0; 
@@ -32,6 +31,12 @@ var durp;
 
         return {
             update: function(interval, events) {
+
+            // Calling this.reset() is the proper way to reset all
+            // successful sequences, but it occurs after every tick
+            // A more efficient approach is to set seq.success = false
+            // in isPressed method, when success is true
+
                 this.reset();
                 events.filter(function(e) { return e.type === "keydown" || e.type === "keyup"; })
                       .map(function(e) { return e.type === "keydown" ? e.keyCode : -e.keyCode;})

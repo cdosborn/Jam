@@ -17,68 +17,42 @@ WALK_X = 5;
                       , WALK_RIGHT: 1
                       , CROUCH: 2
                       , HOVER: 3
-                      , BOOST_LEFT: 4
-                      , BOOST_RIGHT: 5
-                      , BOOST_UP: 6
-                      , BOOST_DOWN: 7
-                      , STAND: 8 
-                      , FALLING: 9 }
+                      , FALLING: 4 
+                      , BOOST_LEFT: 5
+                      , BOOST_RIGHT: 6
+                      , BOOST_UP: 7
+                      , BOOST_DOWN: 8
+                      , STAND: 9 
+                      }
 
         var actions = { BLIP: 0
                       , MELEE: 1
                       , RANGE: 2 
                       , PASSIVE: 3 }
 
-        var directions = { UP: 0
-                         , DOWN: 1
-                         , LEFT: 2
-                         , RIGHT: 3 }
-
-        var combos = { BOOST_RIGHT      : 0
-                     , BOOST_LEFT       : 1
-                     , BOOST_UP         : 2
-                     , BOOST_DOWN       : 3
-                     , BLIP             : 4 } 
-
         //speed,range,damage
 
-        // Initialize state
-        this.action = actions.PASSIVE;
-        this.motion = motions.STAND;
+        this.state = { action: actions.PASSIVE
+                     , motion: motions.STAND } 
+
         this.health = 100;
         this.vel = { x:0, y:0 }
-        this.size = { x:60, y:120 };
+        this.size = { x:30, y:100 };
         this.center = { x:10, y:110 };
         this.color="#f07";
 
-///     game.sequencer.bindKey(C.inputter.D, function() {
-//          self.motion = motions.WALK_RIGHT 
-//  //      if (self.vel.x > 0) {
-//  //          self.vel.x = Math.max(WALK_X, self.vel.x);
-//  //      } else {
-//              self.vel.x = WALK_X;
-//  //      }
-//      }); 
-//      C.inputter.bindKey(C.inputter.A, function() {
-//  //      if (self.vel.x < 0) {
-//  //          self.vel.x = Math.min(-WALK_X, self.vel.x);
-//  //      } else {
-//              self.vel.x = -WALK_X;
-//  //      }        
-//      }); 
 
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
         game.sequencer.bind("BOOST_RIGHT", [C.inputter.D, -C.inputter.D, C.inputter.D]); 
         game.sequencer.bind("BOOST_LEFT", [C.inputter.A, -C.inputter.A, C.inputter.A]);
-        //game.sequencer.bind("BLIP", [C.inputter.H]);
         
         // reduce ought to be moved to a utils file
 
         function reduce (n, x) {
-            var pos, sign, result;
-            pos = Math.abs(n); 
-            sign = n > 0 ? 1 : -1;
+            var pos = Math.abs(n), 
+                sign = n > 0 ? 1 : -1,
+                result;
             if (x > pos) {
                 result = 0;
             } else {
@@ -91,17 +65,22 @@ WALK_X = 5;
             //console.log(this.motion === motions.BOOST_RIGHT ? "BOOST" : (this.motion === motions.WALK_RIGHT ? "WALK" : ""));
 
             if (game.sequencer.isPressed("BOOST_UP")) {
+                this.state.motion = motions.BOOST_UP;
                 this.vel.y += -BOOST_Y;
             }
 
             if (game.sequencer.isPressed("BOOST_DOWN")) {
+                this.state.motion = motions.BOOST_DOWN;
                 this.vel.y += BOOST_Y;
             }
 
             if (game.sequencer.isPressed("BOOST_RIGHT")) {
+                this.state.motion = motions.BOOST_RIGHT;
                 this.vel.x += BOOST_X
             }
+
             if (game.sequencer.isPressed("BOOST_LEFT")) {
+                this.state.motion = motions.BOOST_LEFT;
                 this.vel.x += -BOOST_X
             }
 
@@ -112,6 +91,7 @@ WALK_X = 5;
                     self.vel.x = WALK_X;
                 }
             }
+
             if (C.inputter.isDown(C.inputter.A)) {
                 if (self.vel.x < 0) {
                     self.vel.x = Math.min(-WALK_X, self.vel.x);
@@ -120,6 +100,15 @@ WALK_X = 5;
                 }        
             }
 
+            if (C.inputter.isDown(C.inputter.W)) { 
+                if (this.vel.y >= 0) { // Falling or not in air
+                    self.vel.y = 0.2 * -GRAV;
+                } else if (this.state.motion !== motions.BOOST_UP) {
+                    self.vel.y = 0.2 * -GRAV;
+                }
+            } else {
+                self.vel.y += GRAV;
+            }
 
             this.center.y += this.vel.y
             this.center.x += this.vel.x
@@ -130,11 +119,18 @@ WALK_X = 5;
                 this.vel.x = reduce(this.vel.x, FRIC);
             }
 
+            if (Math.abs(this.vel.x) <= 5) {
+                if (this.vel.x < 0)
+                    this.state.motion = motions.WALK_LEFT;
+                else 
+                    this.state.motions = motions.WALK_RIGHT;
+            }
+
 
             //console.log(this.vel.x);
-            if (!C.inputter.isDown(C.inputter.W) && !C.inputter.isDown(C.inputter.W)) {
-                this.vel.y = (Math.abs(this.vel.x) > 5) ? 0 : this.vel.y + GRAV;
-            }
+///         if (!C.inputter.isDown(C.inputter.W)) { // if 
+///             this.vel.y = (Math.abs(this.vel.x) > 5) ? 0 : this.vel.y + GRAV;
+///         }
         }; 
 
         this.collision= function(other, type) { 
