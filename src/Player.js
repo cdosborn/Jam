@@ -1,6 +1,6 @@
 var FRIC,GRAV, BOOST_X, BOOST_Y;
 FRIC = 0.5;
-GRAV = 1;
+GRAV = 0.5;
 BOOST_X = 20;
 BOOST_Y = 15;
 WALK_X = 5;
@@ -36,11 +36,14 @@ WALK_X = 5;
                      , motion: motions.STAND } 
 
         this.health = 100;
+        this.resources = { boost:  100
+                         , hover:  50
+                         , health: 100 }
+                            
         this.vel = { x:0, y:0 }
         this.size = { x:30, y:100 };
         this.center = { x:10, y:110 };
-        this.color="#f07";
-
+        this.color="#f07"; 
 
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
@@ -100,31 +103,46 @@ WALK_X = 5;
                 }        
             }
 
-            if (C.inputter.isDown(C.inputter.W)) { 
-                if (this.vel.y >= 0) { // Falling or not in air
-                    self.vel.y = 0.2 * -GRAV;
-                } else if (this.state.motion !== motions.BOOST_UP) {
-                    self.vel.y = 0.2 * -GRAV;
+
+            if (C.inputter.isDown(C.inputter.W)) {
+//                  console.log(this.vel.y);
+//                  console.log(this.resources.hover);
+                if (this.vel.y >= 0 && this.resources.hover > 0) { // Falling or not in air
+                    self.resources.hover -= 1.5;
+                    self.vel.y = -0.2;
                 }
+                //console.log(this.resources.hover);
             } else {
-                self.vel.y += GRAV;
+                this.resources.hover = Math.min(50, this.resources.hover + 0.5);
             }
 
+            //this.center.y = Math.min(280, this.center.y + this.vel.y);
             this.center.y += this.vel.y
             this.center.x += this.vel.x
+
+            self.vel.y += GRAV;
             
             if (Math.abs(this.vel.x) > 10) {
                 this.vel.x = reduce(this.vel.x, FRIC * 2);
-            } else if (!C.inputter.isDown(C.inputter.A) && !C.inputter.isDown(C.inputter.D)) {
+                this.vel.y = 0;
+            } else {
                 this.vel.x = reduce(this.vel.x, FRIC);
             }
 
-            if (Math.abs(this.vel.x) <= 5) {
-                if (this.vel.x < 0)
-                    this.state.motion = motions.WALK_LEFT;
-                else 
-                    this.state.motions = motions.WALK_RIGHT;
-            }
+         // if (Math.abs(this.vel.y) > 1) { // Ascending / Descending
+         //     this.vel.y = reduce(this.vel.y, GRAV);
+         //     //console.log(this.vel.y);
+         // }
+
+///         console.log(this.resources.hover);
+
+       ///  if (Math.abs(this.vel.x) <= 5) {
+       ///      if (this.vel.x < 0)
+       ///          this.state.motion = motions.WALK_LEFT;
+       ///      else 
+       ///          this.state.motions = motions.WALK_RIGHT;
+       ///  } else {
+       ///  }
 
 
             //console.log(this.vel.x);
