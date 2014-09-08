@@ -1,9 +1,12 @@
-var FRIC,GRAV, BOOST_X, BOOST_Y;
-FRIC = 0.5;
-GRAV = 0.5;
-BOOST_X = 20;
-BOOST_Y = 15;
-WALK_X = 5;
+var FRIC = 0.5,
+    GRAV = 0.5,
+    BOOST_X = 15,
+    BOOST_Y = 12,
+    HOVER = 100,
+    HOVER_INCREMENT = 1,
+    DIV = 15,
+    WALK_X = 5;
+
 ;(function(exports) {
     exports.Player = function(game, settings) {
         var self = this,
@@ -30,14 +33,11 @@ WALK_X = 5;
                       , RANGE: 2 
                       , PASSIVE: 3 }
 
-        //speed,range,damage
-
         this.state = { action: actions.PASSIVE
                      , motion: motions.STAND } 
 
-        this.health = 100;
         this.resources = { boost:  100
-                         , hover:  50
+                         , hover:  HOVER
                          , health: 100 }
                             
         this.vel = { x:0, y:0 }
@@ -68,22 +68,18 @@ WALK_X = 5;
             //console.log(this.motion === motions.BOOST_RIGHT ? "BOOST" : (this.motion === motions.WALK_RIGHT ? "WALK" : ""));
 
             if (game.sequencer.isPressed("BOOST_UP")) {
-                this.state.motion = motions.BOOST_UP;
                 this.vel.y += -BOOST_Y;
             }
 
             if (game.sequencer.isPressed("BOOST_DOWN")) {
-                this.state.motion = motions.BOOST_DOWN;
                 this.vel.y += BOOST_Y;
             }
 
             if (game.sequencer.isPressed("BOOST_RIGHT")) {
-                this.state.motion = motions.BOOST_RIGHT;
                 this.vel.x += BOOST_X
             }
 
             if (game.sequencer.isPressed("BOOST_LEFT")) {
-                this.state.motion = motions.BOOST_LEFT;
                 this.vel.x += -BOOST_X
             }
 
@@ -105,50 +101,54 @@ WALK_X = 5;
 
 
             if (C.inputter.isDown(C.inputter.W)) {
-//                  console.log(this.vel.y);
-//                  console.log(this.resources.hover);
                 if (this.vel.y >= 0 && this.resources.hover > 0) { // Falling or not in air
                     self.resources.hover -= 1.5;
                     self.vel.y = -0.2;
                 }
-                //console.log(this.resources.hover);
             } else {
-                this.resources.hover = Math.min(50, this.resources.hover + 0.5);
+
+                // Recharge hover
+
+                this.resources.hover = Math.min(HOVER, this.resources.hover + HOVER_INCREMENT);
             }
 
-            //this.center.y = Math.min(280, this.center.y + this.vel.y);
-            this.center.y += this.vel.y
-            this.center.x += this.vel.x
+            this.center.y += (this.vel.y * delta/DIV)
+            this.center.x += (this.vel.x * delta/DIV)
+            var isBOOST_UP    = this.vel.y < -5;
+                isBOOST_DOWN  = this.vel.y > 5;
+                isBOOST_RIGHT = this.vel.x > 5;
+                isBOOST_LEFT  = this.vel.x < -5;
+                isHOVER       = this.vel.y < 0 && !isBOOST_UP;
+                isCROUCH      = false//this.center.y < this.height/2
+                isWALK_RIGHT  = this.vel.x <= 5 && this.vel.x > 0 && !isBOOST_LEFT;
+                isWALK_LEFT   = this.vel.x >= -5 && this.vel.x < 0 && !isBOOST_RIGHT;
+                isSTAND       = this.vel.x === 0 && this.vel.y === 0;
+                isFALLING     = false//this.vel.y <= 0 && this.center.y > this.size.height/2;
+
+
+            if (isBOOST_UP)         {this.state.motion = motions.BOOST_UP}   
+            else if (isBOOST_DOWN)  {this.state.motion = motions.BOOST_DOWN}
+            else if (isBOOST_RIGHT) {this.state.motion = motions.BOOST_RIGHT}
+            else if (isBOOST_LEFT)  {this.state.motion = motions.BOOST_LEFT} 
+            else if (isHOVER)       {this.state.motion = motions.HOVER}      
+            else if (isCROUCH)      {this.state.motion = motions.CROUCH}     
+            else if (isWALK_RIGHT)  {this.state.motion = motions.WALK_RIGHT} 
+            else if (isWALK_LEFT)   {this.state.motion = motions.WALK_LEFT}  
+            else if (isSTAND)       {this.state.motion = motions.STAND}      
+            //if (isHOVER) {console.log(this.state.motion);}
+              
+            // SET FOR NEXT TICK
 
             self.vel.y += GRAV;
             
-            if (Math.abs(this.vel.x) > 10) {
+            if (Math.abs(this.vel.x) > 5) {
                 this.vel.x = reduce(this.vel.x, FRIC * 2);
                 this.vel.y = 0;
             } else {
                 this.vel.x = reduce(this.vel.x, FRIC);
             }
 
-         // if (Math.abs(this.vel.y) > 1) { // Ascending / Descending
-         //     this.vel.y = reduce(this.vel.y, GRAV);
-         //     //console.log(this.vel.y);
-         // }
 
-///         console.log(this.resources.hover);
-
-       ///  if (Math.abs(this.vel.x) <= 5) {
-       ///      if (this.vel.x < 0)
-       ///          this.state.motion = motions.WALK_LEFT;
-       ///      else 
-       ///          this.state.motions = motions.WALK_RIGHT;
-       ///  } else {
-       ///  }
-
-
-            //console.log(this.vel.x);
-///         if (!C.inputter.isDown(C.inputter.W)) { // if 
-///             this.vel.y = (Math.abs(this.vel.x) > 5) ? 0 : this.vel.y + GRAV;
-///         }
         }; 
 
         this.collision= function(other, type) { 

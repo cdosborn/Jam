@@ -3,6 +3,7 @@
 
         this.c = new Coquette(this, "canvas", 1280, 500, "#000");
 
+        // Should be encapsulated, so that it cannot be set!
         this.totalTime = 0;
         this.sequencer = ButtonSequencer(this);
 
@@ -12,12 +13,18 @@
             center: { x: 360, y: 350 }
         });
 
+        var logger = 0,
+            count = 0;
 
-        this.count = 0;
+        count = 0;
         this.update = function(interval) { 
-            this.count += 1;
-        //  console.log(this.totalTime/this.count);
+            if (count > 100) {
+                logger = count = 0;
+            }
+            count += 1;
+            logger += interval;
             this.totalTime += interval;
+          //console.log(logger/count);
             this.sequencer.update(interval, this.c.inputter.getEvents());
         }
     };
