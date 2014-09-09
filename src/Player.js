@@ -1,6 +1,6 @@
 var FRIC = 0.5,
     GRAV = 0.5,
-    BOOST_X = 15,
+    BOOST_X = 20,
     BOOST_Y = 15,
     HOVER = 100,
     HOVER_INCREMENT = 1,
@@ -75,23 +75,25 @@ var FRIC = 0.5,
                 this.vel.x += -BOOST_X
             }
 
-            if (C.inputter.isDown(C.inputter.D)) {
+            if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
+                if (self.state.dir === direction.RIGHT) {
+                    self.vel.x = Math.max(WALK_X, self.vel.x);
+                } else {
+                    self.vel.x = Math.min(-WALK_X, self.vel.x);
+                }
+            } else if (C.inputter.isDown(C.inputter.D)) {
                 if (self.vel.x > 0) {
                     self.vel.x = Math.max(WALK_X, self.vel.x);
                 } else {
                     self.vel.x = WALK_X;
                 }
-            } 
-            if (C.inputter.isDown(C.inputter.A)) {
+            } else if (C.inputter.isDown(C.inputter.A)) {
                 if (self.vel.x < 0) {
                     self.vel.x = Math.min(-WALK_X, self.vel.x);
                 } else {
                     self.vel.x = -WALK_X;
                 }        
             }
-
-            // If the current direction contradicts a key pressed
-            //      Switch directions, otherwise stay true
 
             if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
             } else if (C.inputter.isDown(C.inputter.A)) {
