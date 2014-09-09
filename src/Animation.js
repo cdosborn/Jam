@@ -2,11 +2,7 @@
     exports.Animation = function(obj, img, frames, repeat) {
 
         var index = 0,
-            count = 0,
-            width = obj.size.x,
-            height = obj.size.y,
-            x = obj.center.x - width/2,
-            y = obj.center.y - height/2;
+            count = 0;
 
         return {
             next: function() {
@@ -17,20 +13,16 @@
                 return index;
             },
             draw: function(ctx) { 
-                var frame = frames[index];
+                var frame = frames[index],
+                    width = obj.size.x,
+                    height = obj.size.y,                    
+                    x = obj.center.x - width/2,
+                    y = obj.center.y - height/2;        
                 ctx.drawImage(img, frame * width, 0, width, height, x, y, width, height);
             },
             reset: function() {
                 index = 0;
-            },
-            set: function(i) {
-                index = i;
-            },
-            refresh: function() {
-                width = obj.size.x,
-                height = obj.size.y,                    
-                x = obj.center.x - width/2,
-                y = obj.center.y - height/2;        
+                count = 0;
             }
         }
     }

@@ -43,11 +43,9 @@ var FRIC = 0.5,
                          , hover:  HOVER
                          , health: 100 }
 
-
         this.vel = { x:0, y:0 }
         this.size = { x:212, y:122 };
         this.center = { x:10, y:110 };
-        //this.color="#f07"; 
 
         this.anims = [];
         this.anims["walkRight"] =  Animation(this, game.images['dinosaur_walk'],  [6,7,8,9,10,11], 4);
@@ -60,20 +58,6 @@ var FRIC = 0.5,
         game.sequencer.bind("BOOST_RIGHT", [C.inputter.D, -C.inputter.D, C.inputter.D]); 
         game.sequencer.bind("BOOST_LEFT", [C.inputter.A, -C.inputter.A, C.inputter.A]);
         
-        // reduce ought to be moved to a utils file
-
-        function reduce (n, x) {
-            var pos = Math.abs(n), 
-                sign = n > 0 ? 1 : -1,
-                result;
-            if (x > pos) {
-                result = 0;
-            } else {
-                result = (pos - x) * sign
-            }
-            return result;
-        }
-
         this.update = function(delta) {
             //console.log(this.motion === motions.BOOST_RIGHT ? "BOOST" : (this.motion === motions.WALK_RIGHT ? "WALK" : ""));
 
@@ -99,6 +83,7 @@ var FRIC = 0.5,
                 } else {
                     self.vel.x = WALK_X;
                 }
+                this.state.dir = direction.RIGHT;
             }
 
             if (C.inputter.isDown(C.inputter.A)) {
@@ -107,8 +92,8 @@ var FRIC = 0.5,
                 } else {
                     self.vel.x = -WALK_X;
                 }        
+                this.state.dir = direction.LEFT;
             }
-
 
             if (C.inputter.isDown(C.inputter.W)) {
                 if (this.vel.y >= 0 && this.resources.hover > 0) { // Falling or not in air
@@ -121,6 +106,21 @@ var FRIC = 0.5,
 
                 this.resources.hover = Math.min(HOVER, this.resources.hover + HOVER_INCREMENT);
             }
+
+            var dirWord = this.state.dir == direction.RIGHT ? "RIGHT" : "LEFT";
+            if (C.inputter.isDown(C.inputter.J)) {
+                this.state.action = actions.MELEE;
+                console.log("MELEE " + dirWord);
+            }
+            if (C.inputter.isDown(C.inputter.K)) {
+                this.state.action = actions.BLIP;
+                console.log("PHASE ");
+            }
+            if (C.inputter.isDown(C.inputter.L)) {
+                this.state.action = actions.RANGE;
+                 console.log("RANGE " + dirWord);
+            }
+           
 
             this.center.y += (this.vel.y * delta/DIV)
             this.center.x += (this.vel.x * delta/DIV)
@@ -149,10 +149,7 @@ var FRIC = 0.5,
             else if (isWALK_LEFT)   {this.state.motion = motions.WALK_LEFT}  
             else if (isSTAND)       {this.state.motion = motions.STAND}      
 
-            if (C.inputter.isPressed(C.inputter.A))      {this.state.dir = direction.LEFT} 
-            else if (C.inputter.isPressed(C.inputter.D)) {this.state.dir = direction.RIGHT} 
-
-            if(isBOOST_RIGHT) {console.log("BOOST_RIGHT");}
+            //if(isBOOST_RIGHT) {console.log("BOOST_RIGHT");}
               
             // SET FOR NEXT TICK
 
@@ -191,17 +188,28 @@ var FRIC = 0.5,
                 anim = this.anims["standLeft"]
             }
 
-     //     ctx.save();
-     //     ctx.scale(2,2);
-            anim.refresh();
             anim.draw(ctx);
-            index = anim.next();
+            anim.next();
             for (var i = 0; i < this.anims.length; i++) {
-               this.anims[i].reset();
+               if (anim !== this.anims[i]) {
+                   this.anims[i].reset();
+               }
             }
-            anim.set(index);
-     //     ctx.restore();
         }
+
+        function reduce(n, x) {
+            var pos = Math.abs(n), 
+                sign = n > 0 ? 1 : -1,
+                result;
+            if (x > pos) {
+                result = 0;
+            } else {
+                result = (pos - x) * sign
+            }
+            return result;
+        }
+
+
     };
 
 })(this);
