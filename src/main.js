@@ -15,16 +15,20 @@
         this.totalTime = 0;
         this.sequencer = ButtonSequencer(this);
 
-        this.c.entities.create(Player);
+
+        this.c.entities.create(Player, { 
+            center: { x:10, y:110 },
+            size: { x:212, y:122 }
+        });
         this.c.entities.create(Platform, {
             size:   { x: 1280, y: 30 },
             center: { x: 640, y: 400 }
         });
 
         var logger = 0,
-            count = 0;
+            count = 0,
+            player = this.c.entities.all(Player)[0];
 
-        count = 0;
         this.update = function(interval) { 
             if (count > 100) {
                 logger = count = 0;
@@ -35,7 +39,10 @@
             // if (count % 30 === 0) {
             //     console.log(count/logger * 1000 );
             // }
+
             this.sequencer.update(interval, this.c.inputter.getEvents());
+            //console.log(player);
+            this.c.renderer.setViewCenter(player.center);
         }
     };
 

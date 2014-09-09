@@ -44,8 +44,6 @@ var FRIC = 0.5,
                          , health: 100 }
 
         this.vel = { x:0, y:0 }
-        this.size = { x:212, y:122 };
-        this.center = { x:10, y:110 };
 
         this.anims = [];
         this.anims["walkRight"] =  Animation(this, game.images['dinosaur_walk'],  [6,7,8,9,10,11], 4);
@@ -83,17 +81,24 @@ var FRIC = 0.5,
                 } else {
                     self.vel.x = WALK_X;
                 }
-                this.state.dir = direction.RIGHT;
-            }
-
+            } 
             if (C.inputter.isDown(C.inputter.A)) {
                 if (self.vel.x < 0) {
                     self.vel.x = Math.min(-WALK_X, self.vel.x);
                 } else {
                     self.vel.x = -WALK_X;
                 }        
-                this.state.dir = direction.LEFT;
             }
+
+            // If the current direction contradicts a key pressed
+            //      Switch directions, otherwise stay true
+
+            if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
+            } else if (C.inputter.isDown(C.inputter.A)) {
+                this.state.dir = direction.LEFT
+            } else if (C.inputter.isDown(C.inputter.D)) {
+                this.state.dir = direction.RIGHT;
+            } 
 
             if (C.inputter.isDown(C.inputter.W)) {
                 if (this.vel.y >= 0 && this.resources.hover > 0) { // Falling or not in air
