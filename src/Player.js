@@ -1,7 +1,7 @@
 var FRIC = 0.5,
     GRAV = 0.5,
     BOOST_X = 15,
-    BOOST_Y = 12,
+    BOOST_Y = 15,
     HOVER = 100,
     HOVER_INCREMENT = 1,
     DIV = 15,
@@ -16,17 +16,19 @@ var FRIC = 0.5,
         }
 
         // Enumerate state
-        var motions = { WALK_LEFT: 0
-                      , WALK_RIGHT: 1
+        var motions = { WALK: 0
+                      , STAND: 1 
                       , CROUCH: 2
                       , HOVER: 3
                       , FALLING: 4 
-                      , BOOST_LEFT: 5
-                      , BOOST_RIGHT: 6
-                      , BOOST_UP: 7
-                      , BOOST_DOWN: 8
-                      , STAND: 9 
+                      , BOOST_UP: 5
+                      , BOOST_DOWN: 6
+                      , BOOST_LEFT: 7
+                      , BOOST_RIGHT: 8
                       }
+
+        var direction = { LEFT: 0
+                        , RIGHT: 1 }
 
         var actions = { BLIP: 0
                       , MELEE: 1
@@ -34,16 +36,24 @@ var FRIC = 0.5,
                       , PASSIVE: 3 }
 
         this.state = { action: actions.PASSIVE
-                     , motion: motions.STAND } 
+                     , motion: motions.STAND 
+                     , dir:    direction.RIGHT } 
 
         this.resources = { boost:  100
                          , hover:  HOVER
                          , health: 100 }
-                            
+
+
         this.vel = { x:0, y:0 }
-        this.size = { x:30, y:100 };
+        this.size = { x:212, y:122 };
         this.center = { x:10, y:110 };
-        this.color="#f07"; 
+        //this.color="#f07"; 
+
+        this.anims = [];
+        this.anims["walkRight"] =  Animation(this, game.images['dinosaur_walk'],  [6,7,8,9,10,11], 4);
+        this.anims["walkLeft"]  =  Animation(this, game.images['dinosaur_walk'],  [0,1,2,3,4,5],   4); 
+        this.anims["standRight"] = Animation(this, game.images['dinosaur_stand'], [6,7,8,9,10,11], 4);
+        this.anims["standLeft"] =  Animation(this, game.images['dinosaur_stand'], [0,1,2,3,4,5],   4);
 
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
@@ -114,17 +124,20 @@ var FRIC = 0.5,
 
             this.center.y += (this.vel.y * delta/DIV)
             this.center.x += (this.vel.x * delta/DIV)
-            var isBOOST_UP    = this.vel.y < -5;
-                isBOOST_DOWN  = this.vel.y > 5;
-                isBOOST_RIGHT = this.vel.x > 5;
-                isBOOST_LEFT  = this.vel.x < -5;
-                isHOVER       = this.vel.y < 0 && !isBOOST_UP;
-                isCROUCH      = false//this.center.y < this.height/2
-                isWALK_RIGHT  = this.vel.x <= 5 && this.vel.x > 0 && !isBOOST_LEFT;
-                isWALK_LEFT   = this.vel.x >= -5 && this.vel.x < 0 && !isBOOST_RIGHT;
-                isSTAND       = this.vel.x === 0 && this.vel.y === 0;
-                isFALLING     = false//this.vel.y <= 0 && this.center.y > this.size.height/2;
 
+            var isBOOST_UP    = this.vel.y < -WALK_X,
+                isBOOST_DOWN  = this.vel.y > WALK_X,
+                isBOOST_RIGHT = this.vel.x > WALK_X,
+                isBOOST_LEFT  = this.vel.x < -WALK_X,
+                isHOVER       = this.vel.y < 0 && !isBOOST_UP,
+                isCROUCH      = false//this.center.y < this.height/2
+                isWALK_RIGHT  = this.vel.x <= WALK_X && this.vel.x > 0 && !isBOOST_LEFT,
+                isWALK_LEFT   = this.vel.x >= -WALK_X && this.vel.x < 0 && !isBOOST_RIGHT,
+                isSTAND       = this.vel.x === 0 && this.vel.y === 0,
+                isFALLING     = false//this.vel.y <= 0 && this.center.y > this.size.height/2;
+                isFACING_LEFT = C.inputter.isDown(C.inputter.A) || this.state.dir === direction.LEFT;
+
+            // Set states
 
             if (isBOOST_UP)         {this.state.motion = motions.BOOST_UP}   
             else if (isBOOST_DOWN)  {this.state.motion = motions.BOOST_DOWN}
@@ -135,23 +148,27 @@ var FRIC = 0.5,
             else if (isWALK_RIGHT)  {this.state.motion = motions.WALK_RIGHT} 
             else if (isWALK_LEFT)   {this.state.motion = motions.WALK_LEFT}  
             else if (isSTAND)       {this.state.motion = motions.STAND}      
-            //if (isHOVER) {console.log(this.state.motion);}
+
+            if (C.inputter.isPressed(C.inputter.A))      {this.state.dir = direction.LEFT} 
+            else if (C.inputter.isPressed(C.inputter.D)) {this.state.dir = direction.RIGHT} 
+
+            if(isBOOST_RIGHT) {console.log("BOOST_RIGHT");}
               
             // SET FOR NEXT TICK
 
-            self.vel.y += GRAV;
+            self.vel.y += GRAV * delta/DIV;
             
-            if (Math.abs(this.vel.x) > 5) {
-                this.vel.x = reduce(this.vel.x, FRIC * 2);
+            if (Math.abs(this.vel.x) > WALK_X) {
+                this.vel.x = reduce(this.vel.x, FRIC * delta/DIV);
                 this.vel.y = 0;
             } else {
-                this.vel.x = reduce(this.vel.x, FRIC);
+                this.vel.x = reduce(this.vel.x, FRIC * delta/DIV);
             }
 
 
         }; 
 
-        this.collision= function(other, type) { 
+        this.collision = function(other, type) { 
             var type = other.__proto__.constructor;
             if (type === Platform) {
                 self.vel.y = 0;
@@ -161,12 +178,30 @@ var FRIC = 0.5,
         this.boundingBox = C.collider.RECTANGLE;
 
         this.draw = function(ctx) { 
-            ctx.fillStyle = self.color;
-            ctx.fillRect(this.center.x - this.size.x / 2,
-                         this.center.y - this.size.y / 2,
-                         this.size.x,
-                         this.size.y);
-        }; 
+            var anim, index, 
+                vx = Math.abs(this.vel.x);
+
+            if (vx <= WALK_X && vx !== 0 && this.state.dir === direction.RIGHT) {
+                anim = this.anims["walkRight"];
+            } else if (vx <= WALK_X && vx !== 0 && this.state.dir === direction.LEFT) {
+                anim = this.anims["walkLeft"]
+            } else if (this.state.dir === direction.RIGHT) {
+                anim = this.anims["standRight"]
+            } else { // STAND LEFT
+                anim = this.anims["standLeft"]
+            }
+
+     //     ctx.save();
+     //     ctx.scale(2,2);
+            anim.refresh();
+            anim.draw(ctx);
+            index = anim.next();
+            for (var i = 0; i < this.anims.length; i++) {
+               this.anims[i].reset();
+            }
+            anim.set(index);
+     //     ctx.restore();
+        }
     };
 
 })(this);
