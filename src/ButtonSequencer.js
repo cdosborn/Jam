@@ -19,7 +19,7 @@
             this.index = 0; this.stamp(); 
         },
         stamp: function() { 
-            this.timestamp = game.totalTime;
+            this.timestamp = game.getTime();
         } 
     }; 
 
@@ -51,7 +51,7 @@
                 // to see if instanceof
 
                     if (seq instanceof Sequence) {
-                        if (game.totalTime - seq.timestamp > inbetweenTime) { // not updated recently
+                        if (game.getTime() - seq.timestamp > inbetweenTime) { // not updated recently
                            seq.reset();
                         } 
 

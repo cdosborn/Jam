@@ -27,8 +27,10 @@ var FRIC = 0.5,
                       , BOOST_RIGHT: 8
                       }
 
-        var direction = { LEFT: 0
-                        , RIGHT: 1 }
+        this.interval = 0;
+
+        var directions = { LEFT: 0
+                         , RIGHT: 1 }
 
         var actions = { BLIP: 0
                       , MELEE: 1
@@ -37,7 +39,7 @@ var FRIC = 0.5,
 
         this.state = { action: actions.PASSIVE
                      , motion: motions.STAND 
-                     , dir:    direction.RIGHT } 
+                     , dir:    directions.RIGHT } 
 
         this.resources = { boost:  100
                          , hover:  HOVER
@@ -45,11 +47,59 @@ var FRIC = 0.5,
 
         this.vel = { x:0, y:0 }
 
-        this.anims = [];
-        this.anims["walkRight"] =  Animation(this, game.images['dinosaur_walk'],  [6,7,8,9,10,11], 4);
-        this.anims["walkLeft"]  =  Animation(this, game.images['dinosaur_walk'],  [0,1,2,3,4,5],   4); 
-        this.anims["standRight"] = Animation(this, game.images['dinosaur_stand'], [6,7,8,9,10,11], 4);
-        this.anims["standLeft"] =  Animation(this, game.images['dinosaur_stand'], [0,1,2,3,4,5],   4);
+        this.animator = Animator(this);
+
+//////  this.animator.register(
+//////          "meleeRight",
+//////          Animation(self, {   
+//////              img        : game.images['dinosaur_melee'],
+//////              frames     : [11,12,13,14,15,16,17,18,19,20,21],
+//////              fps        : 10
+//////              cast       : 3,
+//////              exit       : 10
+//////          });
+
+//////  var meleeLeft = Animation(
+//////              this, 
+//////              game.images['dinosaur_melee'], 
+//////              [0,1,2,3,4,5,6,7,8,9,10], 
+//////              2, 
+//////              3, 
+//////              10 ); 
+
+        this.anims = {};
+        this.animDict = ["walkLeft", "walkRight", "standRight", "standLeft"];
+        this.anims["meleeRight"] = Animation(this, {
+            img: game.images['dinosaur_melee'], 
+            frames: [11,12,13,14,15,16,17,18,19,20,21], 
+            fps: 10,
+            cast: 3, 
+            exit: 10
+        });
+
+        this.anims["meleeLeft"]  = Animation(this, {
+            img: game.images['dinosaur_melee'], 
+            frames: [0,1,2,3,4,5,6,7,8,9,10],   
+            cast: 3, 
+            exit: 10
+        }); 
+  
+        this.anims["walkRight"]   = Animation(this, { 
+            img: game.images['dinosaur_walk'],  
+            frames: [6,7,8,9,10,11]   
+        }); 
+        this.anims["walkLeft"]  = Animation(this, { 
+            img: game.images['dinosaur_walk'],  
+            frames: [0,1,2,3,4,5]
+        });
+        this.anims["standRight"] = Animation(this, { 
+            img: game.images['dinosaur_stand'], 
+            frames: [6,7,8,9,10,11]
+        });
+        this.anims["standLeft"]  = Animation(this, { 
+            img: game.images['dinosaur_stand'], 
+            frames: [0,1,2,3,4,5]
+        });
 
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
@@ -57,7 +107,9 @@ var FRIC = 0.5,
         game.sequencer.bind("BOOST_LEFT", [C.inputter.A, -C.inputter.A, C.inputter.A]);
         
         this.update = function(delta) {
-            //console.log(this.motion === motions.BOOST_RIGHT ? "BOOST" : (this.motion === motions.WALK_RIGHT ? "WALK" : ""));
+
+            this.interval = delta;
+            //console.log(this.state.dir);
 
             if (game.sequencer.isPressed("BOOST_UP")) {
                 this.vel.y += -BOOST_Y;
@@ -68,15 +120,15 @@ var FRIC = 0.5,
             }
 
             if (game.sequencer.isPressed("BOOST_RIGHT")) {
-                this.vel.x += BOOST_X
+                this.vel.x += BOOST_X;
             }
 
             if (game.sequencer.isPressed("BOOST_LEFT")) {
-                this.vel.x += -BOOST_X
+                this.vel.x += -BOOST_X;
             }
 
             if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
-                if (self.state.dir === direction.RIGHT) {
+                if (self.state.dir === directions.RIGHT) {
                     self.vel.x = Math.max(WALK_X, self.vel.x);
                 } else {
                     self.vel.x = Math.min(-WALK_X, self.vel.x);
@@ -95,11 +147,10 @@ var FRIC = 0.5,
                 }        
             }
 
-            if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
-            } else if (C.inputter.isDown(C.inputter.A)) {
-                this.state.dir = direction.LEFT
-            } else if (C.inputter.isDown(C.inputter.D)) {
-                this.state.dir = direction.RIGHT;
+            if (!C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
+                this.state.dir = directions.LEFT
+            } else if (!C.inputter.isDown(C.inputter.A) && C.inputter.isDown(C.inputter.D)) {
+                this.state.dir = directions.RIGHT;
             } 
 
             if (C.inputter.isDown(C.inputter.W)) {
@@ -110,20 +161,19 @@ var FRIC = 0.5,
             } else {
 
                 // Recharge hover
-
                 this.resources.hover = Math.min(HOVER, this.resources.hover + HOVER_INCREMENT);
             }
 
-            var dirWord = this.state.dir == direction.RIGHT ? "RIGHT" : "LEFT";
-            if (C.inputter.isDown(C.inputter.J)) {
+            var dirWord = this.state.dir == directions.RIGHT ? "RIGHT" : "LEFT";
+            if (C.inputter.isPressed(C.inputter.J)) {
                 this.state.action = actions.MELEE;
                 console.log("MELEE " + dirWord);
             }
-            if (C.inputter.isDown(C.inputter.K)) {
+            if (C.inputter.isPressed(C.inputter.K)) {
                 this.state.action = actions.BLIP;
                 console.log("PHASE ");
             }
-            if (C.inputter.isDown(C.inputter.L)) {
+            if (C.inputter.isPressed(C.inputter.L)) {
                 this.state.action = actions.RANGE;
                  console.log("RANGE " + dirWord);
             }
@@ -142,18 +192,18 @@ var FRIC = 0.5,
                 isWALK_LEFT   = this.vel.x >= -WALK_X && this.vel.x < 0 && !isBOOST_RIGHT,
                 isSTAND       = this.vel.x === 0 && this.vel.y === 0,
                 isFALLING     = false//this.vel.y <= 0 && this.center.y > this.size.height/2;
-                isFACING_LEFT = C.inputter.isDown(C.inputter.A) || this.state.dir === direction.LEFT;
+                isFACING_LEFT = C.inputter.isDown(C.inputter.A) || this.state.dir === directions.LEFT;
 
             // Set states
 
-            if (isBOOST_UP)         {this.state.motion = motions.BOOST_UP}   
+            if (isBOOST_UP)    {this.state.motion = motions.BOOST_UP}   
             else if (isBOOST_DOWN)  {this.state.motion = motions.BOOST_DOWN}
             else if (isBOOST_RIGHT) {this.state.motion = motions.BOOST_RIGHT}
             else if (isBOOST_LEFT)  {this.state.motion = motions.BOOST_LEFT} 
             else if (isHOVER)       {this.state.motion = motions.HOVER}      
             else if (isCROUCH)      {this.state.motion = motions.CROUCH}     
-            else if (isWALK_RIGHT)  {this.state.motion = motions.WALK_RIGHT} 
-            else if (isWALK_LEFT)   {this.state.motion = motions.WALK_LEFT}  
+            else if (isWALK_RIGHT)  {this.state.motion = motions.WALK} 
+            else if (isWALK_LEFT)   {this.state.motion = motions.WALK}  
             else if (isSTAND)       {this.state.motion = motions.STAND}      
 
             //if(isBOOST_RIGHT) {console.log("BOOST_RIGHT");}
@@ -182,24 +232,35 @@ var FRIC = 0.5,
         this.boundingBox = C.collider.RECTANGLE;
 
         this.draw = function(ctx) { 
-            var anim, index, 
-                vx = Math.abs(this.vel.x);
 
-            if (vx <= WALK_X && vx !== 0 && this.state.dir === direction.RIGHT) {
-                anim = this.anims["walkRight"];
-            } else if (vx <= WALK_X && vx !== 0 && this.state.dir === direction.LEFT) {
-                anim = this.anims["walkLeft"]
-            } else if (this.state.dir === direction.RIGHT) {
-                anim = this.anims["standRight"]
+            if (this.state.motion === motions.WALK && this.state.dir === directions.RIGHT) {
+                this.anim = this.anims["walkRight"];
+            } else if (this.state.motion === motions.WALK && this.state.dir === directions.LEFT) {
+                this.anim = this.anims["walkLeft"]
+            } else if (this.state.action === actions.MELEE) {
+                if (this.state.dir === directions.RIGHT) {
+                    this.anim = this.anims["meleeRight"]
+                } else {
+                    this.anim = this.anims["meleeLeft"]
+                }
+            } else if (this.state.dir === directions.RIGHT) {
+                this.anim = this.anims["standRight"]
             } else { // STAND LEFT
-                anim = this.anims["standLeft"]
+                this.anim = this.anims["standLeft"]
             }
 
-            anim.draw(ctx);
-            anim.next();
-            for (var i = 0; i < this.anims.length; i++) {
-               if (anim !== this.anims[i]) {
-                   this.anims[i].reset();
+            //console.log(this.state.dir);
+
+            this.anim.draw(ctx);
+            this.anim.next(this.interval);
+
+            var next;
+            var name;
+            for (var i = 0, len = this.animDict.length; i < len; i++) {
+               name = this.animDict[i];
+               next = this.anims[name]; 
+               if (this.anim !== next) {
+                   next.reset();
                }
             }
         }
