@@ -83,11 +83,23 @@ var FRIC = 0.5,
             cast: 3, 
             exit: 10
         }); 
-  
-        this.anims["walkRight"]   = Animation(this, { 
+        this.anims["walkRight"]  = Animation(this, { 
             img: game.images['dinosaur_walk'],  
-            frames: [6,7,8,9,10,11]   
-        }); 
+            frames: [6,7,8,9,10,11]
+        });
+//      this.anims["walkRight"]   = Animation(this, { 
+//          img: game.images['player_walk_right_bottom'],  
+//          frames: [0,1,2,3,4,5],
+//          fps:7,
+//          size: { x:96, y: 106}
+//      }); 
+//      this.anims["walkRightTop"]   = Animation(this, { 
+//          img: game.images['player_walk_right_top'],  
+//          frames: [0,1,2,3,4,5],
+//          fps:7,
+//          size: { x:96, y: 106}
+//      }); 
+
         this.anims["walkLeft"]  = Animation(this, { 
             img: game.images['dinosaur_walk'],  
             frames: [0,1,2,3,4,5]
@@ -154,7 +166,8 @@ var FRIC = 0.5,
             } 
 
             if (C.inputter.isDown(C.inputter.W)) {
-                if (this.vel.y >= 0 && this.resources.hover > 0) { // Falling or not in air
+                // Falling or not in air
+                if (this.vel.y >= 0 && this.resources.hover > 0) { 
                     self.resources.hover -= 1.5;
                     self.vel.y = -0.2;
                 }
@@ -164,20 +177,13 @@ var FRIC = 0.5,
                 this.resources.hover = Math.min(HOVER, this.resources.hover + HOVER_INCREMENT);
             }
 
-            var dirWord = this.state.dir == directions.RIGHT ? "RIGHT" : "LEFT";
             if (C.inputter.isPressed(C.inputter.J)) {
                 this.state.action = actions.MELEE;
-                console.log("MELEE " + dirWord);
-            }
-            if (C.inputter.isPressed(C.inputter.K)) {
+            } else if (C.inputter.isPressed(C.inputter.K)) {
                 this.state.action = actions.BLIP;
-                console.log("PHASE ");
-            }
-            if (C.inputter.isPressed(C.inputter.L)) {
+            } else if (C.inputter.isPressed(C.inputter.L)) {
                 this.state.action = actions.RANGE;
-                 console.log("RANGE " + dirWord);
             }
-           
 
             this.center.y += (this.vel.y * delta/DIV)
             this.center.x += (this.vel.x * delta/DIV)
@@ -196,7 +202,7 @@ var FRIC = 0.5,
 
             // Set states
 
-            if (isBOOST_UP)    {this.state.motion = motions.BOOST_UP}   
+            if (isBOOST_UP)         {this.state.motion = motions.BOOST_UP}   
             else if (isBOOST_DOWN)  {this.state.motion = motions.BOOST_DOWN}
             else if (isBOOST_RIGHT) {this.state.motion = motions.BOOST_RIGHT}
             else if (isBOOST_LEFT)  {this.state.motion = motions.BOOST_LEFT} 
@@ -205,6 +211,7 @@ var FRIC = 0.5,
             else if (isWALK_RIGHT)  {this.state.motion = motions.WALK} 
             else if (isWALK_LEFT)   {this.state.motion = motions.WALK}  
             else if (isSTAND)       {this.state.motion = motions.STAND}      
+
 
             //if(isBOOST_RIGHT) {console.log("BOOST_RIGHT");}
               
@@ -218,9 +225,45 @@ var FRIC = 0.5,
             } else {
                 this.vel.x = reduce(this.vel.x, FRIC * delta/DIV);
             }
-
-
         }; 
+
+        this.stateToString = function() {
+            var motionId = this.state.motion;
+            var actionId = this.state.action;
+            var dirId = this.state.dir;
+            var motion, action, dir;
+            if (motionId === motions.BOOST_UP) {
+               motion = "BOOST UP" 
+            } else if (motionId === motions.BOOST_DOWN) {
+               motion = "BOOST DOWN" 
+            } else if (motionId === motions.BOOST_RIGHT) {
+               motion = "BOOST RIGHT" 
+            } else if (motionId === motions.BOOST_LEFT) {
+               motion = "BOOST LEFT" 
+            } else if (motionId === motions.HOVER) {
+               motion = "HOVER" 
+            } else if (motionId === motions.CROUCH) {
+               motion = "CROUCH" 
+            } else if (motionId === motions.WALK) {
+               motion = "WALK" 
+            } else if (motionId === motions.STAND) {
+               motion = "STAND" 
+            }
+//                  var directions = { LEFT: 0
+//                                   , RIGHT: 1 }
+            
+            if (actionId === actions.BLIP) {
+                action = "BLIP";
+            } else if (actionId === actions.MELEE) {
+                action = "MELEE";
+            } else if (actionId === actions.RANGE) {
+                action = "RANGE";
+            } else if (actionId === actions.PASSIVE) {
+                action = "PASSIVE";
+            }
+
+            return [motion, action];
+        }
 
         this.collision = function(other, type) { 
             var type = other.__proto__.constructor;
@@ -249,20 +292,37 @@ var FRIC = 0.5,
                 this.anim = this.anims["standLeft"]
             }
 
-            //console.log(this.state.dir);
-
-            this.anim.draw(ctx);
-            this.anim.next(this.interval);
-
-            var next;
-            var name;
-            for (var i = 0, len = this.animDict.length; i < len; i++) {
-               name = this.animDict[i];
-               next = this.anims[name]; 
-               if (this.anim !== next) {
-                   next.reset();
-               }
+            if (this.state.action === actions.BLIP) {
+                this.anim = this.anims["durp"];
             }
+
+            ctx.fillStyle = "#fff"
+            ctx.fillRect(this.center.x - this.size.x/2,this.center.y - this.size.y/2,this.size.x,this.size.y);
+            ctx.fillStyle = "#000"
+            ctx.font="Bold Helvetica";
+            ctx.fillText(this.stateToString()[0],this.center.x - this.size.x/2,this.center.y,this.size.x);
+            ctx.fillText(this.stateToString()[1],this.center.x - this.size.x/2,this.center.y + 10,this.size.x);
+
+         // this.anim.draw(ctx);
+         // this.anim.next(this.interval);
+
+         //// this.anims["walkRight"].draw(ctx);
+         //// this.anims["walkRight"].next(this.interval);
+         //// this.anims["walkRightTop"].draw(ctx);
+         //// this.anims["walkRightTop"].next(this.interval);
+
+
+         // var next;
+         // var name;
+         // for (var i = 0, len = this.animDict.length; i < len; i++) {
+         //    name = this.animDict[i];
+         //    next = this.anims[name]; 
+         //    if (this.anim !== next) {
+         //        next.reset();
+         //    }
+         // }
+         //
+         
         }
 
         function reduce(n, x) {

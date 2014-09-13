@@ -3,7 +3,7 @@
     // obj - ref to obj defining size for drawing
     // img - ref to img to be split across frames
     // frames - list of img frames composing anim
-    //
+   //
     // *optional*
     // repeatEach - repeat each frame, repeatEach times
     // cast  - last frame where anim can be cancelled
@@ -15,9 +15,11 @@
             lastTime = 0,
             img    = settings.img,
             frames = settings.frames,
-            fps    = (settings.fps  === undefined ? 10 : settings.fps),
-            cast   = (settings.cast === undefined ? frames.length : settings.cast),
-            exit   = (settings.exit === undefined ? 0 : settings.exit);
+            fps    = (settings.fps    === undefined ? 10 : settings.fps),
+            cast   = (settings.cast   === undefined ? frames.length : settings.cast),
+            exit   = (settings.exit   === undefined ? 0 : settings.exit),
+            size   = (settings.size   === undefined ? obj.size : settings.size),
+            center = (settings.center === undefined ? obj.center : settings.center);
 
         return {
             next: function(delta) {
@@ -40,11 +42,19 @@
             },
             draw: function(ctx) { 
                 var frame = frames[curFrame],
-                    width = obj.size.x,
-                    height = obj.size.y,                    
-                    x = obj.center.x - width/2,
-                    y = obj.center.y - height/2;        
+                    width = size.x,
+                    height = size.y,                    
+                    x = center.x - width/2,
+                    y = center.y - height/2;        
+                //if (player.state.action ===  0) {
+                //    //console.log("frame: " + frame);
+                //    //console.log("x: " + x);
+                //    //console.log("y: " + y);
 
+                //    //console.log("width: " + width);
+                //    //console.log("height: " + height);
+                //}
+                
                 ctx.drawImage(img, frame * width, 0, width, height, x, y, width, height);
             },
             reset: function() {
