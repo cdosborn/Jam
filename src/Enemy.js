@@ -242,29 +242,22 @@ var FRIC = 0.5,
         }
 
         function setState() {
-            var isBOOST_UP    = self.vel.y < -WALK_X
-              , isBOOST_DOWN  = self.vel.y > WALK_X
-              , isBOOST_RIGHT = self.vel.x > WALK_X
-              , isBOOST_LEFT  = self.vel.x < -WALK_X
-              , isHOVER       = self.vel.y < 0 && !isBOOST_UP
-              , isCROUCH      = false//self.center.y < self.height/2
-              , isWALK_RIGHT  = self.vel.x <= WALK_X && self.vel.x > 0 && !isBOOST_LEFT
-              , isWALK_LEFT   = self.vel.x >= -WALK_X && self.vel.x < 0 && !isBOOST_RIGHT
-              , isSTAND       = self.vel.x === 0 && self.vel.y === 0
-              , isFALLING     = false//self.vel.y <= 0 && self.center.y > self.size.height/2;
-              , isFACING_LEFT = C.inputter.isDown(C.inputter.A) || self.state.facing === facing.LEFT;
+          //var isBOOST_UP    = self.vel.y < -WALK_X
+          //  , isBOOST_DOWN  = self.vel.y > WALK_X
+          //  , isBOOST_RIGHT = self.vel.x > WALK_X
+          //  , isBOOST_LEFT  = self.vel.x < -WALK_X
+          //  , isHOVER       = self.vel.y < 0 && !isBOOST_UP
+          //  , isCROUCH      = false//self.center.y < self.height/2
+          //  , isWALK_RIGHT  = self.vel.x <= WALK_X && self.vel.x > 0 && !isBOOST_LEFT
+          //  , isWALK_LEFT   = self.vel.x >= -WALK_X && self.vel.x < 0 && !isBOOST_RIGHT
+          //  , isSTAND       = self.vel.x === 0 && self.vel.y === 0
+          //  , isFALLING     = false//self.vel.y <= 0 && self.center.y > self.size.height/2;
+          //  , isFACING_LEFT = C.inputter.isDown(C.inputter.A) || self.state.facing === facing.LEFT;
 
-            if (isBOOST_UP)         {self.state.motion = motions.BOOST_UP}   
-            else if (isBOOST_DOWN)  {self.state.motion = motions.BOOST_DOWN}
-            else if (isBOOST_RIGHT) {self.state.motion = motions.BOOST_RIGHT}
-            else if (isBOOST_LEFT)  {self.state.motion = motions.BOOST_LEFT} 
-            else if (isHOVER)       {self.state.motion = motions.HOVER}      
-            else if (isCROUCH)      {self.state.motion = motions.CROUCH}     
-            else if (isWALK_RIGHT)  {self.state.motion = motions.WALK} 
-            else if (isWALK_LEFT)   {self.state.motion = motions.WALK}  
-            else if (isSTAND)       {self.state.motion = motions.STAND}      
+            if (self.vel.x > 0) {self.state.facing = facing.RIGHT;}   
+            else                {self.state.facing = facing.LEFT;}
+            self.state.motion = motions.WALK;
         }
-
-    };
+    }
 
 })(this);
