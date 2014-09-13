@@ -8,14 +8,6 @@
 
         this.c = new Coquette(this, "canvas", 1280, 500, "#000");
 
-
-        var ctx = document.getElementById("canvas").getContext('2d');
-
-        ctx.imageSmoothingEnabled = false;
-        ctx.webkitImageSmoothingEnabled = false;
-        ctx.mozImageSmoothingEnabled = false;
-
-
         this.images = {
             dinosaur_stand: new Image(),
             dinosaur_walk: new Image(),
@@ -41,9 +33,13 @@
 
         this.c.entities.create(Player, { 
             center: { x:10, y:110 },
-            size: { x:50, y:100 }
+            size: { x:60, y:100 }
         });
 
+        this.c.entities.create(Enemy, { 
+            center: { x:10, y:110 },
+            size: { x:60, y:100 }
+        });
 
         this.c.entities.create(Platform, {
             size:   { x: 1280, y: 30 },
