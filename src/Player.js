@@ -29,17 +29,18 @@ var FRIC = 0.5,
 
         this.interval = 0;
 
-        var directions = { LEFT: 0
-                         , RIGHT: 1 }
+        var facing = { LEFT: 0
+                     , RIGHT: 1 }
 
         var actions = { BLIP: 0
                       , MELEE: 1
                       , RANGE: 2 
-                      , PASSIVE: 3 }
+                      , PASSIVE: 3 
+                      , STAGGER: 4 }
 
         this.state = { action: actions.PASSIVE
                      , motion: motions.STAND 
-                     , dir:    directions.RIGHT } 
+                     , facing: facing.RIGHT } 
 
         this.resources = { boost:  100
                          , hover:  HOVER
@@ -121,136 +122,54 @@ var FRIC = 0.5,
         this.update = function(delta) {
 
             this.interval = delta;
-            //console.log(this.state.dir);
 
-            if (game.sequencer.isPressed("BOOST_UP")) {
-                this.vel.y += -BOOST_Y;
-            }
+            handleInput();
 
-            if (game.sequencer.isPressed("BOOST_DOWN")) {
-                this.vel.y += BOOST_Y;
-            }
+            this.center.y += this.vel.y * delta/DIV
+            this.center.x += this.vel.x * delta/DIV
 
-            if (game.sequencer.isPressed("BOOST_RIGHT")) {
-                this.vel.x += BOOST_X;
-            }
-
-            if (game.sequencer.isPressed("BOOST_LEFT")) {
-                this.vel.x += -BOOST_X;
-            }
-
-            if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
-                if (self.state.dir === directions.RIGHT) {
-                    self.vel.x = Math.max(WALK_X, self.vel.x);
-                } else {
-                    self.vel.x = Math.min(-WALK_X, self.vel.x);
-                }
-            } else if (C.inputter.isDown(C.inputter.D)) {
-                if (self.vel.x > 0) {
-                    self.vel.x = Math.max(WALK_X, self.vel.x);
-                } else {
-                    self.vel.x = WALK_X;
-                }
-            } else if (C.inputter.isDown(C.inputter.A)) {
-                if (self.vel.x < 0) {
-                    self.vel.x = Math.min(-WALK_X, self.vel.x);
-                } else {
-                    self.vel.x = -WALK_X;
-                }        
-            }
-
-            if (!C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
-                this.state.dir = directions.LEFT
-            } else if (!C.inputter.isDown(C.inputter.A) && C.inputter.isDown(C.inputter.D)) {
-                this.state.dir = directions.RIGHT;
-            } 
-
-            if (C.inputter.isDown(C.inputter.W)) {
-                // Falling or not in air
-                if (this.vel.y >= 0 && this.resources.hover > 0) { 
-                    self.resources.hover -= 1.5;
-                    self.vel.y = -0.2;
-                }
-            } else {
-
-                // Recharge hover
-                this.resources.hover = Math.min(HOVER, this.resources.hover + HOVER_INCREMENT);
-            }
-
-            if (C.inputter.isPressed(C.inputter.J)) {
-                this.state.action = actions.MELEE;
-            } else if (C.inputter.isPressed(C.inputter.K)) {
-                this.state.action = actions.BLIP;
-            } else if (C.inputter.isPressed(C.inputter.L)) {
-                this.state.action = actions.RANGE;
-            }
-
-            this.center.y += (this.vel.y * delta/DIV)
-            this.center.x += (this.vel.x * delta/DIV)
-
-            var isBOOST_UP    = this.vel.y < -WALK_X,
-                isBOOST_DOWN  = this.vel.y > WALK_X,
-                isBOOST_RIGHT = this.vel.x > WALK_X,
-                isBOOST_LEFT  = this.vel.x < -WALK_X,
-                isHOVER       = this.vel.y < 0 && !isBOOST_UP,
-                isCROUCH      = false//this.center.y < this.height/2
-                isWALK_RIGHT  = this.vel.x <= WALK_X && this.vel.x > 0 && !isBOOST_LEFT,
-                isWALK_LEFT   = this.vel.x >= -WALK_X && this.vel.x < 0 && !isBOOST_RIGHT,
-                isSTAND       = this.vel.x === 0 && this.vel.y === 0,
-                isFALLING     = false//this.vel.y <= 0 && this.center.y > this.size.height/2;
-                isFACING_LEFT = C.inputter.isDown(C.inputter.A) || this.state.dir === directions.LEFT;
-
-            // Set states
-
-            if (isBOOST_UP)         {this.state.motion = motions.BOOST_UP}   
-            else if (isBOOST_DOWN)  {this.state.motion = motions.BOOST_DOWN}
-            else if (isBOOST_RIGHT) {this.state.motion = motions.BOOST_RIGHT}
-            else if (isBOOST_LEFT)  {this.state.motion = motions.BOOST_LEFT} 
-            else if (isHOVER)       {this.state.motion = motions.HOVER}      
-            else if (isCROUCH)      {this.state.motion = motions.CROUCH}     
-            else if (isWALK_RIGHT)  {this.state.motion = motions.WALK} 
-            else if (isWALK_LEFT)   {this.state.motion = motions.WALK}  
-            else if (isSTAND)       {this.state.motion = motions.STAND}      
-
-
-            //if(isBOOST_RIGHT) {console.log("BOOST_RIGHT");}
+            setState();
               
-            // SET FOR NEXT TICK
-
-            self.vel.y += GRAV * delta/DIV;
+            // Gravity
+            this.vel.y += GRAV * delta/DIV;
             
             if (Math.abs(this.vel.x) > WALK_X) {
-                this.vel.x = reduce(this.vel.x, FRIC * delta/DIV);
                 this.vel.y = 0;
-            } else {
-                this.vel.x = reduce(this.vel.x, FRIC * delta/DIV);
             }
+
+            // Friction
+            this.vel.x = reduce(this.vel.x, FRIC * delta/DIV);
         }; 
 
         this.stateToString = function() {
             var motionId = this.state.motion;
             var actionId = this.state.action;
-            var dirId = this.state.dir;
+            var facingId = this.state.facing;
             var motion, action, dir;
+
             if (motionId === motions.BOOST_UP) {
-               motion = "BOOST UP" 
+               motion = "BOOST UP";
             } else if (motionId === motions.BOOST_DOWN) {
-               motion = "BOOST DOWN" 
+               motion = "BOOST DOWN";
             } else if (motionId === motions.BOOST_RIGHT) {
-               motion = "BOOST RIGHT" 
+               motion = "BOOST RIGHT";
             } else if (motionId === motions.BOOST_LEFT) {
-               motion = "BOOST LEFT" 
+               motion = "BOOST LEFT";
             } else if (motionId === motions.HOVER) {
-               motion = "HOVER" 
+               motion = "HOVER";
             } else if (motionId === motions.CROUCH) {
-               motion = "CROUCH" 
+               motion = "CROUCH";
             } else if (motionId === motions.WALK) {
-               motion = "WALK" 
+               motion = "WALK";
             } else if (motionId === motions.STAND) {
-               motion = "STAND" 
+               motion = "STAND";
             }
-//                  var directions = { LEFT: 0
-//                                   , RIGHT: 1 }
+
+            if (facingId === facing.RIGHT) {
+                dir = "RIGHT";
+            } else {
+                dir = "LEFT";
+            }
             
             if (actionId === actions.BLIP) {
                 action = "BLIP";
@@ -262,7 +181,7 @@ var FRIC = 0.5,
                 action = "PASSIVE";
             }
 
-            return [motion, action];
+            return [motion, action, dir];
         }
 
         this.collision = function(other, type) { 
@@ -276,17 +195,17 @@ var FRIC = 0.5,
 
         this.draw = function(ctx) { 
 
-            if (this.state.motion === motions.WALK && this.state.dir === directions.RIGHT) {
+            if (this.state.motion === motions.WALK && this.state.facing === facing.RIGHT) {
                 this.anim = this.anims["walkRight"];
-            } else if (this.state.motion === motions.WALK && this.state.dir === directions.LEFT) {
+            } else if (this.state.motion === motions.WALK && this.state.facing === facing.LEFT) {
                 this.anim = this.anims["walkLeft"]
             } else if (this.state.action === actions.MELEE) {
-                if (this.state.dir === directions.RIGHT) {
+                if (this.state.facing === facing.RIGHT) {
                     this.anim = this.anims["meleeRight"]
                 } else {
                     this.anim = this.anims["meleeLeft"]
                 }
-            } else if (this.state.dir === directions.RIGHT) {
+            } else if (this.state.facing === facing.RIGHT) {
                 this.anim = this.anims["standRight"]
             } else { // STAND LEFT
                 this.anim = this.anims["standLeft"]
@@ -296,12 +215,16 @@ var FRIC = 0.5,
                 this.anim = this.anims["durp"];
             }
 
-            ctx.fillStyle = "#fff"
+            ctx.fillStyle = "#fff";
             ctx.fillRect(this.center.x - this.size.x/2,this.center.y - this.size.y/2,this.size.x,this.size.y);
-            ctx.fillStyle = "#000"
-            ctx.font="Bold Helvetica";
-            ctx.fillText(this.stateToString()[0],this.center.x - this.size.x/2,this.center.y,this.size.x);
-            ctx.fillText(this.stateToString()[1],this.center.x - this.size.x/2,this.center.y + 10,this.size.x);
+            ctx.fillStyle = "#000";
+
+            var x = this.center.x - this.size.x/2;
+            var y = this.center.y;
+            var w = this.size.x;
+            ctx.fillText(this.stateToString()[0], x, y, w);
+            ctx.fillText(this.stateToString()[1],x, y + 10, w);
+            ctx.fillText(this.stateToString()[2],x, y + 20, w);
 
          // this.anim.draw(ctx);
          // this.anim.next(this.interval);
@@ -337,6 +260,98 @@ var FRIC = 0.5,
             return result;
         }
 
+        function handleInput() {
+            if (game.sequencer.isPressed("BOOST_UP")) {
+                self.vel.y += -BOOST_Y;
+            }
+
+            if (game.sequencer.isPressed("BOOST_DOWN")) {
+                self.vel.y += BOOST_Y;
+            }
+
+            if (game.sequencer.isPressed("BOOST_RIGHT")) {
+                self.vel.x += BOOST_X;
+            }
+
+            if (game.sequencer.isPressed("BOOST_LEFT")) {
+                self.vel.x += -BOOST_X;
+            }
+
+            if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
+                if (self.state.facing === facing.RIGHT) {
+                    self.vel.x = Math.max(WALK_X, self.vel.x);
+                } else {
+                    self.vel.x = Math.min(-WALK_X, self.vel.x);
+                }
+            } else if (C.inputter.isDown(C.inputter.D)) {
+                if (self.state.facing === facing.LEFT) {
+                    self.state.facing = facing.RIGHT;
+                } else if (self.vel.x > 0) {
+                    self.vel.x = Math.max(WALK_X, self.vel.x);
+                } else if (self.vel.x === 0) {
+                    self.vel.x = WALK_X;
+                }
+            } else if (C.inputter.isDown(C.inputter.A)) {
+                if (self.state.facing === facing.RIGHT) {
+                    self.state.facing = facing.LEFT;
+                } else if (self.vel.x < 0) {
+                    self.vel.x = Math.min(-WALK_X, self.vel.x);
+                } else if (self.vel.x === 0) {
+                    self.vel.x = -WALK_X;
+                } 
+            }
+
+      ///   if (!C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
+      ///       self.state.facing = facing.LEFT;
+      ///   } else if (!C.inputter.isDown(C.inputter.A) && C.inputter.isDown(C.inputter.D)) {
+      ///       self.state.facing = facing.RIGHT;
+      ///   } 
+
+            if (C.inputter.isDown(C.inputter.W)) {
+                // Falling or not in air
+                if (self.vel.y >= 0 && self.resources.hover > 0) { 
+                    self.resources.hover -= 1.5;
+                    self.vel.y = -0.2;
+                }
+            } else {
+
+                // Recharge hover
+                self.resources.hover = Math.min(HOVER, self.resources.hover + HOVER_INCREMENT);
+            }
+
+            if (C.inputter.isPressed(C.inputter.J)) {
+                self.state.action = actions.MELEE;
+            } else if (C.inputter.isPressed(C.inputter.K)) {
+                self.state.action = actions.BLIP;
+            } else if (C.inputter.isPressed(C.inputter.L)) {
+                self.state.action = actions.RANGE;
+            }
+
+        }
+
+        function setState() {
+            var isBOOST_UP    = self.vel.y < -WALK_X
+              , isBOOST_DOWN  = self.vel.y > WALK_X
+              , isBOOST_RIGHT = self.vel.x > WALK_X
+              , isBOOST_LEFT  = self.vel.x < -WALK_X
+              , isHOVER       = self.vel.y < 0 && !isBOOST_UP
+              , isCROUCH      = false//self.center.y < self.height/2
+              , isWALK_RIGHT  = self.vel.x <= WALK_X && self.vel.x > 0 && !isBOOST_LEFT
+              , isWALK_LEFT   = self.vel.x >= -WALK_X && self.vel.x < 0 && !isBOOST_RIGHT
+              , isSTAND       = self.vel.x === 0 && self.vel.y === 0
+              , isFALLING     = false//self.vel.y <= 0 && self.center.y > self.size.height/2;
+              , isFACING_LEFT = C.inputter.isDown(C.inputter.A) || self.state.facing === facing.LEFT;
+
+            if (isBOOST_UP)         {self.state.motion = motions.BOOST_UP}   
+            else if (isBOOST_DOWN)  {self.state.motion = motions.BOOST_DOWN}
+            else if (isBOOST_RIGHT) {self.state.motion = motions.BOOST_RIGHT}
+            else if (isBOOST_LEFT)  {self.state.motion = motions.BOOST_LEFT} 
+            else if (isHOVER)       {self.state.motion = motions.HOVER}      
+            else if (isCROUCH)      {self.state.motion = motions.CROUCH}     
+            else if (isWALK_RIGHT)  {self.state.motion = motions.WALK} 
+            else if (isWALK_LEFT)   {self.state.motion = motions.WALK}  
+            else if (isSTAND)       {self.state.motion = motions.STAND}      
+        }
 
     };
 
