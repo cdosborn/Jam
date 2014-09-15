@@ -116,11 +116,15 @@ var FRIC = 0.5,
             return [motion, action, dir];
         }
 
-        this.collision = function(other, type) { 
+        this.collision = function(other) { 
             var type = other.constructor;
             if (type === Platform) {
                 self.vel.y = 0;
                 self.center.y = other.center.y - other.size.y/2 - self.size.y/2
+            } else if (type === Player) {
+                //console.log(other);
+            } else {
+                self.color = "#c00";
             }
         }
         this.boundingBox = C.collider.RECTANGLE;
@@ -147,8 +151,9 @@ var FRIC = 0.5,
                 this.anim = this.anims["durp"];
             }
 
-            ctx.fillStyle = "#c00";
+            ctx.fillStyle = this.color;
             ctx.fillRect(this.center.x - this.size.x/2,this.center.y - this.size.y/2,this.size.x,this.size.y);
+            this.color = "#fff";
             ctx.fillStyle = "#000";
 
             var x = this.center.x - this.size.x/2;

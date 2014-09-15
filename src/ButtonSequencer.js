@@ -27,7 +27,7 @@
         var that = this,
             C = game.c;
             sequences = {};
-            inbetweenTime = 200;
+            inBetweenTime = 200;
 
         return {
             update: function(interval, events) {
@@ -51,7 +51,7 @@
                 // to see if instanceof
 
                     if (seq instanceof Sequence) {
-                        if (game.getTime() - seq.timestamp > inbetweenTime) { // not updated recently
+                        if (game.getTime() - seq.timestamp > inBetweenTime) { // not updated recently
                            seq.reset();
                         } 
 

@@ -6,26 +6,37 @@
             count = 0,
             player;
 
-        this.c = new Coquette(this, "canvas", 1280, 500, "#000");
+        this.c = new Coquette(this, "canvas", 1280, 500, "#444");
 
         this.images = {
-            dinosaur_stand: new Image(),
-            dinosaur_walk: new Image(),
-            dinosaur_melee: new Image(),
-            player_walk_right_bottom: new Image(),
-            player_walk_right_top: new Image()
+            Boost_Top_L: new Image(),
+            Boost_Top_R: new Image(),
+            Boost_Legs_L: new Image(),
+            Boost_Legs_R: new Image(),
+            Boost_slash_L: new Image(),
+            Boost_slash_R: new Image(),
         };
 
         this.getTime = function() {
             return time;
         }
 
-        this.images['dinosaur_stand'].src = 'images/trex-stand2X.png';
-        this.images['dinosaur_walk'].src =  'images/trex-walk2X.png';
-        this.images['dinosaur_melee'].src = 'images/trex-eat2X.png';
+//      this.images['dinosaur_stand'].src = 'images/trex-stand2X.png';
+//      this.images['dinosaur_walk'].src =  'images/trex-walk2X.png';
+//      this.images['dinosaur_melee'].src = 'images/trex-eat2X.png';
+
+        var boostBaseUrl = 'images/Robot/Boost\ \ 124x106/'
+        this.images['Boost_Legs_L'].src  = boostBaseUrl + 'Boost_legs/Boost_Legs_L.png';
+        this.images['Boost_Legs_R'].src  = boostBaseUrl + 'Boost_legs/Boost_Legs_R.png';
+        this.images['Boost_Top_L'].src   = boostBaseUrl + 'Boost_Top\ \ 124x106/Boost_Top_L.png';
+        this.images['Boost_Top_R'].src   = boostBaseUrl + 'Boost_Top\ \ 124x106/Boost_Top_R.png';
+        this.images['Boost_slash_R'].src = boostBaseUrl + 'Boost_Slash/Boost_slash_R.png';
+        this.images['Boost_slash_L'].src = boostBaseUrl + 'Boost_Slash/Boost_slash_L.png';
+//      this.images['Walk_Legs_L'].src =  'images/Robot/Walk_Legs/Walk_Legs.png';
+//      this.images['Walk_Legs_R'].src =  'images/Robot/Walk_Upper/Walk.png';
+//      this.images['Walk_Top_L'].  c =  'images/Robot/Walk_Legs/Walk_Legs.png';
+//      this.images['Walk_Top_R'].src =  'images/Robot/Walk_Upper/Walk.png';
 //      this.images['player_stand'].src =   'images/Robot/Walk_Legs/Walk_Legs.png';
-        this.images['player_walk_right_bottom'].src = 'images/Robot/Walk_Legs/Walk_Legs.png';
-        this.images['player_walk_right_top'].src =    'images/Robot/Walk_Upper/Walk.png';
 //      this.images['player_melee'].src =   'images/Robot';
 
 
@@ -33,7 +44,7 @@
 
         this.c.entities.create(Player, { 
             center: { x:10, y:110 },
-            size: { x:60, y:100 }
+            size: { x:124, y:106 }
         });
 
         this.c.entities.create(Enemy, { 
