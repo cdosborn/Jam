@@ -59,80 +59,6 @@ var FRIC = 0.1,
         C.entities._entities.push(this.attackBox);
 
         this.animator = Animator(this);
-////////this.stater.trigger("MELEE");
-////////this.stater.trigger("STAGGER");
-////////this.stater.during("MELEE", "PRE");
-//      this.stater.define( 
-//          { MELEE: 
-//              { sequence: ["PRE","CAST"] 
-//              , states : 
-//                  { PRE: 
-//                      { dur: 100,  
-//                      , rule: function() { return true; /*no other actions pressed*/ }
-//                      }
-//                  , CAST: { dur: 100 } 
-//                  }
-//          , BLIP: 
-//              { sequence: ["CAST"] 
-//              , states : 
-//                  { CAST: { dur: 100 } }
-//              }
-//          , RANGE:
-//              { sequence: ["PRE","CAST"]
-//              , states: 
-//                  { PRE: 
-//                      { dur: 50 
-//                      , rule : function() { return true; }
-//                      }
-//                  , CAST: 
-//                      {  }
-
-//                  }
-//              }
-//      ); 
-//      this.stater.register(actions.RANGE,
-//          [ 0, "PRE_RANGE"
-//          , 30, "CAST"
-//          , 500, "END_RANGE"
-//          ]
-//      ); 
-//      this.stater.register(actions.STAGGER, 
-//          [ 0, "PRE_STAGGER"
-//          , 100, "FIRST_STAGGER"
-//          , 100, "SECOND_STAGGER"
-//          , 400, "THIRD_STAGGER"
-//          ]
-//      ); 
-
-//////  this.animator.register(
-//////          "meleeRight",
-//////          Animation(self, {   
-//////              img        : game.images['dinosaur_melee'],
-//////              frames     : [11,12,13,14,15,16,17,18,19,20,21],
-//////              fps        : 10
-//////              cast       : 3,
-//////              exit       : 10
-//////          });
-
-//////  var meleeLeft = Animation(
-//////              this, 
-//////              game.images['dinosaur_melee'], 
-//////              [0,1,2,3,4,5,6,7,8,9,10], 
-//////              2, 
-//////              3, 
-//////              10 ); 
-
-        this.anims = {};
-        this.anims["meleeRight"] = Animation(this, {
-            img: game.images['dinosaur_melee'], 
-            frames: [11,12,13,14,15,16,17,18,19,20,21], 
-            fps: 10,
-        });
-
-        this.anims["meleeLeft"]  = Animation(this, {
-            img: game.images['dinosaur_melee'], 
-            frames: [0,1,2,3,4,5,6,7,8,9,10],   
-        }); 
         this.animator.register("Boost_Legs_R", Animation(this, { 
             img: game.images['Boost_Legs_R'],  
             frames: [0,1,2,3,4,5,6]
@@ -157,8 +83,27 @@ var FRIC = 0.1,
             img: game.images['Boost_slash_R'],  
             frames: [0,1,2,3,4,5,6]
         }));
-
-        game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
+        this.animator.register("Walk_L", Animation(this, { 
+            img: game.images['Walk_L'],  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:97,y:106}
+        }));
+        this.animator.register("Walk_R", Animation(this, { 
+            img: game.images['Walk_R'],  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:97,y:106}
+        }));
+        this.animator.register("Stand_R", Animation(this, { 
+            img: game.images['Stand_R'],  
+            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
+            size: {x:76,y:104}
+        }));
+        this.animator.register("Stand_L", Animation(this, { 
+            img: game.images['Stand_L'],  
+            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
+            size: {x:76,y:104}
+        }));
+      game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
         game.sequencer.bind("BOOST_RIGHT", [C.inputter.D, -C.inputter.D, C.inputter.D]); 
         game.sequencer.bind("BOOST_LEFT", [C.inputter.A, -C.inputter.A, C.inputter.A]);
@@ -171,7 +116,6 @@ var FRIC = 0.1,
 
             if (this.state.action === actions.PASSIVE) {
                 handleInput();
-                setState();
             } else {
                 handleActions();
             }
@@ -212,6 +156,8 @@ var FRIC = 0.1,
                motion = "WALK";
             } else if (motionId === motions.STAND) {
                motion = "STAND";
+            } else if (motionId === motions.FALLING) {
+                motion = "FALLING";
             }
 
             if (facingId === facing.RIGHT) {
@@ -252,7 +198,17 @@ var FRIC = 0.1,
                 } else if (state.motion === motions.BOOST_RIGHT) {
                     this.animator.push("Boost_Legs_R");
                     this.animator.push("Boost_Top_R");
-                } 
+                } else if (state.motion === motions.WALK) {
+                    if (state.facing === facing.RIGHT)
+                        this.animator.push("Walk_R");
+                    else
+                        this.animator.push("Walk_L");
+                } else if (state.motion === motions.STAND) {
+                     if (state.facing === facing.RIGHT)
+                        this.animator.push("Stand_R");
+                    else
+                        this.animator.push("Stand_L");
+               }
             } else if (state.action === actions.MELEE) {
                 if (state.motion === motions.BOOST_LEFT) {
                     this.animator.push("Boost_Legs_L");
@@ -307,23 +263,26 @@ var FRIC = 0.1,
         }
 
         function handleInput() {
+
             if (game.sequencer.isPressed("BOOST_UP")) {
                 self.vel.y += -BOOST_Y;
-            }
-
-            if (game.sequencer.isPressed("BOOST_DOWN")) {
+                self.state.motion = motions.BOOST_UP;
+            } else if (game.sequencer.isPressed("BOOST_DOWN")) {
                 self.vel.y += BOOST_Y;
-            }
-
-            if (game.sequencer.isPressed("BOOST_RIGHT")) {
+                self.state.motion = motions.BOOST_DOWN;
+            } else if (C.inputter.isDown(C.inputter.S)) { 
+                if (self.vel.y === 0) { 
+                   self.state.motion = motions.CROUCH;
+               } else if (self.vel.y > 0) { 
+                   self.state.motion = motions.FALLING;
+               }
+            } else if (game.sequencer.isPressed("BOOST_RIGHT")) {
                 self.vel.x += BOOST_X;
-            }
-
-            if (game.sequencer.isPressed("BOOST_LEFT")) {
+                self.state.motion = motions.BOOST_RIGHT;
+            } else if (game.sequencer.isPressed("BOOST_LEFT")) {
                 self.vel.x += -BOOST_X;
-            }
-
-            if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
+                self.state.motion = motions.BOOST_LEFT;
+            } else if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
                 if (self.state.facing === facing.RIGHT) {
                     self.vel.x = Math.max(WALK_X, self.vel.x);
                 } else {
@@ -345,13 +304,14 @@ var FRIC = 0.1,
                 } else if (self.vel.x === 0) {
                     self.vel.x = -WALK_X;
                 } 
-            }
+            } 
 
-      ///   if (!C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
-      ///       self.state.facing = facing.LEFT;
-      ///   } else if (!C.inputter.isDown(C.inputter.A) && C.inputter.isDown(C.inputter.D)) {
-      ///       self.state.facing = facing.RIGHT;
-      ///   } 
+            var xSpeed = Math.abs(self.vel.x);
+            if (xSpeed <= WALK_X && xSpeed > 0) {
+                self.state.motion = motions.WALK;
+            } else if (self.vel.x === 0 && self.vel.y === 0) {
+                self.state.motion = motions.STAND;
+            }
 
             if (C.inputter.isDown(C.inputter.W)) {
                 // Falling or not in air
@@ -384,31 +344,6 @@ var FRIC = 0.1,
                     self.actionTimer.after(900, function() { self.state.action = actions.PASSIVE;});
                 });
             }
-
-        }
-
-        function setState() {
-            var isBOOST_UP    = self.vel.y < -WALK_X
-              , isBOOST_DOWN  = self.vel.y > WALK_X
-              , isBOOST_RIGHT = self.vel.x > WALK_X
-              , isBOOST_LEFT  = self.vel.x < -WALK_X
-              , isHOVER       = self.vel.y < 0 && !isBOOST_UP
-              , isCROUCH      = false//self.center.y < self.height/2
-              , isWALK_RIGHT  = self.vel.x <= WALK_X && self.vel.x > 0 && !isBOOST_LEFT
-              , isWALK_LEFT   = self.vel.x >= -WALK_X && self.vel.x < 0 && !isBOOST_RIGHT
-              , isSTAND       = self.vel.x === 0 && self.vel.y === 0
-              , isFALLING     = false//self.vel.y <= 0 && self.center.y > self.size.height/2;
-              , isFACING_LEFT = C.inputter.isDown(C.inputter.A) || self.state.facing === facing.LEFT;
-
-            if (isBOOST_UP)         {self.state.motion = motions.BOOST_UP}   
-            else if (isBOOST_DOWN)  {self.state.motion = motions.BOOST_DOWN}
-            else if (isBOOST_RIGHT) {self.state.motion = motions.BOOST_RIGHT}
-            else if (isBOOST_LEFT)  {self.state.motion = motions.BOOST_LEFT} 
-            else if (isHOVER)       {self.state.motion = motions.HOVER}      
-            else if (isCROUCH)      {self.state.motion = motions.CROUCH}     
-            else if (isWALK_RIGHT)  {self.state.motion = motions.WALK} 
-            else if (isWALK_LEFT)   {self.state.motion = motions.WALK}  
-            else if (isSTAND)       {self.state.motion = motions.STAND}      
         }
 
         function handleActions() {
@@ -427,12 +362,10 @@ var FRIC = 0.1,
 
             // Create attack hitbox
             
-            console.log("BEGIN OF ATTACK");
             self.attackBox.center = self.center;
             self.attackBox.size.x = 500;
             C.collider.createEntity(self.attackBox);
             self.meleeTimer.after(500, function() {
-                console.log("END OF ATTACK");
                 self.attackBox.size.x = 10;
                 C.collider.destroyEntity(self.attackBox);
             });            
