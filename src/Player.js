@@ -5,6 +5,7 @@ var FRIC = 0.1,
     HOVER = 100,
     HOVER_INCREMENT = 1,
     DIV = 15,
+//  DEBUG = true,
     DEBUG = false,
     WALK_X = 5;
 
@@ -103,7 +104,28 @@ var FRIC = 0.1,
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
             size: {x:76,y:104}
         }));
-      game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
+        this.animator.register("Falling_Top_L", Animation(this, { 
+            img: game.images['Falling_Top_L'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:62,y:126}
+        }));
+        this.animator.register("Falling_Top_R", Animation(this, { 
+            img: game.images['Falling_Top_R'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:62,y:126}
+        }));
+        this.animator.register("Falling_Legs_L", Animation(this, { 
+            img: game.images['Falling_Legs_L'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:62,y:126}
+        }));
+        this.animator.register("Falling_Legs_R", Animation(this, { 
+            img: game.images['Falling_Legs_R'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:62,y:126}
+        }));
+
+        game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
         game.sequencer.bind("BOOST_RIGHT", [C.inputter.D, -C.inputter.D, C.inputter.D]); 
         game.sequencer.bind("BOOST_LEFT", [C.inputter.A, -C.inputter.A, C.inputter.A]);
@@ -208,6 +230,15 @@ var FRIC = 0.1,
                         this.animator.push("Stand_R");
                     else
                         this.animator.push("Stand_L");
+               } else if (state.motion === motions.FALLING) {
+                    if (state.facing === facing.RIGHT) {
+                        this.animator.push("Falling_Legs_R");
+                        this.animator.push("Falling_Top_R");
+                    } else {
+                        this.animator.push("Falling_Legs_L");
+                        this.animator.push("Falling_Top_L");
+                    }
+
                }
             } else if (state.action === actions.MELEE) {
                 if (state.motion === motions.BOOST_LEFT) {
@@ -263,7 +294,6 @@ var FRIC = 0.1,
         }
 
         function handleInput() {
-
             if (game.sequencer.isPressed("BOOST_UP")) {
                 self.vel.y += -BOOST_Y;
                 self.state.motion = motions.BOOST_UP;
@@ -304,44 +334,53 @@ var FRIC = 0.1,
                 } else if (self.vel.x === 0) {
                     self.vel.x = -WALK_X;
                 } 
+            } else if (C.inputter.isDown(C.inputter.W) 
+                        && self.resources.hover > 0
+                        && self.vel.y >= 0) {
+                // Falling or not in air
+                self.resources.hover -= 1.5;
+                self.vel.y = -0.2;
+                self.state.motion = motions.HOVER;
             } 
-
+            
             var xSpeed = Math.abs(self.vel.x);
-            if (xSpeed <= WALK_X && xSpeed > 0) {
+            
+            if (self.vel.y > 0 && xSpeed <= WALK_X) {
+                self.state.motion = motions.FALLING;
+            } else if (xSpeed <= WALK_X && xSpeed > 0) {
                 self.state.motion = motions.WALK;
             } else if (self.vel.x === 0 && self.vel.y === 0) {
                 self.state.motion = motions.STAND;
-            }
+            }                                                             
 
-            if (C.inputter.isDown(C.inputter.W)) {
-                // Falling or not in air
-                if (self.vel.y >= 0 && self.resources.hover > 0) { 
-                    self.resources.hover -= 1.5;
-                    self.vel.y = -0.2;
-                }
-            } else {
-
+            if (!C.inputter.isDown(C.inputter.W)){
                 // Recharge hover
                 self.resources.hover = Math.min(HOVER, self.resources.hover + HOVER_INCREMENT);
-            }
+            } 
 
             if (C.inputter.isPressed(C.inputter.J)) {
                 self.actionTimer.after(100, function() {
                     self.state.action = actions.MELEE;
                     meleeAction();
-                    self.actionTimer.after(900, function() { self.state.action = actions.PASSIVE;});
+                    self.actionTimer.after(900, function() { 
+                        self.state.action = actions.PASSIVE;
+                    });
                 });
             } else if (C.inputter.isPressed(C.inputter.K)) {
                 self.actionTimer.after(200, function() {
                    self.state.action = actions.BLIP; 
                     blipAction();
-                    self.actionTimer.after(300, function() { self.state.action = actions.PASSIVE;});
+                    self.actionTimer.after(300, function() { 
+                        self.state.action = actions.PASSIVE;
+                    });
                 });
             } else if (C.inputter.isPressed(C.inputter.L)) {
                 self.actionTimer.after(100, function() {
                     self.state.action = actions.RANGE;
                     rangeAction();
-                    self.actionTimer.after(900, function() { self.state.action = actions.PASSIVE;});
+                    self.actionTimer.after(900, function() { 
+                        self.state.action = actions.PASSIVE;
+                    });
                 });
             }
         }
@@ -371,10 +410,6 @@ var FRIC = 0.1,
             });            
 
 
-          //self.attacker.register(
-          //        [ x, y, width, height
-          //        , x2,y2,width2,height2
-          //        ]
         };
         function slowMeleeAction() {
             // Create attack hitbox

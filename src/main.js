@@ -9,16 +9,29 @@
         this.c = new Coquette(this, "canvas", 1280, 500, "#444");
 
         this.images = {
-            Boost_Top_L:   new Image(),
-            Boost_Top_R:   new Image(),
-            Boost_Legs_L:  new Image(),
-            Boost_Legs_R:  new Image(),
-            Boost_slash_L: new Image(),
-            Boost_slash_R: new Image(),
-            Walk_L:        new Image(),
-            Walk_R:        new Image(),
-            Stand_L:       new Image(),
-            Stand_R:       new Image()
+            Boost_Top_L:          new Image(),
+            Boost_Top_R:          new Image(),
+            Boost_Legs_L:         new Image(),
+            Boost_Legs_R:         new Image(),
+            Boost_slash_L:        new Image(),
+            Boost_slash_R:        new Image(),
+            Walk_L:               new Image(),
+            Walk_R:               new Image(),
+            Stand_L:              new Image(),
+            Stand_R:              new Image(),
+            Falling_Slash_Top_L:  new Image(),
+            Falling_Slash_Top_R:  new Image(),
+            Falling_Slash_Legs_L: new Image(),
+            Falling_Slash_Legs_R: new Image(),
+            Falling_Laser_Top_L:  new Image(),
+            Falling_Laser_Top_R:  new Image(),
+            Falling_Laser_Legs_L: new Image(),
+            Falling_Laser_Legs_R: new Image(),
+            Falling_Top_L:        new Image(),
+            Falling_Top_R:        new Image(),
+            Falling_Legs_L:       new Image(),
+            Falling_Legs_R:       new Image()
+
        };
 
         this.getTime = function() {
@@ -42,16 +55,10 @@
         this.images['Walk_R'].src        = 'images/Robot/Walk/97x106/97X106_Walk_R.png';
         this.images['Stand_L'].src       = 'images/Robot/Stand/76x104/Stand_L.png';
         this.images['Stand_R'].src       = 'images/Robot/Stand/76x104/Stand_R.png';
-//      this.images['Boost_slash_R'].src = boostBaseUrl + 'Boost_Slash/Boost_slash_R.png';
-//      this.images['Boost_slash_L'].src = boostBaseUrl + 'Boost_Slash/Boost_slash_L.png';
-
-//      this.images['Walk_Legs_L'].src =  'images/Robot/Walk_Legs/Walk_Legs.png';
-//      this.images['Walk_Legs_R'].src =  'images/Robot/Walk_Upper/Walk.png';
-//      this.images['Walk_Top_L'].  c =  'images/Robot/Walk_Legs/Walk_Legs.png';
-//      this.images['Walk_Top_R'].src =  'images/Robot/Walk_Upper/Walk.png';
-//      this.images['player_stand'].src =   'images/Robot/Walk_Legs/Walk_Legs.png';
-//      this.images['player_melee'].src =   'images/Robot';
-
+        this.images['Falling_Top_L'].src = 'images/Robot/Fall/62x126/Falling_Body_L.png';
+        this.images['Falling_Top_R'].src = 'images/Robot/Fall/62x126/Falling_Body_R.png';
+        this.images['Falling_Legs_L'].src = 'images/Robot/Fall/6:2x126/Falling_Legs_L.png';
+        this.images['Falling_Legs_R'].src = 'images/Robot/Fall/62x126/Falling_Legs_R.png';
 
         this.sequencer = ButtonSequencer(this);
 
