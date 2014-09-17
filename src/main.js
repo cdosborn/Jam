@@ -13,8 +13,10 @@
             Boost_Top_R:          new Image(),
             Boost_Legs_L:         new Image(),
             Boost_Legs_R:         new Image(),
-            Boost_slash_L:        new Image(),
-            Boost_slash_R:        new Image(),
+            Boost_Slash_L:        new Image(),
+            Boost_Slash_R:        new Image(),
+            Boost_Laser_L:        new Image(),
+            Boost_Laser_R:        new Image(),
             Walk_L:               new Image(),
             Walk_R:               new Image(),
             Stand_L:              new Image(),
@@ -30,8 +32,15 @@
             Falling_Top_L:        new Image(),
             Falling_Top_R:        new Image(),
             Falling_Legs_L:       new Image(),
-            Falling_Legs_R:       new Image()
-
+            Falling_Legs_R:       new Image(),
+            Falling_Slash_Top_L:  new Image(),
+            Falling_Slash_Top_R:  new Image(),
+            Falling_Slash_Legs_L: new Image(),
+            Falling_Slash_Legs_R: new Image(),
+            Falling_Laser_Top_L:  new Image(),
+            Falling_Laser_Top_R:  new Image(),
+            Falling_Laser_Legs_L: new Image(),
+            Falling_Laser_Legs_R: new Image()
        };
 
         this.getTime = function() {
@@ -45,20 +54,30 @@
         var boostBaseUrl = 'images/Robot/Boost/';
         var walkBaseUrl = 'images/Robot/Walk/';
         var standBaseUrl = 'images/Robot/Stand/';
-        this.images['Boost_Legs_L'].src  = 'images/Robot/Boost/124x106/Boot_legs_L.png';
-        this.images['Boost_Legs_R'].src  = 'images/Robot/Boost/124x106/Boot_legs_R.png';
-        this.images['Boost_Top_L'].src   = 'images/Robot/Boost/124x106/Boost_Top_L.png';
-        this.images['Boost_Top_R'].src   = 'images/Robot/Boost/124x106/Boost_Top_R.png';
-        this.images['Boost_slash_L'].src = 'images/Robot/Boost/124x106/Boost_slash_L.png';
-        this.images['Boost_slash_R'].src = 'images/Robot/Boost/124x106/Boost_slash_R.png';
-        this.images['Walk_L'].src        = 'images/Robot/Walk/97x106/97x106_Walk_L.png';
-        this.images['Walk_R'].src        = 'images/Robot/Walk/97x106/97X106_Walk_R.png';
-        this.images['Stand_L'].src       = 'images/Robot/Stand/76x104/Stand_L.png';
-        this.images['Stand_R'].src       = 'images/Robot/Stand/76x104/Stand_R.png';
-        this.images['Falling_Top_L'].src = 'images/Robot/Fall/62x126/Falling_Body_L.png';
-        this.images['Falling_Top_R'].src = 'images/Robot/Fall/62x126/Falling_Body_R.png';
-        this.images['Falling_Legs_L'].src = 'images/Robot/Fall/6:2x126/Falling_Legs_L.png';
-        this.images['Falling_Legs_R'].src = 'images/Robot/Fall/62x126/Falling_Legs_R.png';
+        this.images['Boost_Legs_L'].src         = 'images/Robot/Boost/124x106/Boot_legs_L.png';
+        this.images['Boost_Legs_R'].src         = 'images/Robot/Boost/124x106/Boot_legs_R.png';
+        this.images['Boost_Top_L'].src          = 'images/Robot/Boost/124x106/Boost_Top_L.png';
+        this.images['Boost_Top_R'].src          = 'images/Robot/Boost/124x106/Boost_Top_R.png';
+        this.images['Boost_Slash_L'].src        = 'images/Robot/Boost/124x106/Boost_slash_L.png';
+        this.images['Boost_Slash_R'].src        = 'images/Robot/Boost/124x106/Boost_slash_R.png';
+        this.images['Boost_Laser_L'].src        = 'images/Robot/Boost/124x106/Boost_laser_L.png';
+        this.images['Boost_Laser_R'].src        = 'images/Robot/Boost/124x106/Boost_laser_R.png';
+        this.images['Walk_L'].src               = 'images/Robot/Walk/97x106/97x106_Walk_L.png';
+        this.images['Walk_R'].src               = 'images/Robot/Walk/97x106/97X106_Walk_R.png';
+        this.images['Stand_L'].src              = 'images/Robot/Stand/76x104/Stand_L.png';
+        this.images['Stand_R'].src              = 'images/Robot/Stand/76x104/Stand_R.png';
+        this.images['Falling_Top_L'].src        = 'images/Robot/Fall/62x126/Falling_Body_L.png';
+        this.images['Falling_Top_R'].src        = 'images/Robot/Fall/62x126/Falling_Body_R.png';
+        this.images['Falling_Legs_L'].src       = 'images/Robot/Fall/62x126/Falling_Legs_L.png';
+        this.images['Falling_Legs_R'].src       = 'images/Robot/Fall/62x126/Falling_Legs_R.png';
+        this.images['Falling_Slash_Top_L'].src  = 'images/Robot/Fall/166x130/Falling_Slash_Body_L.png';
+        this.images['Falling_Slash_Top_R'].src  = 'images/Robot/Fall/166x130/Falling_Slash_Body_R.png';
+        this.images['Falling_Slash_Legs_L'].src = 'images/Robot/Fall/166x130/Falling_Slash_Legs_L.png';
+        this.images['Falling_Slash_Legs_R'].src = 'images/Robot/Fall/166x130/Falling_Slash_Legs_R.png';
+        this.images['Falling_Laser_Top_L'].src  = 'images/Robot/Fall/558x126/Falling_Laser_Body_L.png';
+        this.images['Falling_Laser_Top_R'].src  = 'images/Robot/Fall/558x126/Falling_Laser_Body_R.png';
+        this.images['Falling_Laser_Legs_L'].src = 'images/Robot/Fall/558x126/Falling_Laser_Legs_L.png';
+        this.images['Falling_Laser_Legs_R'].src = 'images/Robot/Fall/558x126/Falling_Laser_Legs_R.png';
 
         this.sequencer = ButtonSequencer(this);
 

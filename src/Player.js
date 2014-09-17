@@ -76,14 +76,25 @@ var FRIC = 0.1,
             img: game.images['Boost_Top_L'],  
             frames: [0,1,2,3,4,5,6]
         }));
-        this.animator.register("Boost_slash_L", Animation(this, { 
-            img: game.images['Boost_slash_L'],  
+        this.animator.register("Boost_Slash_L", Animation(this, { 
+            img: game.images['Boost_Slash_L'],  
             frames: [0,1,2,3,4,5,6]
         }));
-        this.animator.register("Boost_slash_R", Animation(this, { 
-            img: game.images['Boost_slash_R'],  
+        this.animator.register("Boost_Slash_R", Animation(this, { 
+            img: game.images['Boost_Slash_R'],  
             frames: [0,1,2,3,4,5,6]
         }));
+        this.animator.register("Boost_Laser_L", Animation(this, { 
+            img: game.images['Boost_Laser_L'],  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:124,y:106}
+        }));
+        this.animator.register("Boost_Laser_R", Animation(this, { 
+            img: game.images['Boost_Laser_R'],  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:124,y:106}
+        }));
+
         this.animator.register("Walk_L", Animation(this, { 
             img: game.images['Walk_L'],  
             frames: [0,1,2,3,4,5,6],
@@ -121,6 +132,46 @@ var FRIC = 0.1,
         }));
         this.animator.register("Falling_Legs_R", Animation(this, { 
             img: game.images['Falling_Legs_R'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:62,y:126}
+        }));
+        this.animator.register("Falling_Slash_Top_L", Animation(this, { 
+            img: game.images['Falling_Slash_Top_L'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:166,y:130}
+        }));
+        this.animator.register("Falling_Slash_Top_R", Animation(this, { 
+            img: game.images['Falling_Slash_Top_R'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:166,y:130}
+        }));
+        this.animator.register("Falling_Slash_Legs_L", Animation(this, { 
+            img: game.images['Falling_Slash_Legs_L'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:166,y:130}
+        }));
+        this.animator.register("Falling_Slash_Legs_R", Animation(this, { 
+            img: game.images['Falling_Slash_Legs_R'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:166,y:130}
+        }));
+        this.animator.register("Falling_Laser_Top_L", Animation(this, { 
+            img: game.images['Falling_Laser_Top_L'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:62,y:126}
+        }));
+        this.animator.register("Falling_Laser_Top_R", Animation(this, { 
+            img: game.images['Falling_Laser_Top_R'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:62,y:126}
+        }));
+        this.animator.register("Falling_Laser_Legs_L", Animation(this, { 
+            img: game.images['Falling_Laser_Legs_L'],  
+            frames: [0,1,2,3,4,5,6,7,8],
+            size: {x:62,y:126}
+        }));
+        this.animator.register("Falling_Laser_Legs_R", Animation(this, { 
+            img: game.images['Falling_Laser_Legs_R'],  
             frames: [0,1,2,3,4,5,6,7,8],
             size: {x:62,y:126}
         }));
@@ -243,13 +294,38 @@ var FRIC = 0.1,
             } else if (state.action === actions.MELEE) {
                 if (state.motion === motions.BOOST_LEFT) {
                     this.animator.push("Boost_Legs_L");
-                    this.animator.push("Boost_slash_L");
+                    this.animator.push("Boost_Slash_L");
                 } else if (state.motion === motions.BOOST_RIGHT) {
                     this.animator.push("Boost_Legs_R");
-                    this.animator.push("Boost_slash_R");
-                } 
-            }
+                    this.animator.push("Boost_Slash_R");
+                } else if (state.motion === motions.FALLING) {
+                    if (state.facing === facing.RIGHT) {
+                        this.animator.push("Falling_Slash_Legs_R");
+                        this.animator.push("Falling_Slash_Top_R");
+                    } else {
+                        this.animator.push("Falling_Slash_Legs_L");
+                        this.animator.push("Falling_Slash_Top_L");
+                    }
 
+               }
+            } else if (state.action === actions.RANGE) {
+                if (state.motion === motions.BOOST_LEFT) {
+                    this.animator.push("Boost_Legs_L");
+                    this.animator.push("Boost_Laser_L");
+                } else if (state.motion === motions.BOOST_RIGHT) {
+                    this.animator.push("Boost_Legs_R");
+                    this.animator.push("Boost_Laser_R");
+                } else if (state.motion === motions.FALLING) {
+                    if (state.facing === facing.RIGHT) {
+                        this.animator.push("Falling_Laser_Legs_R");
+                        this.animator.push("Falling_Laser_Top_R");
+                    } else {
+                        this.animator.push("Falling_Laser_Legs_L");
+                        this.animator.push("Falling_Laser_Top_L");
+                    }
+
+               }
+            }
 
             this.animator.draw(ctx);
 
