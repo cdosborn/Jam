@@ -21,12 +21,12 @@
                     frameDuration = 1 / fps * 1000;
                     
                 var framesToAdvance = (lastTime + delta) / frameDuration;
+                var extraTime = (lastTime + delta) % frameDuration
 
-                //console.log(timePassed);
                 if (framesToAdvance < 1) {
                     lastTime += delta
                 } else {
-                    lastTime = 0;
+                    lastTime = extraTime;
                     curFrame = (curFrame + framesToAdvance) % frames.length | 0;
                  // console.log(curFrame);
                 }
