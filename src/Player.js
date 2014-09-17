@@ -4,7 +4,9 @@ var FRIC = 0.1,
     BOOST_Y = 15,
     BOOST_CAST = 200,
     BOOST_MELEE_CAST = 200,
-    BOOST_MELEE_BCKSWNG = 800,
+    BOOST_MELEE_BCKSWNG = 248,   //248 totoal
+    WALK_MELEE_CAST = 0,
+    WALK_MELEE_BCKSWNG = 550,    //550 total
     HOVER = 100,
     HOVER_INCREMENT = 1,
     DIV = 15,
@@ -110,6 +112,24 @@ var FRIC = 0.1,
             img: game.images['Walk_R'],  
             frames: [0,1,2,3,4,5,6],
             size: {x:97,y:106}
+        }));
+        this.animator.register("Walk_Slash_Swing_R", Animation(this, { 
+            img: game.images['Walk_Slash_Swing_R'],  
+            frames: [0,1,2,3,4,5,6,7,8,9,10],
+            fps:20,
+            size: {x:192,y:106}
+        }));
+        this.animator.register("Walk_Slash_Charge_R", Animation(this, { 
+            img: game.images['Walk_Slash_Charge_R'],  
+            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
+            fps:20,
+            size: {x:192,y:106}
+        }));
+        this.animator.register("Walk_Slash_Release_R", Animation(this, { 
+            img: game.images['Walk_Slash_Release_R'],  
+            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
+            fps:20,
+            size: {x:192,y:106}
         }));
         this.animator.register("Stand_R", Animation(this, { 
             img: game.images['Stand_R'],  
@@ -314,6 +334,8 @@ var FRIC = 0.1,
                         this.animator.push("Falling_Slash_Top_L");
                     }
 
+               } else if (state.motion === motions.WALK || state.motion === motions.STAND) {
+                   this.animator.push("Walk_Slash_Swing_R");
                }
             } else if (state.action === actions.RANGE) {
                 if (state.motion === motions.BOOST_LEFT) {
@@ -452,6 +474,8 @@ var FRIC = 0.1,
                 self.resources.hover = Math.min(HOVER, self.resources.hover + HOVER_INCREMENT);
             } 
 
+            // The animation for the melee is determined by state.action
+            // The control flow is determined by state.action
             if (C.inputter.isPressed(C.inputter.J)) {
                 if ((self.state.motion === motions.BOOST_RIGHT || self.state.motion === motions.BOOST_LEFT) 
                         && self.flags.boostCastActive) {
@@ -466,6 +490,17 @@ var FRIC = 0.1,
                             self.state.action = actions.PASSIVE;
                         });
                     });
+                } else if (self.state.motion === motions.WALK || self.state.motion === motions.STAND) {
+                    self.state.action = actions.MELEE;
+                    self.actionTimer.after(WALK_MELEE_CAST, function() {
+                        self.state.action = actions.MELEE;
+                      //self.vel.x = (self.state.facing === facing.RIGHT ? 3 : self.vel.x); // creep fwd
+                        meleeAction();
+                        self.actionTimer.after(WALK_MELEE_BCKSWNG, function() { 
+                            self.state.action = actions.PASSIVE;
+                        });
+                    });
+
                 } 
             } else if (C.inputter.isPressed(C.inputter.K)) {
                 self.actionTimer.after(200, function() {
@@ -491,6 +526,12 @@ var FRIC = 0.1,
                   
                 // if attack hitbox collides with enemy
                 // send damage to enemy
+
+
+            if (self.state.motion === motions.WALK || self.state.motion === motions.STAND) {
+                self.center.x += (self.state.facing === facing.RIGHT ? 7 : -7);
+            }
+
 
             } else if (self.state.action === actions.BLIP) {
             } else if (self.state.action === actions.RANGE) {
