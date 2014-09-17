@@ -47,10 +47,6 @@
             return time;
         }
 
-//      this.images['dinosaur_stand'].src = 'images/trex-stand2X.png';
-//      this.images['dinosaur_walk'].src =  'images/trex-walk2X.png';
-//      this.images['dinosaur_melee'].src = 'images/trex-eat2X.png';
-
         var boostBaseUrl = 'images/Robot/Boost/';
         var walkBaseUrl = 'images/Robot/Walk/';
         var standBaseUrl = 'images/Robot/Stand/';
@@ -98,6 +94,7 @@
 
         player = this.c.entities.all(Player)[0];
 
+//      this.scener.start(this, LoadScene);
         this.update = function(interval) { 
             if (count > 100) { 
                 logger = count = 0;
@@ -109,6 +106,7 @@
             // //     console.log(count/logger * 1000 );
             // // }
             //
+//          this.scener.update(interval);
             this.sequencer.update(interval, this.c.inputter.getEvents());
             this.c.renderer.setViewCenter(player.center); 
         }

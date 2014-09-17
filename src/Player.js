@@ -2,6 +2,9 @@ var FRIC = 0.1,
     GRAV = 0.3,
     BOOST_X = 20,
     BOOST_Y = 15,
+    BOOST_CAST = 200,
+    BOOST_MELEE_CAST = 200,
+    BOOST_MELEE_BCKSWNG = 800,
     HOVER = 100,
     HOVER_INCREMENT = 1,
     DIV = 15,
@@ -44,6 +47,8 @@ var FRIC = 0.1,
                      , motion: motions.STAND 
                      , facing: facing.RIGHT } 
 
+        this.flags = { boostCastActive: false }
+
         this.resources = { boost:  100
                          , hover:  HOVER
                          , health: 100 }
@@ -52,6 +57,7 @@ var FRIC = 0.1,
 
         this.actionTimer = Timer(this);
         this.meleeTimer = Timer(this);
+        this.boostTimer = Timer(this);
 
         this.attackBox = { size: {x:10,y:50}
                          , center: this.center
@@ -185,6 +191,7 @@ var FRIC = 0.1,
 
             this.actionTimer.update(delta);
             this.meleeTimer.update(delta);
+            this.boostTimer.update(delta);
             this.animator.update(delta);
 
             if (this.state.action === actions.PASSIVE) {
@@ -370,6 +377,9 @@ var FRIC = 0.1,
         }
 
         function handleInput() {
+            var vx = self.vel.x;
+            var vy = self.vel.y;
+
             if (game.sequencer.isPressed("BOOST_UP")) {
                 self.vel.y += -BOOST_Y;
                 self.state.motion = motions.BOOST_UP;
@@ -377,55 +387,63 @@ var FRIC = 0.1,
                 self.vel.y += BOOST_Y;
                 self.state.motion = motions.BOOST_DOWN;
             } else if (C.inputter.isDown(C.inputter.S)) { 
-                if (self.vel.y === 0) { 
+                if (vy === 0) { 
                    self.state.motion = motions.CROUCH;
-               } else if (self.vel.y > 0) { 
+               } else if (vy > 0) { 
                    self.state.motion = motions.FALLING;
                }
             } else if (game.sequencer.isPressed("BOOST_RIGHT")) {
                 self.vel.x += BOOST_X;
                 self.state.motion = motions.BOOST_RIGHT;
+                self.flags.boostCastActive = true;
+                self.boostTimer.after(BOOST_CAST, function() { self.flags.boostCastActive = false; });
             } else if (game.sequencer.isPressed("BOOST_LEFT")) {
                 self.vel.x += -BOOST_X;
                 self.state.motion = motions.BOOST_LEFT;
+                self.flags.boostCastActive = true;
+                self.boostTimer.after(BOOST_CAST, function() { self.flags.boostCastActive = false; });
             } else if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
                 if (self.state.facing === facing.RIGHT) {
-                    self.vel.x = Math.max(WALK_X, self.vel.x);
+                    self.vel.x = Math.max(WALK_X, vx);
                 } else {
-                    self.vel.x = Math.min(-WALK_X, self.vel.x);
+                    self.vel.x = Math.min(-WALK_X, vx);
                 }
             } else if (C.inputter.isDown(C.inputter.D)) {
                 if (self.state.facing === facing.LEFT) {
                     self.state.facing = facing.RIGHT;
-                } else if (self.vel.x > 0) {
-                    self.vel.x = Math.max(WALK_X, self.vel.x);
-                } else if (self.vel.x === 0) {
+                } else if (vx > 0) {
+                    self.vel.x = Math.max(WALK_X, vx);
+                } else if (vx === 0) {
                     self.vel.x = WALK_X;
                 }
             } else if (C.inputter.isDown(C.inputter.A)) {
                 if (self.state.facing === facing.RIGHT) {
                     self.state.facing = facing.LEFT;
-                } else if (self.vel.x < 0) {
-                    self.vel.x = Math.min(-WALK_X, self.vel.x);
-                } else if (self.vel.x === 0) {
+                } else if (vx < 0) {
+                    self.vel.x = Math.min(-WALK_X, vx);
+                } else if (vx === 0) {
                     self.vel.x = -WALK_X;
                 } 
             } else if (C.inputter.isDown(C.inputter.W) 
                         && self.resources.hover > 0
-                        && self.vel.y >= 0) {
+                        && vy >= 0) {
                 // Falling or not in air
                 self.resources.hover -= 1.5;
                 self.vel.y = -0.2;
                 self.state.motion = motions.HOVER;
             } 
             
-            var xSpeed = Math.abs(self.vel.x);
-            
-            if (self.vel.y > 0 && xSpeed <= WALK_X) {
+            // State modifications based on what was
+            // applied above
+
+            var newVx = self.vel.x;
+            var newVy = self.vel.y;
+            var absNewVx = Math.abs(newVx);
+            if (newVy > 0 && absNewVx <= WALK_X) {
                 self.state.motion = motions.FALLING;
-            } else if (xSpeed <= WALK_X && xSpeed > 0) {
+            } else if (absNewVx <= WALK_X && absNewVx > 0) {
                 self.state.motion = motions.WALK;
-            } else if (self.vel.x === 0 && self.vel.y === 0) {
+            } else if (newVx === 0 && newVy === 0) {
                 self.state.motion = motions.STAND;
             }                                                             
 
@@ -435,13 +453,20 @@ var FRIC = 0.1,
             } 
 
             if (C.inputter.isPressed(C.inputter.J)) {
-                self.actionTimer.after(100, function() {
+                if ((self.state.motion === motions.BOOST_RIGHT || self.state.motion === motions.BOOST_LEFT) 
+                        && self.flags.boostCastActive) {
                     self.state.action = actions.MELEE;
-                    meleeAction();
-                    self.actionTimer.after(900, function() { 
-                        self.state.action = actions.PASSIVE;
+                    self.vel.x = (newVx < 0 ? -0.2 : 0.2); 
+                    self.actionTimer.after(BOOST_MELEE_CAST, function() {
+                        self.state.motion = (newVx < 0 ? motions.BOOST_LEFT : motions.BOOST_RIGHT);
+                        self.state.action = actions.MELEE;
+                        self.vel.x = newVx; // now apply boost
+                        meleeAction();
+                        self.actionTimer.after(BOOST_MELEE_BCKSWNG, function() { 
+                            self.state.action = actions.PASSIVE;
+                        });
                     });
-                });
+                } 
             } else if (C.inputter.isPressed(C.inputter.K)) {
                 self.actionTimer.after(200, function() {
                    self.state.action = actions.BLIP; 
