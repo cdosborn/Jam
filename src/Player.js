@@ -6,7 +6,7 @@ var FRIC = 0.1,
     // After BOOST_CAST actions no longer combined
     // with BOOST
 
-    BOOST_CAST = 200,           
+    BOOST_CAST = 100,           
 
     // BOOST_MELEE_CAST duration where a different
     // action could be applied to the boost
@@ -232,26 +232,23 @@ var FRIC = 0.1,
             img: game.images['PFX_Boost_L'],  
             frames: [0,1,2,3,4],
             size: {x:48,y:14},
-            offset: {x:-1, y:-18}
+            offset: {x:10, y:-18}
         }));
         this.animator.register("PFX_Boost_R", Animation(this, { 
             img: game.images['PFX_Boost_R'],  
             frames: [0,1,2,3,4],
             size: {x:48,y:14},
-            offset: {x:0, y:-18}
+            offset: {x:-10, y:-18}
         }));
-        var offy = {x:-50, y:0}
         this.animator.register("PFX_Boost_Slash_L", Animation(this, { 
             img: game.images['PFX_Boost_Slash_L'],  
             frames: [0,1,2,3,4],
             size: {x:250,y:50},
-            offset: offy
         }));
         this.animator.register("PFX_Boost_Slash_R", Animation(this, { 
             img: game.images['PFX_Boost_Slash_R'],  
             frames: [0,1,2,3,4],
             size: {x:250,y:50},
-            offset: {x:50, y:0}
         }));
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
@@ -479,8 +476,8 @@ var FRIC = 0.1,
             } else if (game.sequencer.isPressed("BOOST_RIGHT")) {
                 self.vel.x += BOOST_X;
                 self.state.motion = motions.BOOST_RIGHT;
-                self.flags.boostCastActive = true;
                 self.state.facing = facing.RIGHT;
+                self.flags.boostCastActive = true;
                 self.boostTimer.after(BOOST_CAST, function() { self.flags.boostCastActive = false; });
             } else if (game.sequencer.isPressed("BOOST_LEFT")) {
                 self.vel.x += -BOOST_X;
@@ -538,14 +535,12 @@ var FRIC = 0.1,
                 self.resources.hover = Math.min(HOVER, self.resources.hover + HOVER_INCREMENT);
             } 
 
-            // The animation for the melee is determined by state.action
-            // The control flow is determined by state.action
             if (C.inputter.isPressed(C.inputter.J)) {
-                self.state.action = actions.MELEE;
 
                 if ((self.state.motion === motions.BOOST_RIGHT || self.state.motion === motions.BOOST_LEFT) 
                         && self.flags.boostCastActive) {
-                    self.vel.x = (newVx < 0 ? -0.2 : 0.2); 
+                    self.state.action = actions.MELEE;
+                    self.vel.x = (newVx < 0 ? -0.2 : 0.2);  // WITH FRICTION RESULTS IN A STAND STATE
                     self.actionTimer.after(BOOST_MELEE_CAST, function() {
                         self.state.status = status.BUSY;
                         self.state.motion = (newVx < 0 ? motions.BOOST_LEFT : motions.BOOST_RIGHT);
@@ -557,6 +552,7 @@ var FRIC = 0.1,
                         });
                     });
                 } else if (self.state.motion === motions.WALK || self.state.motion === motions.STAND) {
+                    self.state.action = actions.MELEE;
                     self.actionTimer.after(WALK_MELEE_CAST, function() {
                         self.state.status = status.BUSY;
                           
@@ -568,8 +564,8 @@ var FRIC = 0.1,
                         });
                     });
 
-                } else { // FALLING
-
+                } else if (self.state.motion === motions.FALLING) { 
+                    self.state.action = actions.MELEE;
                     self.actionTimer.after(FALL_MELEE_CAST, function() {
                         self.state.status = status.BUSY;
                           
