@@ -45,6 +45,9 @@
             reset: function() {
                 curFrame = 0;
             },
+            getFrame: function() {
+                return curFrame;
+            }
         }
     }
 
@@ -84,6 +87,9 @@
                    // console.log(passiveQueue);
                     anims[activeQueue[i]].draw(ctx);
                 }
+            },
+            getFrame: function(name) {
+                return anims[name].getFrame();
             }
         }
     }

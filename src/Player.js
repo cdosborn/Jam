@@ -6,18 +6,18 @@ var FRIC = 0.1,
     // After BOOST_CAST actions no longer combined
     // with BOOST
 
-    BOOST_CAST = 100,           
+    BOOST_CAST = 200,           
 
     // BOOST_MELEE_CAST duration where a different
     // action could be applied to the boost
 
-    BOOST_MELEE_CAST = 200,
+    BOOST_MELEE_CAST = 100,
 
     // BOOST_MELEE_BCKSWNG duration following
     // the cast, where the player is vulnerable
     // and cannot change animation
 
-    BOOST_MELEE_BCKSWNG = 248,   //248 totoal
+    BOOST_MELEE_BCKSWNG = 600,   //700 totoal
 
     // The duration where the melee can be cancelled
     // while walking
@@ -240,15 +240,19 @@ var FRIC = 0.1,
             size: {x:48,y:14},
             offset: {x:-10, y:-18}
         }));
-        this.animator.register("PFX_Boost_Slash_L", Animation(this, { 
+
+        var slashPFXObj = { center: {x:0,y:0}, size: {x:250,y:50} };
+        this.animator.register("PFX_Boost_Slash_L", Animation(this, {//slashPFXObj, { 
             img: game.images['PFX_Boost_Slash_L'],  
-            frames: [0,1,2,3,4],
+            frames: [0,1,2,3,4,5,6,7],
             size: {x:250,y:50},
+            fps:20
         }));
-        this.animator.register("PFX_Boost_Slash_R", Animation(this, { 
+        this.animator.register("PFX_Boost_Slash_R", Animation(this,{ //slashPFXObj, { 
             img: game.images['PFX_Boost_Slash_R'],  
-            frames: [0,1,2,3,4],
+            frames: [0,1,2,3,4,5,6,7],
             size: {x:250,y:50},
+            fps:20
         }));
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
@@ -377,15 +381,55 @@ var FRIC = 0.1,
                }
             } else if (state.action === actions.MELEE) {
                 if (state.motion === motions.BOOST_LEFT) {
-                    this.animator.push("Boost_Legs_L");
-                    this.animator.push("Boost_Slash_L");
-                    this.animator.push("PFX_Boost_L");
-                    this.animator.push("PFX_Boost_Slash_L");
+                    if (this.animator.getFrame("PFX_Boost_L") > 2) { // on frame 3
+                        if (this.animator.getFrame("PFX_Boost_Slash_L") > 4) { // on pfx 5
+
+                            // DRAW PFX ABOVE
+
+                            this.animator.push("Boost_Legs_L");
+                            this.animator.push("Boost_Slash_L");
+                            this.animator.push("PFX_Boost_L");
+                            this.animator.push("PFX_Boost_Slash_L");
+
+                        } else  {
+
+                            // DRAW PFX BEHIND
+
+                            this.animator.push("PFX_Boost_Slash_L");
+                            this.animator.push("Boost_Legs_L");
+                            this.animator.push("Boost_Slash_L");
+                            this.animator.push("PFX_Boost_L");
+                        }
+                    } else {
+                        this.animator.push("Boost_Legs_L");
+                        this.animator.push("Boost_Slash_L");
+                        this.animator.push("PFX_Boost_L");
+                    }
                 } else if (state.motion === motions.BOOST_RIGHT) {
-                    this.animator.push("Boost_Legs_R");
-                    this.animator.push("Boost_Slash_R");
-                    this.animator.push("PFX_Boost_R");
-                    this.animator.push("PFX_Boost_Slash_R");
+                    if (this.animator.getFrame("PFX_Boost_R") > 2) { // on frame 3
+                        if (this.animator.getFrame("PFX_Boost_Slash_R") > 4) { // on pfx 5
+
+                            // DRAW PFX ABOVE
+
+                            this.animator.push("Boost_Legs_R");
+                            this.animator.push("Boost_Slash_R");
+                            this.animator.push("PFX_Boost_R");
+                            this.animator.push("PFX_Boost_Slash_R");
+
+                        } else  {
+
+                            // DRAW PFX BEHIND
+
+                            this.animator.push("PFX_Boost_Slash_R");
+                            this.animator.push("Boost_Legs_R");
+                            this.animator.push("Boost_Slash_R");
+                            this.animator.push("PFX_Boost_R");
+                        }
+                    } else {
+                        this.animator.push("Boost_Legs_R");
+                        this.animator.push("Boost_Slash_R");
+                        this.animator.push("PFX_Boost_R");
+                    }
                 } else if (state.motion === motions.FALLING) {
                     if (state.facing === facing.RIGHT) {
                         this.animator.push("Falling_Slash_R");
@@ -524,9 +568,14 @@ var FRIC = 0.1,
             var absNewVx = Math.abs(newVx);
             if (newVy > 0 && absNewVx <= WALK_X) {
                 self.state.motion = motions.FALLING;
-            } else if (absNewVx <= WALK_X && absNewVx > 0) {
+            } else if (absNewVx <= WALK_X && absNewVx > 0 && !self.flags.boostCastActive) {
                 self.state.motion = motions.WALK;
-            } else if (newVx === 0 && newVy === 0) {
+            } else if (newVx === 0 && newVy === 0 && !self.flags.boostCastActive) {
+                  
+                // !self.flags.boostCastActive checks that we are NOT in a boost
+                // attack sequence, otherwise the vel becomes 0 and handleInput
+                // thinks STAND
+
                 self.state.motion = motions.STAND;
             }                                                             
 
@@ -540,9 +589,11 @@ var FRIC = 0.1,
                 if ((self.state.motion === motions.BOOST_RIGHT || self.state.motion === motions.BOOST_LEFT) 
                         && self.flags.boostCastActive) {
                     self.state.action = actions.MELEE;
-                    self.vel.x = (newVx < 0 ? -0.2 : 0.2);  // WITH FRICTION RESULTS IN A STAND STATE
+                    self.vel.x = 0 //(newVx < 0 ? -0.2 : 0.2);  // WITH FRICTION RESULTS IN A STAND STATE
                     self.actionTimer.after(BOOST_MELEE_CAST, function() {
                         self.state.status = status.BUSY;
+                        slashPFXObj.center.x = self.center.x + (newVx < 0 ? -10*BOOST_X : 10*BOOST_X);
+                        slashPFXObj.center.y = self.center.y;
                         self.state.motion = (newVx < 0 ? motions.BOOST_LEFT : motions.BOOST_RIGHT);
                         self.vel.x = (newVx < 0 ? -BOOST_X : BOOST_X); // now apply boost
                         meleeAction();
