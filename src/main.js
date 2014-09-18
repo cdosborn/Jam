@@ -27,10 +27,8 @@
             Walk_Slash_Swing_R:   new Image(),
             Stand_L:              new Image(),
             Stand_R:              new Image(),
-            Falling_Slash_Top_L:  new Image(),
-            Falling_Slash_Top_R:  new Image(),
-            Falling_Slash_Legs_L: new Image(),
-            Falling_Slash_Legs_R: new Image(),
+            Falling_Slash_L:      new Image(),
+            Falling_Slash_R:      new Image(),
             Falling_Laser_Top_L:  new Image(),
             Falling_Laser_Top_R:  new Image(),
             Falling_Laser_Legs_L: new Image(),
@@ -39,14 +37,14 @@
             Falling_Top_R:        new Image(),
             Falling_Legs_L:       new Image(),
             Falling_Legs_R:       new Image(),
-            Falling_Slash_Top_L:  new Image(),
-            Falling_Slash_Top_R:  new Image(),
-            Falling_Slash_Legs_L: new Image(),
-            Falling_Slash_Legs_R: new Image(),
             Falling_Laser_Top_L:  new Image(),
             Falling_Laser_Top_R:  new Image(),
             Falling_Laser_Legs_L: new Image(),
-            Falling_Laser_Legs_R: new Image()
+            Falling_Laser_Legs_R: new Image(),
+            PFX_Boost_L:          new Image(),
+            PFX_Boost_R:          new Image(),
+            PFX_Boost_Slash_L:    new Image(),
+            PFX_Boost_Slash_R:    new Image()
        };
 
         this.getTime = function() {
@@ -74,18 +72,20 @@
         this.images['Walk_Slash_Swing_R'].src   = 'images/Robot/Walk/192x106/Walk_slash_swing_R.png';
         this.images['Stand_L'].src              = 'images/Robot/Stand/76x104/Stand_L.png';
         this.images['Stand_R'].src              = 'images/Robot/Stand/76x104/Stand_R.png';
+        this.images['Falling_Slash_L'].src      = 'images/Robot/Fall/166x130/Falling_Slash_L.png';
+        this.images['Falling_Slash_R'].src      = 'images/Robot/Fall/166x130/Falling_Slash_R.png';
         this.images['Falling_Top_L'].src        = 'images/Robot/Fall/62x126/Falling_Body_L.png';
         this.images['Falling_Top_R'].src        = 'images/Robot/Fall/62x126/Falling_Body_R.png';
         this.images['Falling_Legs_L'].src       = 'images/Robot/Fall/62x126/Falling_Legs_L.png';
         this.images['Falling_Legs_R'].src       = 'images/Robot/Fall/62x126/Falling_Legs_R.png';
-        this.images['Falling_Slash_Top_L'].src  = 'images/Robot/Fall/166x130/Falling_Slash_Body_L.png';
-        this.images['Falling_Slash_Top_R'].src  = 'images/Robot/Fall/166x130/Falling_Slash_Body_R.png';
-        this.images['Falling_Slash_Legs_L'].src = 'images/Robot/Fall/166x130/Falling_Slash_Legs_L.png';
-        this.images['Falling_Slash_Legs_R'].src = 'images/Robot/Fall/166x130/Falling_Slash_Legs_R.png';
         this.images['Falling_Laser_Top_L'].src  = 'images/Robot/Fall/558x126/Falling_Laser_Body_L.png';
         this.images['Falling_Laser_Top_R'].src  = 'images/Robot/Fall/558x126/Falling_Laser_Body_R.png';
         this.images['Falling_Laser_Legs_L'].src = 'images/Robot/Fall/558x126/Falling_Laser_Legs_L.png';
         this.images['Falling_Laser_Legs_R'].src = 'images/Robot/Fall/558x126/Falling_Laser_Legs_R.png';
+        this.images['PFX_Boost_L'].src          = 'images/Robot/PFX/48x14/Boost_pfx_L.png';
+        this.images['PFX_Boost_R'].src          = 'images/Robot/PFX/48x14/Boost_pfx_R.png';
+        this.images['PFX_Boost_Slash_L'].src    = 'images/Robot/PFX/250x50/Boost_slash_pfx_L.png';
+        this.images['PFX_Boost_Slash_R'].src    = 'images/Robot/PFX/250x50/Boost_slash_pfx_R.png';
 
         this.sequencer = ButtonSequencer(this);
 

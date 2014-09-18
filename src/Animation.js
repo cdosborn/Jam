@@ -10,9 +10,10 @@
             lastTime = 0,
             img    = settings.img,
             frames = settings.frames,
-            fps    = (settings.fps    === undefined ? 10 : settings.fps),
-            size   = (settings.size   === undefined ? obj.size : settings.size),
-            center = (settings.center === undefined ? obj.center : settings.center);
+            fps    = (settings.fps    === undefined ? 10            : settings.fps),
+            size   = (settings.size   === undefined ? obj.size      : settings.size),
+            center = (settings.center === undefined ? obj.center    : settings.center),
+            offset = (settings.offset === undefined ? { x: 0, y: 0} : settings.offset);
 
         return {
             next: function(delta) {
@@ -36,17 +37,9 @@
                 var frame = frames[curFrame],
                     width = size.x,
                     height = size.y,                    
-                    x = center.x - width/2,
-                    y = center.y - height/2;        
-                //if (player.state.action ===  0) {
-                //    //console.log("frame: " + frame);
-                //    //console.log("x: " + x);
-                //    //console.log("y: " + y);
+                    x = center.x - width/2 + offset.x,
+                    y = center.y - height/2 + offset.y;        
 
-                //    //console.log("width: " + width);
-                //    //console.log("height: " + height);
-                //}
-                
                 ctx.drawImage(img, frame * width, 0, width, height, x, y, width, height);
             },
             reset: function() {

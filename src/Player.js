@@ -2,11 +2,39 @@ var FRIC = 0.1,
     GRAV = 0.3,
     BOOST_X = 20,
     BOOST_Y = 15,
-    BOOST_CAST = 200,
+
+    // After BOOST_CAST actions no longer combined
+    // with BOOST
+
+    BOOST_CAST = 200,           
+
+    // BOOST_MELEE_CAST duration where a different
+    // action could be applied to the boost
+
     BOOST_MELEE_CAST = 200,
+
+    // BOOST_MELEE_BCKSWNG duration following
+    // the cast, where the player is vulnerable
+    // and cannot change animation
+
     BOOST_MELEE_BCKSWNG = 248,   //248 totoal
+
+    // The duration where the melee can be cancelled
+    // while walking
+
     WALK_MELEE_CAST = 0,
+
+    // The duration of vulnerability following the
+    // cast point
+
     WALK_MELEE_BCKSWNG = 550,    //550 total
+
+    BLIP_CAST = 100,
+    BLIP_BCKSWNG = 500,
+    FALL_MELEE_CAST = 100,
+    FALL_MELEE_BCKSWNG = 500,
+    LASER_CAST = 100,
+    LASER_BCKSWNG = 700,
     HOVER = 100,
     HOVER_INCREMENT = 1,
     DIV = 15,
@@ -45,9 +73,13 @@ var FRIC = 0.1,
                       , PASSIVE: 3 
                       , STAGGER: 4 }
 
+        var status =  { FREE: 0
+                      , BUSY: 1 } 
+
         this.state = { action: actions.PASSIVE
                      , motion: motions.STAND 
-                     , facing: facing.RIGHT } 
+                     , facing: facing.RIGHT 
+                     , status: status.FREE } 
 
         this.flags = { boostCastActive: false }
 
@@ -106,12 +138,12 @@ var FRIC = 0.1,
         this.animator.register("Walk_L", Animation(this, { 
             img: game.images['Walk_L'],  
             frames: [0,1,2,3,4,5,6],
-            size: {x:97,y:106}
+            size: {x:97,y:106},
         }));
         this.animator.register("Walk_R", Animation(this, { 
             img: game.images['Walk_R'],  
             frames: [0,1,2,3,4,5,6],
-            size: {x:97,y:106}
+            size: {x:97,y:106},
         }));
         this.animator.register("Walk_Slash_Swing_R", Animation(this, { 
             img: game.images['Walk_Slash_Swing_R'],  
@@ -134,12 +166,14 @@ var FRIC = 0.1,
         this.animator.register("Stand_R", Animation(this, { 
             img: game.images['Stand_R'],  
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
-            size: {x:76,y:104}
+            size: {x:76,y:104},
+            offset: {x:0, y:2}
         }));
         this.animator.register("Stand_L", Animation(this, { 
             img: game.images['Stand_L'],  
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
-            size: {x:76,y:104}
+            size: {x:76,y:104},
+            offset: {x:0, y:2}
         }));
         this.animator.register("Falling_Top_L", Animation(this, { 
             img: game.images['Falling_Top_L'],  
@@ -161,24 +195,16 @@ var FRIC = 0.1,
             frames: [0,1,2,3,4,5,6,7,8],
             size: {x:62,y:126}
         }));
-        this.animator.register("Falling_Slash_Top_L", Animation(this, { 
-            img: game.images['Falling_Slash_Top_L'],  
-            frames: [0,1,2,3,4,5,6,7,8],
+        this.animator.register("Falling_Slash_L", Animation(this, { 
+            img: game.images['Falling_Slash_L'],  
+            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            fps:20,
             size: {x:166,y:130}
         }));
-        this.animator.register("Falling_Slash_Top_R", Animation(this, { 
-            img: game.images['Falling_Slash_Top_R'],  
-            frames: [0,1,2,3,4,5,6,7,8],
-            size: {x:166,y:130}
-        }));
-        this.animator.register("Falling_Slash_Legs_L", Animation(this, { 
-            img: game.images['Falling_Slash_Legs_L'],  
-            frames: [0,1,2,3,4,5,6,7,8],
-            size: {x:166,y:130}
-        }));
-        this.animator.register("Falling_Slash_Legs_R", Animation(this, { 
-            img: game.images['Falling_Slash_Legs_R'],  
-            frames: [0,1,2,3,4,5,6,7,8],
+        this.animator.register("Falling_Slash_R", Animation(this, { 
+            img: game.images['Falling_Slash_R'],  
+            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            fps:20,
             size: {x:166,y:130}
         }));
         this.animator.register("Falling_Laser_Top_L", Animation(this, { 
@@ -202,6 +228,31 @@ var FRIC = 0.1,
             size: {x:62,y:126}
         }));
 
+        this.animator.register("PFX_Boost_L", Animation(this, { 
+            img: game.images['PFX_Boost_L'],  
+            frames: [0,1,2,3,4],
+            size: {x:48,y:14},
+            offset: {x:-1, y:-18}
+        }));
+        this.animator.register("PFX_Boost_R", Animation(this, { 
+            img: game.images['PFX_Boost_R'],  
+            frames: [0,1,2,3,4],
+            size: {x:48,y:14},
+            offset: {x:0, y:-18}
+        }));
+        var offy = {x:-50, y:0}
+        this.animator.register("PFX_Boost_Slash_L", Animation(this, { 
+            img: game.images['PFX_Boost_Slash_L'],  
+            frames: [0,1,2,3,4],
+            size: {x:250,y:50},
+            offset: offy
+        }));
+        this.animator.register("PFX_Boost_Slash_R", Animation(this, { 
+            img: game.images['PFX_Boost_Slash_R'],  
+            frames: [0,1,2,3,4],
+            size: {x:250,y:50},
+            offset: {x:50, y:0}
+        }));
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
         game.sequencer.bind("BOOST_RIGHT", [C.inputter.D, -C.inputter.D, C.inputter.D]); 
@@ -214,7 +265,7 @@ var FRIC = 0.1,
             this.boostTimer.update(delta);
             this.animator.update(delta);
 
-            if (this.state.action === actions.PASSIVE) {
+            if (this.state.status === status.FREE) {
                 handleInput();
             } else {
                 handleActions();
@@ -238,7 +289,8 @@ var FRIC = 0.1,
             var motionId = this.state.motion;
             var actionId = this.state.action;
             var facingId = this.state.facing;
-            var motion, action, dir;
+            var statusId = this.state.status;
+            var motion, action, dir, stat;
 
             if (motionId === motions.BOOST_UP) {
                motion = "BOOST UP";
@@ -265,7 +317,13 @@ var FRIC = 0.1,
             } else {
                 dir = "LEFT";
             }
-            
+
+            if (statusId === status.FREE) {
+                stat = "FREE";
+            } else {
+                stat = "BUSY";
+            }
+           
             if (actionId === actions.BLIP) {
                 action = "BLIP";
             } else if (actionId === actions.MELEE) {
@@ -276,7 +334,7 @@ var FRIC = 0.1,
                 action = "PASSIVE";
             }
 
-            return [motion, action, dir];
+            return [motion, action, dir, stat];
         }
 
         this.collision = function(other) { 
@@ -295,9 +353,11 @@ var FRIC = 0.1,
                 if (state.motion === motions.BOOST_LEFT) {
                     this.animator.push("Boost_Legs_L");
                     this.animator.push("Boost_Top_L");
+                    this.animator.push("PFX_Boost_L");
                 } else if (state.motion === motions.BOOST_RIGHT) {
                     this.animator.push("Boost_Legs_R");
                     this.animator.push("Boost_Top_R");
+                    this.animator.push("PFX_Boost_R");
                 } else if (state.motion === motions.WALK) {
                     if (state.facing === facing.RIGHT)
                         this.animator.push("Walk_R");
@@ -322,18 +382,19 @@ var FRIC = 0.1,
                 if (state.motion === motions.BOOST_LEFT) {
                     this.animator.push("Boost_Legs_L");
                     this.animator.push("Boost_Slash_L");
+                    this.animator.push("PFX_Boost_L");
+                    this.animator.push("PFX_Boost_Slash_L");
                 } else if (state.motion === motions.BOOST_RIGHT) {
                     this.animator.push("Boost_Legs_R");
                     this.animator.push("Boost_Slash_R");
+                    this.animator.push("PFX_Boost_R");
+                    this.animator.push("PFX_Boost_Slash_R");
                 } else if (state.motion === motions.FALLING) {
                     if (state.facing === facing.RIGHT) {
-                        this.animator.push("Falling_Slash_Legs_R");
-                        this.animator.push("Falling_Slash_Top_R");
+                        this.animator.push("Falling_Slash_R");
                     } else {
-                        this.animator.push("Falling_Slash_Legs_L");
-                        this.animator.push("Falling_Slash_Top_L");
+                        this.animator.push("Falling_Slash_L");
                     }
-
                } else if (state.motion === motions.WALK || state.motion === motions.STAND) {
                    this.animator.push("Walk_Slash_Swing_R");
                }
@@ -382,6 +443,7 @@ var FRIC = 0.1,
                 ctx.fillText(stringList[0], x, y     , w);
                 ctx.fillText(stringList[1], x, y + 10, w);
                 ctx.fillText(stringList[2], x, y + 20, w);
+                ctx.fillText(stringList[3], x, y + 30, w);
             }
 
         }
@@ -418,10 +480,12 @@ var FRIC = 0.1,
                 self.vel.x += BOOST_X;
                 self.state.motion = motions.BOOST_RIGHT;
                 self.flags.boostCastActive = true;
+                self.state.facing = facing.RIGHT;
                 self.boostTimer.after(BOOST_CAST, function() { self.flags.boostCastActive = false; });
             } else if (game.sequencer.isPressed("BOOST_LEFT")) {
                 self.vel.x += -BOOST_X;
                 self.state.motion = motions.BOOST_LEFT;
+                self.state.facing = facing.LEFT;
                 self.flags.boostCastActive = true;
                 self.boostTimer.after(BOOST_CAST, function() { self.flags.boostCastActive = false; });
             } else if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
@@ -477,44 +541,65 @@ var FRIC = 0.1,
             // The animation for the melee is determined by state.action
             // The control flow is determined by state.action
             if (C.inputter.isPressed(C.inputter.J)) {
+                self.state.action = actions.MELEE;
+
                 if ((self.state.motion === motions.BOOST_RIGHT || self.state.motion === motions.BOOST_LEFT) 
                         && self.flags.boostCastActive) {
-                    self.state.action = actions.MELEE;
                     self.vel.x = (newVx < 0 ? -0.2 : 0.2); 
                     self.actionTimer.after(BOOST_MELEE_CAST, function() {
+                        self.state.status = status.BUSY;
                         self.state.motion = (newVx < 0 ? motions.BOOST_LEFT : motions.BOOST_RIGHT);
-                        self.state.action = actions.MELEE;
-                        self.vel.x = newVx; // now apply boost
+                        self.vel.x = (newVx < 0 ? -BOOST_X : BOOST_X); // now apply boost
                         meleeAction();
                         self.actionTimer.after(BOOST_MELEE_BCKSWNG, function() { 
+                            self.state.status = status.FREE;
                             self.state.action = actions.PASSIVE;
                         });
                     });
                 } else if (self.state.motion === motions.WALK || self.state.motion === motions.STAND) {
-                    self.state.action = actions.MELEE;
                     self.actionTimer.after(WALK_MELEE_CAST, function() {
-                        self.state.action = actions.MELEE;
-                      //self.vel.x = (self.state.facing === facing.RIGHT ? 3 : self.vel.x); // creep fwd
+                        self.state.status = status.BUSY;
+                          
+                        //self.vel.x = (self.state.facing === facing.RIGHT ? 3 : self.vel.x); // creep fwd
                         meleeAction();
                         self.actionTimer.after(WALK_MELEE_BCKSWNG, function() { 
+                            self.state.status = status.FREE;
                             self.state.action = actions.PASSIVE;
                         });
                     });
 
-                } 
+                } else { // FALLING
+
+                    self.actionTimer.after(FALL_MELEE_CAST, function() {
+                        self.state.status = status.BUSY;
+                          
+                        //self.vel.x = (self.state.facing === facing.RIGHT ? 3 : self.vel.x); // creep fwd
+                        meleeAction();
+                        self.actionTimer.after(FALL_MELEE_BCKSWNG, function() { 
+                            self.state.status = status.FREE;
+                            self.state.action = actions.PASSIVE;
+                        });
+                    });
+
+
+                }
             } else if (C.inputter.isPressed(C.inputter.K)) {
-                self.actionTimer.after(200, function() {
+                self.actionTimer.after(BLIP_CAST, function() {
+                    self.state.status = status.BUSY;
                    self.state.action = actions.BLIP; 
                     blipAction();
-                    self.actionTimer.after(300, function() { 
+                    self.actionTimer.after(BLIP_BCKSWNG, function() { 
+                        self.state.status = status.FREE;
                         self.state.action = actions.PASSIVE;
                     });
                 });
             } else if (C.inputter.isPressed(C.inputter.L)) {
-                self.actionTimer.after(100, function() {
+                self.actionTimer.after(LASER_CAST, function() {
+                    self.state.status = status.BUSY;
                     self.state.action = actions.RANGE;
                     rangeAction();
-                    self.actionTimer.after(900, function() { 
+                    self.actionTimer.after(LASER_BCKSWNG, function() { 
+                        self.state.status = status.FREE;
                         self.state.action = actions.PASSIVE;
                     });
                 });
@@ -527,10 +612,10 @@ var FRIC = 0.1,
                 // if attack hitbox collides with enemy
                 // send damage to enemy
 
-
-            if (self.state.motion === motions.WALK || self.state.motion === motions.STAND) {
-                self.center.x += (self.state.facing === facing.RIGHT ? 7 : -7);
-            }
+                // Creeping forward for melee
+                if (self.state.motion === motions.WALK || self.state.motion === motions.STAND) {
+                    self.center.x += (self.state.facing === facing.RIGHT ? 7 : -7);
+                }
 
 
             } else if (self.state.action === actions.BLIP) {
