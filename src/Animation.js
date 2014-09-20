@@ -29,7 +29,6 @@
                 } else {
                     lastTime = extraTime;
                     curFrame = (curFrame + framesToAdvance) % frames.length | 0;
-                 // console.log(curFrame);
                 }
 
             },
@@ -87,6 +86,17 @@
                    // console.log(passiveQueue);
                     anims[activeQueue[i]].draw(ctx);
                 }
+            },
+            reset: function() {
+                for (var i = 0, len = activeQueue.length; i < len; i++) {
+                    name = activeQueue[i].reset();
+                    anims[name].reset(); 
+                }
+                for (var i = 0, len = passiveQueue.length; i < len; i++) {
+                    name = passiveQueue[i];
+                    anims[name].reset(); 
+                }
+
             },
             getFrame: function(name) {
                 return anims[name].getFrame();

@@ -19,6 +19,8 @@
             Boost_Laser_R:        new Image(),
             Walk_L:               new Image(),
             Walk_R:               new Image(),
+            Jump_L:               new Image(),
+            Jump_R:               new Image(),
         //  Walk_Slash_Charge_L:  new Image(),
             Walk_Slash_Charge_R:  new Image(),
         //  Walk_Slash_Release_L: new Image(),
@@ -44,7 +46,9 @@
             PFX_Boost_L:          new Image(),
             PFX_Boost_R:          new Image(),
             PFX_Boost_Slash_L:    new Image(),
-            PFX_Boost_Slash_R:    new Image()
+            PFX_Boost_Slash_R:    new Image(),
+//          PFX_Laser_L:          new Image(),
+            PFX_Laser_R:          new Image()
        };
 
         this.getTime = function() {
@@ -62,6 +66,8 @@
         this.images['Boost_Slash_R'].src        = 'images/Robot/Boost/124x106/Boost_slash_R.png';
         this.images['Boost_Laser_L'].src        = 'images/Robot/Boost/124x106/Boost_laser_L.png';
         this.images['Boost_Laser_R'].src        = 'images/Robot/Boost/124x106/Boost_laser_R.png';
+        this.images['Jump_L'].src               = 'images/Robot/Jump/90x112/Jump_Left.png';
+        this.images['Jump_R'].src               = 'images/Robot/Jump/90x112/Jump_Right.png';
         this.images['Walk_L'].src               = 'images/Robot/Walk/97x106/97x106_Walk_L.png';
         this.images['Walk_R'].src               = 'images/Robot/Walk/97x106/97X106_Walk_R.png';
   //    this.images['Walk_Slash_Charge_L'].src  = 'images/Robot/Walk/192x106/Walk_slash_charge_L.png';
@@ -86,6 +92,8 @@
         this.images['PFX_Boost_R'].src          = 'images/Robot/PFX/48x14/Boost_pfx_R.png';
         this.images['PFX_Boost_Slash_L'].src    = 'images/Robot/PFX/250x50/Boost_slash_pfx_L.png';
         this.images['PFX_Boost_Slash_R'].src    = 'images/Robot/PFX/250x50/Boost_slash_pfx_R.png';
+//      this.images['PFX_Laser_L'].src          = 'images/Robot/PFX/362x20/Laser_PFX_L.png';
+        this.images['PFX_Laser_R'].src          = 'images/Robot/PFX/362x20/Laser_PFX_R.png';
 
         this.sequencer = ButtonSequencer(this);
 

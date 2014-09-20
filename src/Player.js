@@ -22,12 +22,12 @@ var FRIC = 0.1,
     // The duration where the melee can be cancelled
     // while walking
 
-    WALK_MELEE_CAST = 0,
+    WALK_MELEE_CAST = 200,
 
     // The duration of vulnerability following the
     // cast point
 
-    WALK_MELEE_BCKSWNG = 550,    //550 total
+    WALK_MELEE_BCKSWNG = 350,    //550 total
 
     BLIP_CAST = 100,
     BLIP_BCKSWNG = 500,
@@ -38,7 +38,6 @@ var FRIC = 0.1,
     HOVER = 100,
     HOVER_INCREMENT = 1,
     DIV = 15,
-//  DEBUG = true,
     DEBUG = false,
     WALK_X = 5;
 
@@ -134,7 +133,16 @@ var FRIC = 0.1,
             frames: [0,1,2,3,4,5,6],
             size: {x:124,y:106}
         }));
-
+        this.animator.register("Jump_L", Animation(this, { 
+            img: game.images['Jump_L'],  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:90,y:112},
+        }));
+        this.animator.register("Jump_R", Animation(this, { 
+            img: game.images['Jump_R'],  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:90,y:112},
+        }));
         this.animator.register("Walk_L", Animation(this, { 
             img: game.images['Walk_L'],  
             frames: [0,1,2,3,4,5,6],
@@ -254,6 +262,19 @@ var FRIC = 0.1,
             size: {x:250,y:50},
             fps:20
         }));
+        this.animator.register("PFX_Laser_Boost_R", Animation(this, { 
+            img: game.images['PFX_Laser_R'],  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:360, y:20},
+            offset: {x:210,y:-40}
+        }));
+        this.animator.register("PFX_Laser_Fall_R", Animation(this, { 
+            img: game.images['PFX_Laser_R'],  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:360, y:20},
+            offset: {x:180,y:-25}
+        }));
+
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
         game.sequencer.bind("BOOST_RIGHT", [C.inputter.D, -C.inputter.D, C.inputter.D]); 
@@ -378,58 +399,70 @@ var FRIC = 0.1,
                         this.animator.push("Falling_Top_L");
                     }
 
+               } else if (state.motion === motions.Jump) {
+                    if (state.facing === facing.RIGHT) {
+                        this.animator.push("Jump_R");
+                    } else {
+                        this.animator.push("Jump_L");
+                    }
                }
             } else if (state.action === actions.MELEE) {
                 if (state.motion === motions.BOOST_LEFT) {
-                    if (this.animator.getFrame("PFX_Boost_L") > 2) { // on frame 3
-                        if (this.animator.getFrame("PFX_Boost_Slash_L") > 4) { // on pfx 5
+                    this.animator.push("Boost_Legs_L");
+                    this.animator.push("Boost_Slash_L");
+                    this.animator.push("PFX_Boost_L");
+                  //if (this.animator.getFrame("PFX_Boost_L") > 2) { // on frame 3
+                  //    if (this.animator.getFrame("PFX_Boost_Slash_L") > 4) { // on pfx 5
 
-                            // DRAW PFX ABOVE
+                  //        // DRAW PFX ABOVE
 
-                            this.animator.push("Boost_Legs_L");
-                            this.animator.push("Boost_Slash_L");
-                            this.animator.push("PFX_Boost_L");
-                            this.animator.push("PFX_Boost_Slash_L");
+                  //        this.animator.push("Boost_Legs_L");
+                  //        this.animator.push("Boost_Slash_L");
+                  //        this.animator.push("PFX_Boost_L");
+                  //        this.animator.push("PFX_Boost_Slash_L");
 
-                        } else  {
+                  //    } else  {
 
-                            // DRAW PFX BEHIND
+                  //        // DRAW PFX BEHIND
 
-                            this.animator.push("PFX_Boost_Slash_L");
-                            this.animator.push("Boost_Legs_L");
-                            this.animator.push("Boost_Slash_L");
-                            this.animator.push("PFX_Boost_L");
-                        }
-                    } else {
-                        this.animator.push("Boost_Legs_L");
-                        this.animator.push("Boost_Slash_L");
-                        this.animator.push("PFX_Boost_L");
-                    }
+                  //        this.animator.push("PFX_Boost_Slash_L");
+                  //        this.animator.push("Boost_Legs_L");
+                  //        this.animator.push("Boost_Slash_L");
+                  //        this.animator.push("PFX_Boost_L");
+                  //    }
+                  //} else {
+                  //    this.animator.push("Boost_Legs_L");
+                  //    this.animator.push("Boost_Slash_L");
+                  //    this.animator.push("PFX_Boost_L");
+                  //}
                 } else if (state.motion === motions.BOOST_RIGHT) {
-                    if (this.animator.getFrame("PFX_Boost_R") > 2) { // on frame 3
-                        if (this.animator.getFrame("PFX_Boost_Slash_R") > 4) { // on pfx 5
+                    this.animator.push("Boost_Legs_R");
+                    this.animator.push("Boost_Slash_R");
+                    this.animator.push("PFX_Boost_R");
+                  //if (this.animator.getFrame("PFX_Boost_R") > 2) { // on frame 3
+                  //    if (this.animator.getFrame("PFX_Boost_Slash_R") > 4) { // on pfx 5
 
-                            // DRAW PFX ABOVE
+                  //        // DRAW PFX ABOVE
 
-                            this.animator.push("Boost_Legs_R");
-                            this.animator.push("Boost_Slash_R");
-                            this.animator.push("PFX_Boost_R");
-                            this.animator.push("PFX_Boost_Slash_R");
+                  //        this.animator.push("Boost_Legs_R");
+                  //        this.animator.push("Boost_Slash_R");
+                  //        this.animator.push("PFX_Boost_R");
+                  //        this.animator.push("PFX_Boost_Slash_R");
 
-                        } else  {
+                  //    } else  {
 
-                            // DRAW PFX BEHIND
+                  //        // DRAW PFX BEHIND
 
-                            this.animator.push("PFX_Boost_Slash_R");
-                            this.animator.push("Boost_Legs_R");
-                            this.animator.push("Boost_Slash_R");
-                            this.animator.push("PFX_Boost_R");
-                        }
-                    } else {
-                        this.animator.push("Boost_Legs_R");
-                        this.animator.push("Boost_Slash_R");
-                        this.animator.push("PFX_Boost_R");
-                    }
+                  //        this.animator.push("PFX_Boost_Slash_R");
+                  //        this.animator.push("Boost_Legs_R");
+                  //        this.animator.push("Boost_Slash_R");
+                  //        this.animator.push("PFX_Boost_R");
+                  //    }
+                  //} else {
+                  //    this.animator.push("Boost_Legs_R");
+                  //    this.animator.push("Boost_Slash_R");
+                  //    this.animator.push("PFX_Boost_R");
+                  //}
                 } else if (state.motion === motions.FALLING) {
                     if (state.facing === facing.RIGHT) {
                         this.animator.push("Falling_Slash_R");
@@ -443,13 +476,16 @@ var FRIC = 0.1,
                 if (state.motion === motions.BOOST_LEFT) {
                     this.animator.push("Boost_Legs_L");
                     this.animator.push("Boost_Laser_L");
+                  //this.animator.push("PFX_Laser_R");
                 } else if (state.motion === motions.BOOST_RIGHT) {
                     this.animator.push("Boost_Legs_R");
                     this.animator.push("Boost_Laser_R");
+                    this.animator.push("PFX_Laser_Boost_R");
                 } else if (state.motion === motions.FALLING) {
                     if (state.facing === facing.RIGHT) {
                         this.animator.push("Falling_Laser_Legs_R");
                         this.animator.push("Falling_Laser_Top_R");
+                        this.animator.push("PFX_Laser_Fall_R");
                     } else {
                         this.animator.push("Falling_Laser_Legs_L");
                         this.animator.push("Falling_Laser_Top_L");
@@ -507,17 +543,17 @@ var FRIC = 0.1,
 
             if (game.sequencer.isPressed("BOOST_UP")) {
                 self.vel.y += -BOOST_Y;
-                self.state.motion = motions.BOOST_UP;
+                self.state.motion = motions.Jump;
             } else if (game.sequencer.isPressed("BOOST_DOWN")) {
                 self.vel.y += BOOST_Y;
                 self.state.motion = motions.BOOST_DOWN;
             } else if (C.inputter.isDown(C.inputter.S)) { 
                 if (vy === 0) { 
-                   self.state.motion = motions.CROUCH;
-               } else if (vy > 0) { 
-                   self.state.motion = motions.FALLING;
-               }
-            } else if (game.sequencer.isPressed("BOOST_RIGHT")) {
+                   self.state.motion = motions.CROUCH; 
+                } else if (vy > 0) { 
+                   self.state.motion = motions.FALLING; 
+                }
+            } else if (game.sequencer.isPressed("BOOST_RIGHT")) { 
                 self.vel.x += BOOST_X;
                 self.state.motion = motions.BOOST_RIGHT;
                 self.state.facing = facing.RIGHT;
@@ -579,27 +615,43 @@ var FRIC = 0.1,
                 self.state.motion = motions.STAND;
             }                                                             
 
+            // Recharge hover
             if (!C.inputter.isDown(C.inputter.W)){
-                // Recharge hover
                 self.resources.hover = Math.min(HOVER, self.resources.hover + HOVER_INCREMENT);
             } 
 
+
+
+            if (self.state.action !== actions.PASSIVE) {
+                if (C.inputter.getEvents().filter(function(e) { return e.type === "keydown"; }).length > 0) {
+                    self.animator.reset();
+                    self.state.action = actions.PASSIVE;
+                    self.actionTimer = Timer(self);
+                }
+            }
+
             if (C.inputter.isPressed(C.inputter.J)) {
 
-                if ((self.state.motion === motions.BOOST_RIGHT || self.state.motion === motions.BOOST_LEFT) 
+                // If control flow still includes handleInput, then cast point has not been reached
+                // thus any action key press resets the animation.
+                self.animator.reset();
+
+                if ((self.state.motion === motions.BOOST_RIGHT 
+                            || self.state.motion === motions.BOOST_LEFT) 
                         && self.flags.boostCastActive) {
                     self.state.action = actions.MELEE;
                     self.vel.x = 0 //(newVx < 0 ? -0.2 : 0.2);  // WITH FRICTION RESULTS IN A STAND STATE
                     self.actionTimer.after(BOOST_MELEE_CAST, function() {
                         self.state.status = status.BUSY;
-                        slashPFXObj.center.x = self.center.x + (newVx < 0 ? -10*BOOST_X : 10*BOOST_X);
-                        slashPFXObj.center.y = self.center.y;
+                     // slashPFXObj.center.x = self.center.x + (newVx < 0 ? -10*BOOST_X : 10*BOOST_X);
+                     // slashPFXObj.center.y = self.center.y;
                         self.state.motion = (newVx < 0 ? motions.BOOST_LEFT : motions.BOOST_RIGHT);
                         self.vel.x = (newVx < 0 ? -BOOST_X : BOOST_X); // now apply boost
                         meleeAction();
                         self.actionTimer.after(BOOST_MELEE_BCKSWNG, function() { 
                             self.state.status = status.FREE;
                             self.state.action = actions.PASSIVE;
+                            self.actionTimer.after();
                         });
                     });
                 } else if (self.state.motion === motions.WALK || self.state.motion === motions.STAND) {
@@ -612,6 +664,10 @@ var FRIC = 0.1,
                         self.actionTimer.after(WALK_MELEE_BCKSWNG, function() { 
                             self.state.status = status.FREE;
                             self.state.action = actions.PASSIVE;
+                            self.flags.chargeCastActive = true;
+                            self.actionTimer.after(CHARGE_CAST, function() {
+                                self.flags.chargeCastActive = false;
+                            })
                         });
                     });
 
@@ -661,28 +717,27 @@ var FRIC = 0.1,
 
                 // Creeping forward for melee
                 if (self.state.motion === motions.WALK || self.state.motion === motions.STAND) {
-                    self.center.x += (self.state.facing === facing.RIGHT ? 7 : -7);
+                    self.center.x += (self.state.facing === facing.RIGHT ? 10 : -10);
                 }
 
 
             } else if (self.state.action === actions.BLIP) {
             } else if (self.state.action === actions.RANGE) {
             }
-            self.vel.y = reduce(self.vel.y, 0.5);
+            self.vel.y = reduce(self.vel.y, 1);
         }
 
         function meleeAction() {
 
             // Create attack hitbox
             
-            self.attackBox.center = self.center;
-            self.attackBox.size.x = 500;
-            C.collider.createEntity(self.attackBox);
-            self.meleeTimer.after(500, function() {
-                self.attackBox.size.x = 10;
-                C.collider.destroyEntity(self.attackBox);
-            });            
-
+            //self.attackBox.center = self.center;
+            //self.attackBox.size.x = 500;
+            //C.collider.createEntity(self.attackBox);
+            //self.meleeTimer.after(500, function() {
+            //    self.attackBox.size.x = 10;
+            //    C.collider.destroyEntity(self.attackBox);
+            //});            
 
         };
         function slowMeleeAction() {
