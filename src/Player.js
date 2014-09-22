@@ -213,127 +213,29 @@ var FRIC = 0.1,
         this.draw = function(ctx) { 
             var state = this.state;
 
-            if (state.action === actions.PASSIVE) {
-                if (state.motion === motions.BOOST_LEFT) {
+            action, motion, facing, 
+
+
+            // This could be data-driven too - build a table describing which animations to push,
+            // then write a little code to navigate the table given a state - and if necessary for speed,
+            // compile them into something for faster lookups (nested objects or something)
+
+            to_push = [
+              [actions.PASSIVE, motions.BOOST_LEFT, [facing.LEFT, facing.RIGHT], function(){
                     this.animator.push("Boost_Legs_L");
                     this.animator.push("Boost_Top_L");
                     this.animator.push("PFX_Boost_L");
-                } else if (state.motion === motions.BOOST_RIGHT) {
+              }],
+              [actions.PASSIVE, motions.BOOST_RIGHT, [facing.LEFT, facing.RIGHT], function(){
                     this.animator.push("Boost_Legs_R");
                     this.animator.push("Boost_Top_R");
                     this.animator.push("PFX_Boost_R");
-                } else if (state.motion === motions.WALK) {
-                    if (state.facing === facing.RIGHT)
-                        this.animator.push("Walk_R");
-                    else
-                        this.animator.push("Walk_L");
-                } else if (state.motion === motions.STAND) {
-                     if (state.facing === facing.RIGHT)
-                        this.animator.push("Stand_R");
-                    else
-                        this.animator.push("Stand_L");
-               } else if (state.motion === motions.FALLING) {
-                    if (state.facing === facing.RIGHT) {
-                        this.animator.push("Falling_Legs_R");
-                        this.animator.push("Falling_Top_R");
-                    } else {
-                        this.animator.push("Falling_Legs_L");
-                        this.animator.push("Falling_Top_L");
-                    }
+              }]
+              //etc
+            ];
 
-               } else if (state.motion === motions.Jump) {
-                    if (state.facing === facing.RIGHT) {
-                        this.animator.push("Jump_R");
-                    } else {
-                        this.animator.push("Jump_L");
-                    }
-               }
-            } else if (state.action === actions.MELEE) {
-                if (state.motion === motions.BOOST_LEFT) {
-                    this.animator.push("Boost_Legs_L");
-                    this.animator.push("Boost_Slash_L");
-                    this.animator.push("PFX_Boost_L");
-                  //if (this.animator.getFrame("PFX_Boost_L") > 2) { // on frame 3
-                  //    if (this.animator.getFrame("PFX_Boost_Slash_L") > 4) { // on pfx 5
-
-                  //        // DRAW PFX ABOVE
-
-                  //        this.animator.push("Boost_Legs_L");
-                  //        this.animator.push("Boost_Slash_L");
-                  //        this.animator.push("PFX_Boost_L");
-                  //        this.animator.push("PFX_Boost_Slash_L");
-
-                  //    } else  {
-
-                  //        // DRAW PFX BEHIND
-
-                  //        this.animator.push("PFX_Boost_Slash_L");
-                  //        this.animator.push("Boost_Legs_L");
-                  //        this.animator.push("Boost_Slash_L");
-                  //        this.animator.push("PFX_Boost_L");
-                  //    }
-                  //} else {
-                  //    this.animator.push("Boost_Legs_L");
-                  //    this.animator.push("Boost_Slash_L");
-                  //    this.animator.push("PFX_Boost_L");
-                  //}
-                } else if (state.motion === motions.BOOST_RIGHT) {
-                    this.animator.push("Boost_Legs_R");
-                    this.animator.push("Boost_Slash_R");
-                    this.animator.push("PFX_Boost_R");
-                  //if (this.animator.getFrame("PFX_Boost_R") > 2) { // on frame 3
-                  //    if (this.animator.getFrame("PFX_Boost_Slash_R") > 4) { // on pfx 5
-
-                  //        // DRAW PFX ABOVE
-
-                  //        this.animator.push("Boost_Legs_R");
-                  //        this.animator.push("Boost_Slash_R");
-                  //        this.animator.push("PFX_Boost_R");
-                  //        this.animator.push("PFX_Boost_Slash_R");
-
-                  //    } else  {
-
-                  //        // DRAW PFX BEHIND
-
-                  //        this.animator.push("PFX_Boost_Slash_R");
-                  //        this.animator.push("Boost_Legs_R");
-                  //        this.animator.push("Boost_Slash_R");
-                  //        this.animator.push("PFX_Boost_R");
-                  //    }
-                  //} else {
-                  //    this.animator.push("Boost_Legs_R");
-                  //    this.animator.push("Boost_Slash_R");
-                  //    this.animator.push("PFX_Boost_R");
-                  //}
-                } else if (state.motion === motions.FALLING) {
-                    if (state.facing === facing.RIGHT) {
-                        this.animator.push("Falling_Slash_R");
-                    } else {
-                        this.animator.push("Falling_Slash_L");
-                    }
-               } else if (state.motion === motions.WALK || state.motion === motions.STAND) {
-                   this.animator.push("Walk_Slash_Swing_R");
-               }
-            } else if (state.action === actions.RANGE) {
-                if (state.motion === motions.BOOST_LEFT) {
-                    this.animator.push("Boost_Legs_L");
-                    this.animator.push("Boost_Laser_L");
-                  //this.animator.push("PFX_Laser_R");
-                } else if (state.motion === motions.BOOST_RIGHT) {
-                    this.animator.push("Boost_Legs_R");
-                    this.animator.push("Boost_Laser_R");
-                    this.animator.push("PFX_Laser_Boost_R");
-                } else if (state.motion === motions.FALLING) {
-                    if (state.facing === facing.RIGHT) {
-                        this.animator.push("Falling_Laser_Legs_R");
-                        this.animator.push("Falling_Laser_Top_R");
-                        this.animator.push("PFX_Laser_Fall_R");
-                    } else {
-                        this.animator.push("Falling_Laser_Legs_L");
-                        this.animator.push("Falling_Laser_Top_L");
-                    }
-
-               }
+            for animation_set in to_push {
+              if it matches, do it
             }
 
             this.animator.draw(ctx);
