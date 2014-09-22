@@ -285,6 +285,11 @@ var FRIC = 0.1,
             var vx = self.vel.x;
             var vy = self.vel.y;
 
+            var actions = {};
+          // this looks harder - but if we named each case and described the conditions, I think
+          // we could get somethign flatter and easier to edit. This should probably be at least
+          // two separate functions as well.
+
             if (game.sequencer.isPressed("BOOST_UP")) {
                 self.vel.y += -BOOST_Y;
                 self.state.motion = motions.Jump;
