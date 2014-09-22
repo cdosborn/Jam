@@ -89,7 +89,7 @@
             },
             reset: function() {
                 for (var i = 0, len = activeQueue.length; i < len; i++) {
-                    name = activeQueue[i].reset();
+                    name = activeQueue[i];
                     anims[name].reset(); 
                 }
                 for (var i = 0, len = passiveQueue.length; i < len; i++) {
