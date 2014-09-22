@@ -29,6 +29,8 @@ var FRIC = 0.1,
 
     WALK_MELEE_BCKSWNG = 350,    //550 total
 
+    CHARGE_CAST = 100, // no idea, just to make this work
+
     BLIP_CAST = 100,
     BLIP_BCKSWNG = 500,
     FALL_MELEE_CAST = 100,
@@ -99,181 +101,29 @@ var FRIC = 0.1,
         C.entities._entities.push(this.attackBox);
 
         this.animator = Animator(this);
-        this.animator.register("Boost_Legs_R", Animation(this, { 
-            img: game.images['Boost_Legs_R'],  
-            frames: [0,1,2,3,4,5,6]
-        }));
-        this.animator.register("Boost_Legs_L", Animation(this, { 
-            img: game.images['Boost_Legs_L'],  
-            frames: [0,1,2,3,4,5,6]
-        }));
-        this.animator.register("Boost_Top_R", Animation(this, { 
-            img: game.images['Boost_Top_R'],  
-            frames: [0,1,2,3,4,5,6]
-        }));
-        this.animator.register("Boost_Top_L", Animation(this, { 
-            img: game.images['Boost_Top_L'],  
-            frames: [0,1,2,3,4,5,6]
-        }));
-        this.animator.register("Boost_Slash_L", Animation(this, { 
-            img: game.images['Boost_Slash_L'],  
-            frames: [0,1,2,3,4,5,6]
-        }));
-        this.animator.register("Boost_Slash_R", Animation(this, { 
-            img: game.images['Boost_Slash_R'],  
-            frames: [0,1,2,3,4,5,6]
-        }));
-        this.animator.register("Boost_Laser_L", Animation(this, { 
-            img: game.images['Boost_Laser_L'],  
-            frames: [0,1,2,3,4,5,6],
-            size: {x:124,y:106}
-        }));
-        this.animator.register("Boost_Laser_R", Animation(this, { 
-            img: game.images['Boost_Laser_R'],  
-            frames: [0,1,2,3,4,5,6],
-            size: {x:124,y:106}
-        }));
-        this.animator.register("Jump_L", Animation(this, { 
-            img: game.images['Jump_L'],  
-            frames: [0,1,2,3,4,5,6],
-            size: {x:90,y:112},
-        }));
-        this.animator.register("Jump_R", Animation(this, { 
-            img: game.images['Jump_R'],  
-            frames: [0,1,2,3,4,5,6],
-            size: {x:90,y:112},
-        }));
-        this.animator.register("Walk_L", Animation(this, { 
-            img: game.images['Walk_L'],  
-            frames: [0,1,2,3,4,5,6],
-            size: {x:97,y:106},
-        }));
-        this.animator.register("Walk_R", Animation(this, { 
-            img: game.images['Walk_R'],  
-            frames: [0,1,2,3,4,5,6],
-            size: {x:97,y:106},
-        }));
-        this.animator.register("Walk_Slash_Swing_R", Animation(this, { 
-            img: game.images['Walk_Slash_Swing_R'],  
-            frames: [0,1,2,3,4,5,6,7,8,9,10],
-            fps:20,
-            size: {x:192,y:106}
-        }));
-        this.animator.register("Walk_Slash_Charge_R", Animation(this, { 
-            img: game.images['Walk_Slash_Charge_R'],  
-            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
-            fps:20,
-            size: {x:192,y:106}
-        }));
-        this.animator.register("Walk_Slash_Release_R", Animation(this, { 
-            img: game.images['Walk_Slash_Release_R'],  
-            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
-            fps:20,
-            size: {x:192,y:106}
-        }));
-        this.animator.register("Stand_R", Animation(this, { 
-            img: game.images['Stand_R'],  
-            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
-            size: {x:76,y:104},
-            offset: {x:0, y:2}
-        }));
-        this.animator.register("Stand_L", Animation(this, { 
-            img: game.images['Stand_L'],  
-            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
-            size: {x:76,y:104},
-            offset: {x:0, y:2}
-        }));
-        this.animator.register("Falling_Top_L", Animation(this, { 
-            img: game.images['Falling_Top_L'],  
-            frames: [0,1,2,3,4,5,6,7,8],
-            size: {x:62,y:126}
-        }));
-        this.animator.register("Falling_Top_R", Animation(this, { 
-            img: game.images['Falling_Top_R'],  
-            frames: [0,1,2,3,4,5,6,7,8],
-            size: {x:62,y:126}
-        }));
-        this.animator.register("Falling_Legs_L", Animation(this, { 
-            img: game.images['Falling_Legs_L'],  
-            frames: [0,1,2,3,4,5,6,7,8],
-            size: {x:62,y:126}
-        }));
-        this.animator.register("Falling_Legs_R", Animation(this, { 
-            img: game.images['Falling_Legs_R'],  
-            frames: [0,1,2,3,4,5,6,7,8],
-            size: {x:62,y:126}
-        }));
-        this.animator.register("Falling_Slash_L", Animation(this, { 
-            img: game.images['Falling_Slash_L'],  
-            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            fps:20,
-            size: {x:166,y:130}
-        }));
-        this.animator.register("Falling_Slash_R", Animation(this, { 
-            img: game.images['Falling_Slash_R'],  
-            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            fps:20,
-            size: {x:166,y:130}
-        }));
-        this.animator.register("Falling_Laser_Top_L", Animation(this, { 
-            img: game.images['Falling_Laser_Top_L'],  
-            frames: [0,1,2,3,4,5,6,7,8],
-            size: {x:62,y:126}
-        }));
-        this.animator.register("Falling_Laser_Top_R", Animation(this, { 
-            img: game.images['Falling_Laser_Top_R'],  
-            frames: [0,1,2,3,4,5,6,7,8],
-            size: {x:62,y:126}
-        }));
-        this.animator.register("Falling_Laser_Legs_L", Animation(this, { 
-            img: game.images['Falling_Laser_Legs_L'],  
-            frames: [0,1,2,3,4,5,6,7,8],
-            size: {x:62,y:126}
-        }));
-        this.animator.register("Falling_Laser_Legs_R", Animation(this, { 
-            img: game.images['Falling_Laser_Legs_R'],  
-            frames: [0,1,2,3,4,5,6,7,8],
-            size: {x:62,y:126}
-        }));
 
-        this.animator.register("PFX_Boost_L", Animation(this, { 
-            img: game.images['PFX_Boost_L'],  
-            frames: [0,1,2,3,4],
-            size: {x:48,y:14},
-            offset: {x:10, y:-18}
-        }));
-        this.animator.register("PFX_Boost_R", Animation(this, { 
-            img: game.images['PFX_Boost_R'],  
-            frames: [0,1,2,3,4],
-            size: {x:48,y:14},
-            offset: {x:-10, y:-18}
-        }));
+        animations_to_register = { // maybe eventually load this from some external json
+          "Boost_Legs_R" : {frames: 7},
+          "Walk_Slash_Charge_R" : {frames: 28, fps: 20, size: {x:192, y:106}}
+        }
 
-        var slashPFXObj = { center: {x:0,y:0}, size: {x:250,y:50} };
-        this.animator.register("PFX_Boost_Slash_L", Animation(this, {//slashPFXObj, { 
-            img: game.images['PFX_Boost_Slash_L'],  
-            frames: [0,1,2,3,4,5,6,7],
-            size: {x:250,y:50},
-            fps:20
-        }));
-        this.animator.register("PFX_Boost_Slash_R", Animation(this,{ //slashPFXObj, { 
-            img: game.images['PFX_Boost_Slash_R'],  
-            frames: [0,1,2,3,4,5,6,7],
-            size: {x:250,y:50},
-            fps:20
-        }));
-        this.animator.register("PFX_Laser_Boost_R", Animation(this, { 
-            img: game.images['PFX_Laser_R'],  
-            frames: [0,1,2,3,4,5,6],
-            size: {x:360, y:20},
-            offset: {x:210,y:-40}
-        }));
-        this.animator.register("PFX_Laser_Fall_R", Animation(this, { 
-            img: game.images['PFX_Laser_R'],  
-            frames: [0,1,2,3,4,5,6],
-            size: {x:360, y:20},
-            offset: {x:180,y:-25}
-        }));
+        for (var animation in animations_to_register) { // I'd rather write parsing code like this once than have all those things explicit
+          if (animations_to_register.hasOwnProperty(animation)) {
+            var frames = [];
+            for (var i = 0; i < frames; i++){ frames.push(i) }
+            var animation_data = {
+                img: game.images[animation],  
+                frames: frames
+            }
+            if (animations_to_register[animation].fps) {
+              animation_data.fps = animaitons_to_register.fps;
+            }
+            if (animations_to_register[animation].size) {
+              animation_data.fps = animaitons_to_register.size;
+            }
+            this.animator.register(animation, Animation(this, animation_data));
+          }
+        }
 
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
@@ -314,25 +164,17 @@ var FRIC = 0.1,
             var statusId = this.state.status;
             var motion, action, dir, stat;
 
-            if (motionId === motions.BOOST_UP) {
-               motion = "BOOST UP";
-            } else if (motionId === motions.BOOST_DOWN) {
-               motion = "BOOST DOWN";
-            } else if (motionId === motions.BOOST_RIGHT) {
-               motion = "BOOST RIGHT";
-            } else if (motionId === motions.BOOST_LEFT) {
-               motion = "BOOST LEFT";
-            } else if (motionId === motions.HOVER) {
-               motion = "HOVER";
-            } else if (motionId === motions.CROUCH) {
-               motion = "CROUCH";
-            } else if (motionId === motions.WALK) {
-               motion = "WALK";
-            } else if (motionId === motions.STAND) {
-               motion = "STAND";
-            } else if (motionId === motions.FALLING) {
-                motion = "FALLING";
+            var motion_map = {
+              motions.BOOST_UP : "BOOST UP",
+              motions.BOOST_DOWN : "BOOST DOWN",
+              motions.BOOST_RIGHT : "BOOST RIGHT"
+              // etc.
             }
+
+            motion = motion_map[motionId]
+
+
+            // maybe each of these should be a separate function?
 
             if (facingId === facing.RIGHT) {
                 dir = "RIGHT";
@@ -371,127 +213,29 @@ var FRIC = 0.1,
         this.draw = function(ctx) { 
             var state = this.state;
 
-            if (state.action === actions.PASSIVE) {
-                if (state.motion === motions.BOOST_LEFT) {
+            action, motion, facing, 
+
+
+            // This could be data-driven too - build a table describing which animations to push,
+            // then write a little code to navigate the table given a state - and if necessary for speed,
+            // compile them into something for faster lookups (nested objects or something)
+
+            to_push = [
+              [actions.PASSIVE, motions.BOOST_LEFT, [facing.LEFT, facing.RIGHT], function(){
                     this.animator.push("Boost_Legs_L");
                     this.animator.push("Boost_Top_L");
                     this.animator.push("PFX_Boost_L");
-                } else if (state.motion === motions.BOOST_RIGHT) {
+              }],
+              [actions.PASSIVE, motions.BOOST_RIGHT, [facing.LEFT, facing.RIGHT], function(){
                     this.animator.push("Boost_Legs_R");
                     this.animator.push("Boost_Top_R");
                     this.animator.push("PFX_Boost_R");
-                } else if (state.motion === motions.WALK) {
-                    if (state.facing === facing.RIGHT)
-                        this.animator.push("Walk_R");
-                    else
-                        this.animator.push("Walk_L");
-                } else if (state.motion === motions.STAND) {
-                     if (state.facing === facing.RIGHT)
-                        this.animator.push("Stand_R");
-                    else
-                        this.animator.push("Stand_L");
-               } else if (state.motion === motions.FALLING) {
-                    if (state.facing === facing.RIGHT) {
-                        this.animator.push("Falling_Legs_R");
-                        this.animator.push("Falling_Top_R");
-                    } else {
-                        this.animator.push("Falling_Legs_L");
-                        this.animator.push("Falling_Top_L");
-                    }
+              }]
+              //etc
+            ];
 
-               } else if (state.motion === motions.Jump) {
-                    if (state.facing === facing.RIGHT) {
-                        this.animator.push("Jump_R");
-                    } else {
-                        this.animator.push("Jump_L");
-                    }
-               }
-            } else if (state.action === actions.MELEE) {
-                if (state.motion === motions.BOOST_LEFT) {
-                    this.animator.push("Boost_Legs_L");
-                    this.animator.push("Boost_Slash_L");
-                    this.animator.push("PFX_Boost_L");
-                  //if (this.animator.getFrame("PFX_Boost_L") > 2) { // on frame 3
-                  //    if (this.animator.getFrame("PFX_Boost_Slash_L") > 4) { // on pfx 5
-
-                  //        // DRAW PFX ABOVE
-
-                  //        this.animator.push("Boost_Legs_L");
-                  //        this.animator.push("Boost_Slash_L");
-                  //        this.animator.push("PFX_Boost_L");
-                  //        this.animator.push("PFX_Boost_Slash_L");
-
-                  //    } else  {
-
-                  //        // DRAW PFX BEHIND
-
-                  //        this.animator.push("PFX_Boost_Slash_L");
-                  //        this.animator.push("Boost_Legs_L");
-                  //        this.animator.push("Boost_Slash_L");
-                  //        this.animator.push("PFX_Boost_L");
-                  //    }
-                  //} else {
-                  //    this.animator.push("Boost_Legs_L");
-                  //    this.animator.push("Boost_Slash_L");
-                  //    this.animator.push("PFX_Boost_L");
-                  //}
-                } else if (state.motion === motions.BOOST_RIGHT) {
-                    this.animator.push("Boost_Legs_R");
-                    this.animator.push("Boost_Slash_R");
-                    this.animator.push("PFX_Boost_R");
-                  //if (this.animator.getFrame("PFX_Boost_R") > 2) { // on frame 3
-                  //    if (this.animator.getFrame("PFX_Boost_Slash_R") > 4) { // on pfx 5
-
-                  //        // DRAW PFX ABOVE
-
-                  //        this.animator.push("Boost_Legs_R");
-                  //        this.animator.push("Boost_Slash_R");
-                  //        this.animator.push("PFX_Boost_R");
-                  //        this.animator.push("PFX_Boost_Slash_R");
-
-                  //    } else  {
-
-                  //        // DRAW PFX BEHIND
-
-                  //        this.animator.push("PFX_Boost_Slash_R");
-                  //        this.animator.push("Boost_Legs_R");
-                  //        this.animator.push("Boost_Slash_R");
-                  //        this.animator.push("PFX_Boost_R");
-                  //    }
-                  //} else {
-                  //    this.animator.push("Boost_Legs_R");
-                  //    this.animator.push("Boost_Slash_R");
-                  //    this.animator.push("PFX_Boost_R");
-                  //}
-                } else if (state.motion === motions.FALLING) {
-                    if (state.facing === facing.RIGHT) {
-                        this.animator.push("Falling_Slash_R");
-                    } else {
-                        this.animator.push("Falling_Slash_L");
-                    }
-               } else if (state.motion === motions.WALK || state.motion === motions.STAND) {
-                   this.animator.push("Walk_Slash_Swing_R");
-               }
-            } else if (state.action === actions.RANGE) {
-                if (state.motion === motions.BOOST_LEFT) {
-                    this.animator.push("Boost_Legs_L");
-                    this.animator.push("Boost_Laser_L");
-                  //this.animator.push("PFX_Laser_R");
-                } else if (state.motion === motions.BOOST_RIGHT) {
-                    this.animator.push("Boost_Legs_R");
-                    this.animator.push("Boost_Laser_R");
-                    this.animator.push("PFX_Laser_Boost_R");
-                } else if (state.motion === motions.FALLING) {
-                    if (state.facing === facing.RIGHT) {
-                        this.animator.push("Falling_Laser_Legs_R");
-                        this.animator.push("Falling_Laser_Top_R");
-                        this.animator.push("PFX_Laser_Fall_R");
-                    } else {
-                        this.animator.push("Falling_Laser_Legs_L");
-                        this.animator.push("Falling_Laser_Top_L");
-                    }
-
-               }
+            for animation_set in to_push {
+              if it matches, do it
             }
 
             this.animator.draw(ctx);
@@ -540,6 +284,11 @@ var FRIC = 0.1,
         function handleInput() {
             var vx = self.vel.x;
             var vy = self.vel.y;
+
+            var actions = {};
+          // this looks harder - but if we named each case and described the conditions, I think
+          // we could get somethign flatter and easier to edit. This should probably be at least
+          // two separate functions as well.
 
             if (game.sequencer.isPressed("BOOST_UP")) {
                 self.vel.y += -BOOST_Y;
