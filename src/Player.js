@@ -164,25 +164,17 @@ var FRIC = 0.1,
             var statusId = this.state.status;
             var motion, action, dir, stat;
 
-            if (motionId === motions.BOOST_UP) {
-               motion = "BOOST UP";
-            } else if (motionId === motions.BOOST_DOWN) {
-               motion = "BOOST DOWN";
-            } else if (motionId === motions.BOOST_RIGHT) {
-               motion = "BOOST RIGHT";
-            } else if (motionId === motions.BOOST_LEFT) {
-               motion = "BOOST LEFT";
-            } else if (motionId === motions.HOVER) {
-               motion = "HOVER";
-            } else if (motionId === motions.CROUCH) {
-               motion = "CROUCH";
-            } else if (motionId === motions.WALK) {
-               motion = "WALK";
-            } else if (motionId === motions.STAND) {
-               motion = "STAND";
-            } else if (motionId === motions.FALLING) {
-                motion = "FALLING";
+            var motion_map = {
+              motions.BOOST_UP : "BOOST UP",
+              motions.BOOST_DOWN : "BOOST DOWN",
+              motions.BOOST_RIGHT : "BOOST RIGHT"
+              // etc.
             }
+
+            motion = motion_map[motionId]
+
+
+            // maybe each of these should be a separate function?
 
             if (facingId === facing.RIGHT) {
                 dir = "RIGHT";
