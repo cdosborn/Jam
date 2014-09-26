@@ -31,7 +31,7 @@ var FRIC = 0.1,
     MELEE_BCKSWNG = 350,    //550 total
 
     WALK_MELEE_CHARGE_WAIT = 200,
-    SWING_BACKSWNG     = 560,
+    RELEASE_BACKSWNG   = 350,
     BLIP_CAST          = 100,
     BLIP_BCKSWNG       = 500,
     CHARGE_CAST        = 500,
@@ -181,7 +181,7 @@ var FRIC = 0.1,
         }));
         this.animator.register("Walk_Slash_Release_R", Animation(this, { 
             img: game.images['Walk_Slash_Release_R'],  
-            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
+            frames: [0,1,2,3,4,5,6,7],
             fps:20,
             size: {x:192,y:106}
         }));
@@ -326,7 +326,7 @@ var FRIC = 0.1,
                 Melee: {
                     duration: MELEE_CAST,
                     active: function(time) {
-                        var isKeyDown = function(e) { return e.type === "keydown"};
+                        var isKeyDown = function(e) { return e.type === "keydown" };
                         var noKeyDown = C.inputter.getEvents()
                                                   .filter(isKeyDown)
                                                   .length === 0;
@@ -337,7 +337,12 @@ var FRIC = 0.1,
                         self.state.action = actions.MELEE;
                     },
                     transition: function(time) { 
-                        self.stater.toSibling("MeleeBckswng");
+                        if (time < MELEE_CAST) {
+                            self.stater.toParent();
+//                          self.animator.reset();
+                        } else {
+                            self.stater.toSibling("MeleeBckswng");
+                        }
                     },
                 },
                 MeleeBckswng: {
@@ -367,7 +372,6 @@ var FRIC = 0.1,
                 Charge: {
                     duration: MAX_CHARGE,
                     active: function(time) {
-                        console.log(C.inputter.isDown(C.inputter.J));
                         return C.inputter.isDown(C.inputter.J);
                     },
                     init: function() {
@@ -376,17 +380,17 @@ var FRIC = 0.1,
                         self.state.status = status.BUSY;
                     },
                     transition: function(time) {
-                        console.log(time);
+                        if (time < MIN_CHARGE_DUR) {
+                            self.stater.toParent();
+                            self.state.action = actions.PASSIVE;
+                            self.state.status = status.FREE; 
+                        } else {
                             self.stater.toSibling("Swing");
-//                      if (time < MIN_CHARGE_DUR) {
-//                          self.stater.toParent();
-//                      } else {
-//                          self.stater.toSibling("Swing");
-//                      }
+                        }
                     }
                 },
                 Swing: {
-                    duration: SWING_BACKSWNG,
+                    duration: RELEASE_BACKSWNG,
                     init: function() {
                         self.vel.x += BOOST_X;
                         self.state.action = actions.SWING;
@@ -395,6 +399,7 @@ var FRIC = 0.1,
                     transition: function() {
                         self.state.action = actions.PASSIVE;
                         self.state.status = status.FREE;
+                        self.state.motion = motions.STAND;
                         self.stater.toParent();
                     } 
                 } 
@@ -405,7 +410,6 @@ var FRIC = 0.1,
 
             this.stater.update(delta);
             this.animator.update(delta);
-          //console.log(this.stater.getPath().toString());
 
             if (this.state.status === status.FREE) {
                 handleInput();
@@ -496,11 +500,6 @@ var FRIC = 0.1,
         this.draw = function(ctx) { 
             var state = this.state;
 
-            if (self.state.action === actions.RANGE && self.animator.getFrame("PFX_Laser_Fall_R") === 0)  {
-                //console.log("AHH  "  +  "at " + game.getTime() + "ms");
-            }
-
-
             if (state.action === actions.PASSIVE) {
                 if (state.motion === motions.BOOST_LEFT) {
                     this.animator.push("Boost_Legs_L");
@@ -587,7 +586,7 @@ var FRIC = 0.1,
                 this.animator.push("Walk_Slash_Charge_R");
             } else if (state.action === actions.SWING) {
                 this.animator.push("Walk_Slash_Release_R");
-            }
+            } 
 
             this.animator.draw(ctx);
 

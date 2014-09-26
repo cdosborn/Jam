@@ -18,7 +18,7 @@
 
         var update =     function() { obj.update.call(null, timer.getTime()); };
         var init =       function() { obj.init.call(null); };
-        var active =     function() { obj.active.call(null, timer.getTime()); };
+        var active =     function() { return obj.active.call(null, timer.getTime()); };
         var transition = function() { obj.transition.call(null, timer.getTime());}
         var finished = function() { 
             return (duration !== undefined) && (timer.getTime() >= duration);
@@ -63,11 +63,6 @@
         var checkCur = function() {
             var timeOver = cur.finished();
             var active = cur.active();
-
-            if (active === undefined) {
-               console.log(cur);
-               console.log(cur.active());
-            }
 
             if (cur.finished() || !active) { 
                 if (cur.transition) {

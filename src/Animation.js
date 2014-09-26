@@ -81,8 +81,6 @@
             draw: function(ctx) { 
                 for (var i = 0, len = activeQueue.length; i < len; i++) {
                     anims[activeQueue[i]].draw(ctx);
-                  //if (activeQueue[i] === "PFX_Laser_Fall_R")
-                  //    console.log("Frame " + anims[activeQueue[i]].getFrame() + " at " + game.getTime() + "ms");
                 }
 
             },
