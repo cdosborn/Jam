@@ -8,6 +8,10 @@
 
         this.c = new Coquette(this, "canvas", 1280, 500, "#444");
 
+        this.c.renderer._ctx.imageSmoothingEnabled = false;
+        this.c.renderer._ctx.webkitImageSmoothingEnabled = false;
+        this.c.renderer._ctx.mozImageSmoothingEnabled = false;
+
         this.images = {
             Boost_Top_L:          new Image(),
             Boost_Top_R:          new Image(),

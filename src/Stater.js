@@ -1,80 +1,132 @@
 ;(function(exports) {
 
-    TimerLocal = function() {
+    var Timer = function() {
         var time = 0;
         return {
-            update: function(delta) { time += delta; },
+            add: function(delta) { time += delta; },
             getTime: function() { return time; },
-            add: function(timer) { time += timer.getTime()},
             reset: function() { time = 0; }
         }
     }
 
-    State = function(parent, name, obj) {
-        var self = this;
+    var State = function(parent, name, obj) {
+        var duration = obj.duration;
+        var timer    = Timer();
 
         var doNothing = function(){};
-        if (obj.init === undefined) { obj.init = doNothing; }
-        if (obj.update === undefined) { obj.update = doNothing; }
-        if (obj.after === undefined) { obj.after = doNothing; }
-        if (obj.transition !== undefined) { 
-            this.transition = function(name) {
-                return obj.transition(name, self.timer.getTime()); 
-            }
-        }
+        var returnTrue = function(){ return true; };
 
-        this.timer = TimerLocal();
-        this.parent = parent;
-        this.name = name;
-        this.children = obj.children;
-        this.init = obj.init;
-        this.active = function() { return obj.active(self.timer.getTime()); };
-        this.after = function() { return obj.after(self.timer.getTime()); };
-        this.reset = function() { self.timer.reset(); };
-        this.update = function(delta) {
-            self.timer.update(delta);
-            obj.update(self.timer.getTime());
+        var update =     function() { obj.update.call(null, timer.getTime()); };
+        var init =       function() { obj.init.call(null); };
+        var active =     function() { obj.active.call(null, timer.getTime()); };
+        var transition = function() { obj.transition.call(null, timer.getTime());}
+        var finished = function() { 
+            return (duration !== undefined) && (timer.getTime() >= duration);
         };
+
+        return {
+            name:       name,
+            timer:      timer,
+            parent:     parent,
+            children:   obj.children,
+            transition: obj.transition === undefined ? null   : transition,
+            update:     obj.update === undefined ? doNothing  : update,
+            init:       obj.init   === undefined ? doNothing  : init,
+            active:     obj.active === undefined ? returnTrue : active, 
+            finished:   finished,
+        }
     }
 
 
-    Stater = function(obj) {
-        var cur = new State(obj, "root", obj);
+    var Stater = function(obj) {
+        var cur;
 
-        cur.init();
+        // transform obj into nested state objs
+        (function(object) {
+            var build = function(parent, name, node) {
+                var state = new State(parent, name, node);
+
+                var children = state.children;
+                for (var name in children) {
+                    if (state.children.hasOwnProperty(name)) {
+                        state.children[name] = build(state, name, state.children[name]);
+                    }
+                }
+                return state;
+            }
+
+            cur = build(cur, "root", object);
+            cur.init();
+        })(obj)
+
+
+        var checkCur = function() {
+            var timeOver = cur.finished();
+            var active = cur.active();
+
+            if (active === undefined) {
+               console.log(cur);
+               console.log(cur.active());
+            }
+
+            if (cur.finished() || !active) { 
+                if (cur.transition) {
+                    cur.transition();
+                    cur.init();
+                } else {
+                    toParent();
+                }
+            }
+        }
 
         var toParent = function() {
-            var parent = cur.parent; 
-            parent.timer.add(cur.timer);
-            cur.after();
-            cur.reset();
-            return parent;
+            cur.parent.timer.add(cur.timer.getTime());
+            cur.timer.reset();
+            cur = cur.parent;
+        }
+
+        var toChild = function(name, delta) {
+            var child;
+            if (cur.children && cur.children[name]) {
+                child = cur.children[name];
+                if (delta !== undefined) {
+                    child.timer.add(delta);
+                }
+                cur = child;
+            }
         }
 
         return {
-            update: function(delta) { 
-                if (!cur.active()) {
-                    cur = toParent();
-                    this.update(delta);
-                } else {
-                    cur.update(delta);
+            toParent: toParent,
+            toChild: toChild,
+            toSibling: function(name, delta) { 
+                toParent();
+                if (delta) { toChild(name, delta); }
+                else {       toChild(name) };
+            },
+            getPath: function() {
+                var getPathHelper = function(node) {
+                    if (node.name === "root") {
+                        return ["root"];
+                    }
+                    var names = getPathHelper(node.parent);
+                    names.push(node.name);
+                    return names;
                 }
+
+                return getPathHelper(cur);
+            },
+            update: function(delta) { 
+                cur.timer.add(delta);
+                checkCur();
+                cur.update();
             },
 
-            emit: function(state) {
-                var filtered = (cur.transition !== undefined ? cur.transition(state) : state);
-                var child, children;
-
-                children = cur.children;
-                for (var name in children) {
-                    child = children[name];
-                    if (name === filtered && children.hasOwnProperty(filtered)) {
-                        cur = (child instanceof State ? child : new State(cur, name, child));
-                        cur.init();
-                        return true;
-                    } 
+            emit: function(state) { 
+                if (cur.children && cur.children.hasOwnProperty(state)) { 
+                    this.toChild(state);
+                    cur.init();
                 }
-                return false;
             }
         }
     }

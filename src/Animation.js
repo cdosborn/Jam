@@ -7,7 +7,7 @@
     Animation = function(obj, settings) {
 
         var curFrame = 0,
-            lastTime = 0,
+            timeLeftOver = 0,
             img    = settings.img,
             frames = settings.frames,
             fps    = (settings.fps    === undefined ? 10            : settings.fps),
@@ -17,32 +17,29 @@
 
         return {
             next: function(delta) {
-                var curTime = game.getTime(),
-                    timePassed = curTime - lastTime,
-                    frameDuration = 1 / fps * 1000;
-                    
-                var framesToAdvance = (lastTime + delta) / frameDuration;
-                var extraTime = (lastTime + delta) % frameDuration
+                var frameDuration = 1 / fps * 1000;
+                var timePassed = timeLeftOver + delta;
+                var framesToAdvance = (timePassed / frameDuration) | 0;
+                var extraTime = timePassed % frameDuration;
 
-                if (framesToAdvance < 1) {
-                    lastTime += delta
-                } else {
-                    lastTime = extraTime;
-                    curFrame = (curFrame + framesToAdvance) % frames.length | 0;
+                if (framesToAdvance > 0) {
+                    curFrame = (curFrame + framesToAdvance) % frames.length;
                 }
 
+                timeLeftOver = extraTime;
             },
             draw: function(ctx) { 
                 var frame = frames[curFrame],
                     width = size.x,
                     height = size.y,                    
-                    x = center.x - width/2 + offset.x,
-                    y = center.y - height/2 + offset.y;        
+                    x = (center.x - width/2 + offset.x),
+                    y = (center.y - height/2 + offset.y);        
 
                 ctx.drawImage(img, frame * width, 0, width, height, x, y, width, height);
             },
             reset: function() {
                 curFrame = 0;
+                timeLeftOver = 0;
             },
             getFrame: function() {
                 return curFrame;
@@ -83,9 +80,11 @@
             },
             draw: function(ctx) { 
                 for (var i = 0, len = activeQueue.length; i < len; i++) {
-                   // console.log(passiveQueue);
                     anims[activeQueue[i]].draw(ctx);
+                  //if (activeQueue[i] === "PFX_Laser_Fall_R")
+                  //    console.log("Frame " + anims[activeQueue[i]].getFrame() + " at " + game.getTime() + "ms");
                 }
+
             },
             reset: function() {
                 for (var i = 0, len = activeQueue.length; i < len; i++) {
@@ -96,10 +95,12 @@
                     name = passiveQueue[i];
                     anims[name].reset(); 
                 }
-
             },
             getFrame: function(name) {
                 return anims[name].getFrame();
+            },
+            getAnims: function(name) {
+                return activeQueue;
             }
         }
     }

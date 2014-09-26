@@ -1,15 +1,6 @@
 ;(function(exports) {
 
-    // vars
-    // 
-    // methods 
-    //
-    // *optional*
-    // 
-    // 
-    // 
-
-    Timer = function(obj, settings) {
+    var Timer = function(obj, settings) {
 
         var cb, timeUntil, active, type;
 
