@@ -26,11 +26,11 @@
             Walk_R:               new Image(),
             Jump_L:               new Image(),
             Jump_R:               new Image(),
-        //  Walk_Slash_Charge_L:  new Image(),
+            Walk_Slash_Charge_L:  new Image(),
             Walk_Slash_Charge_R:  new Image(),
-        //  Walk_Slash_Release_L: new Image(),
+            Walk_Slash_Release_L: new Image(),
             Walk_Slash_Release_R: new Image(),
-        //  Walk_Slash_Swing_L:   new Image(),
+            Walk_Slash_Swing_L:   new Image(),
             Walk_Slash_Swing_R:   new Image(),
             Stand_L:              new Image(),
             Stand_R:              new Image(),
@@ -77,11 +77,11 @@
         this.images['Jump_R'].src               = 'images/Robot/Jump/90x112/Jump_Right.png';
         this.images['Walk_L'].src               = 'images/Robot/Walk/97x106/97x106_Walk_L.png';
         this.images['Walk_R'].src               = 'images/Robot/Walk/97x106/97X106_Walk_R.png';
-  //    this.images['Walk_Slash_Charge_L'].src  = 'images/Robot/Walk/192x106/Walk_slash_charge_L.png';
+        this.images['Walk_Slash_Charge_L'].src  = 'images/Robot/Walk/192x106/Walk_slash_charge_L.png';
         this.images['Walk_Slash_Charge_R'].src  = 'images/Robot/Walk/192x106/Walk_slash_charge_R.png';
-  //    this.images['Walk_Slash_Release_L'].src = 'images/Robot/Walk/192x106/Walk_slash_release_L.png';
+        this.images['Walk_Slash_Release_L'].src = 'images/Robot/Walk/192x106/Walk_slash_release_L.png';
         this.images['Walk_Slash_Release_R'].src = 'images/Robot/Walk/192x106/Walk_slash_release_R.png';
-  //    this.images['Walk_Slash_Swing_L'].src   = 'images/Robot/Walk/192x106/Walk_slash_swing_L.png';
+        this.images['Walk_Slash_Swing_L'].src   = 'images/Robot/Walk/192x106/Walk_slash_swing_L.png';
         this.images['Walk_Slash_Swing_R'].src   = 'images/Robot/Walk/192x106/Walk_slash_swing_R.png';
         this.images['Stand_L'].src              = 'images/Robot/Stand/76x104/Stand_L.png';
         this.images['Stand_R'].src              = 'images/Robot/Stand/76x104/Stand_R.png';

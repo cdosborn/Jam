@@ -12,8 +12,8 @@ var FRIC = 0.1,
     // BOOST_MELEE_CAST duration where a different
     // action could be applied to the boost
 
-    BOOST_MELEE_BCKSWNG = 200,
-    BOOST_MELEE_CAST = 500,
+    BOOST_MELEE_BCKSWNG = 400,
+    BOOST_MELEE_CAST = 300,
 
     // BOOST_BCKSWNG duration following
     // the cast, where the player is vulnerable
@@ -187,12 +187,6 @@ var FRIC = 0.1,
             fps:20,
             size: {x:192,y:106}
         }));
-        this.animator.register("Walk_Slash_Swing_Reverse_R", Animation(this, { 
-            img: game.images['Walk_Slash_Swing_R'],  
-            frames: [10,9,8,7,6,5,4,3,2,1,0],
-            fps:20,
-            size: {x:192,y:106}
-        }));
         this.animator.register("Walk_Slash_Charge_R", Animation(this, { 
             img: game.images['Walk_Slash_Charge_R'],  
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
@@ -205,6 +199,25 @@ var FRIC = 0.1,
             fps:20,
             size: {x:192,y:106}
         }));
+        this.animator.register("Walk_Slash_Swing_L", Animation(this, { 
+            img: game.images['Walk_Slash_Swing_L'],  
+            frames: [0,1,2,3,4,5,6,7,8,9,10],
+            fps:20,
+            size: {x:192,y:106}
+        }));
+        this.animator.register("Walk_Slash_Charge_L", Animation(this, { 
+            img: game.images['Walk_Slash_Charge_L'],  
+            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
+            fps:20,
+            size: {x:192,y:106}
+        }));
+        this.animator.register("Walk_Slash_Release_L", Animation(this, { 
+            img: game.images['Walk_Slash_Release_L'],  
+            frames: [0,1,2,3,4,5,6,7],
+            fps:20,
+            size: {x:192,y:106}
+        }));
+
         this.animator.register("Stand_R", Animation(this, { 
             img: game.images['Stand_R'],  
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
@@ -369,14 +382,16 @@ var FRIC = 0.1,
                                 self.vel.x = self.vel.y = 0;
                             },
                             update: function(time) {
-                                if (time > BOOST_MELEE_CAST) {
+                                if (time > BOOST_MELEE_CAST && time < BOOST_MELEE_CAST + 250) {
                                     self.state.status = status.BUSY;
-                                    self.vel.x = (self.vel.x > 0 ? BOOST_X : -BOOST_X);
+                                    self.vel.x = (self.vel.x > 0 ? BOOST_X * 2 : -BOOST_X * 2);
                                 } else {
                                     self.vel.x = (self.state.facing === facing.RIGHT ? 1 : -1);
                                 }
+
                             },
                             transition: function() {
+                                self.vel.x = 0;
                                 self.state.action = actions.PASSIVE;
                                 self.state.status = status.FREE;
                                 self.stater.toParent();
@@ -472,7 +487,7 @@ var FRIC = 0.1,
                         Swing: {
                             duration: RELEASE_BACKSWNG,
                             init: function() {
-                                self.vel.x += BOOST_X;
+                                self.vel.x = (self.vel.x > 0 ? BOOST_X : -BOOST_X);
                                 self.state.action = actions.SWING;
                                 self.state.status = status.BUSY;
                             },
@@ -633,7 +648,11 @@ var FRIC = 0.1,
                         this.animator.push("Falling_Slash_L");
                     }
                } else if (state.motion === motions.WALK || state.motion === motions.STAND) {
-                   this.animator.push("Walk_Slash_Swing_R");
+                    if (state.facing === facing.RIGHT) {
+                       this.animator.push("Walk_Slash_Swing_R");
+                    } else {
+                       this.animator.push("Walk_Slash_Swing_L");
+                    }
                }
             } else if (state.action === actions.MELEE_RVS) {
                this.animator.push("Walk_Slash_Swing_Reverse_R");
@@ -674,11 +693,19 @@ var FRIC = 0.1,
                         this.animator.push("Jump_L");
                     }
                }
-
             } else if (state.action === actions.CHARGE) {
-                this.animator.push("Walk_Slash_Charge_R");
+                if (state.facing === facing.RIGHT) {
+                    this.animator.push("Walk_Slash_Charge_R");
+                } else {
+                    this.animator.push("Walk_Slash_Charge_L");
+                }
             } else if (state.action === actions.SWING) {
-                this.animator.push("Walk_Slash_Release_R");
+                if (state.facing === facing.RIGHT) {
+                    this.animator.push("Walk_Slash_Release_R");
+                } else {
+                    this.animator.push("Walk_Slash_Release_L");
+                }
+
             } 
 
             this.animator.draw(ctx);
