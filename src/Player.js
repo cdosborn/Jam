@@ -420,10 +420,9 @@ var FRIC = 0.1,
                         self.state.action = actions.RANGE;
                         self.animator.reset();
                     },
-                  //after: function(time) {
-                  //    self.state.action = actions.PASSIVE;
-                  //    //self.animator.reset();
-                  //}
+                    update: function() {
+                        self.vel.y = 0;
+                    }
                 },
                 Melee: {
                     duration: MELEE_CAST,
@@ -487,7 +486,7 @@ var FRIC = 0.1,
                         Swing: {
                             duration: RELEASE_BACKSWNG,
                             init: function() {
-                                self.vel.x = (self.vel.x > 0 ? BOOST_X : -BOOST_X);
+                                self.vel.x = (self.state.facing === facing.RIGHT ? BOOST_X : -BOOST_X);
                                 self.state.action = actions.SWING;
                                 self.state.status = status.BUSY;
                             },
