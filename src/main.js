@@ -6,7 +6,8 @@
             count = 0,
             player;
 
-        this.c = new Coquette(this, "canvas", 1280, 500, "#444");
+        this.c = new Coquette(this, "canvas", 1280, 1000, "#444");
+        //this.c = new Coquette(this, "canvas", 1280, 500, "#444");
 
         this.c.renderer._ctx.imageSmoothingEnabled = false;
         this.c.renderer._ctx.webkitImageSmoothingEnabled = false;
@@ -51,7 +52,7 @@
             PFX_Boost_R:          new Image(),
             PFX_Boost_Slash_L:    new Image(),
             PFX_Boost_Slash_R:    new Image(),
-//          PFX_Laser_L:          new Image(),
+            PFX_Laser_L:          new Image(),
             PFX_Laser_R:          new Image()
        };
 
@@ -66,8 +67,10 @@
         this.images['Boost_Legs_R'].src         = 'images/Robot/Boost/124x106/Boot_legs_R.png';
         this.images['Boost_Top_L'].src          = 'images/Robot/Boost/124x106/Boost_Top_L.png';
         this.images['Boost_Top_R'].src          = 'images/Robot/Boost/124x106/Boost_Top_R.png';
-        this.images['Boost_Slash_L'].src        = 'images/Robot/Boost/124x106/Boost_slash_L.png';
-        this.images['Boost_Slash_R'].src        = 'images/Robot/Boost/124x106/Boost_slash_R.png';
+        this.images['Boost_Slash_L'].src        = 'images/Robot/Boost/162x106/Boost_slash_top_L.png';
+        this.images['Boost_Slash_R'].src        = 'images/Robot/Boost/162x106/Boost_slash_top_R.png';
+//      this.images['Boost_Slash_L'].src        = 'images/Robot/Boost/124x106/Boost_slash_L.png';
+//      this.images['Boost_Slash_R'].src        = 'images/Robot/Boost/124x106/Boost_slash_R.png';
         this.images['Boost_Laser_L'].src        = 'images/Robot/Boost/124x106/Boost_laser_L.png';
         this.images['Boost_Laser_R'].src        = 'images/Robot/Boost/124x106/Boost_laser_R.png';
         this.images['Jump_L'].src               = 'images/Robot/Jump/90x112/Jump_Left.png';
@@ -96,7 +99,7 @@
         this.images['PFX_Boost_R'].src          = 'images/Robot/PFX/48x14/Boost_pfx_R.png';
         this.images['PFX_Boost_Slash_L'].src    = 'images/Robot/PFX/250x50/Boost_slash_pfx_L.png';
         this.images['PFX_Boost_Slash_R'].src    = 'images/Robot/PFX/250x50/Boost_slash_pfx_R.png';
-//      this.images['PFX_Laser_L'].src          = 'images/Robot/PFX/362x20/Laser_PFX_L.png';
+        this.images['PFX_Laser_L'].src          = 'images/Robot/PFX/362x20/Laser_PFX_L.png';
         this.images['PFX_Laser_R'].src          = 'images/Robot/PFX/362x20/Laser_PFX_R.png';
 
         this.sequencer = ButtonSequencer(this);

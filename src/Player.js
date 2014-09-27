@@ -12,13 +12,14 @@ var FRIC = 0.1,
     // BOOST_MELEE_CAST duration where a different
     // action could be applied to the boost
 
-    BOOST_MELEE_CAST = 100,
+    BOOST_MELEE_BCKSWNG = 200,
+    BOOST_MELEE_CAST = 500,
 
     // BOOST_BCKSWNG duration following
     // the cast, where the player is vulnerable
     // and cannot change animation
 
-    BOOST_BCKSWNG = 600,   //700 totoal
+    BOOST_BCKSWNG = 500,   //700 totoal
 
     // The duration where the melee can be cancelled
     // while walking
@@ -125,12 +126,31 @@ var FRIC = 0.1,
         }));
         this.animator.register("Boost_Slash_L", Animation(this, { 
             img: game.images['Boost_Slash_L'],  
-            frames: [0,1,2,3,4,5,6]
+            frames: [0,1,2,3,4,5,6],
+            size: {x:162, y:106},
+            offset: {x:-28, y:0},
+            fps:10
         }));
         this.animator.register("Boost_Slash_R", Animation(this, { 
             img: game.images['Boost_Slash_R'],  
-            frames: [0,1,2,3,4,5,6]
+            frames: [0,1,2,3,4,5,6],
+            size: {x:162, y:106},
+            offset: {x:28, y:0},
+            fps:10
         }));
+//      this.animator.register("Boost_Slash_L", Animation(this, { 
+//          img: game.images['Boost_Slash_L'],  
+//          frames: [0,1,2,3,4,5,6],
+//          size: {x:124, y:106},
+//          fps:10
+//      }));
+//      this.animator.register("Boost_Slash_R", Animation(this, { 
+//          img: game.images['Boost_Slash_R'],  
+//          frames: [0,1,2,3,4,5,6],
+//          size: {x:124, y:106},
+//          fps:10
+//      }));
+
         this.animator.register("Boost_Laser_L", Animation(this, { 
             img: game.images['Boost_Laser_L'],  
             frames: [0,1,2,3,4,5,6],
@@ -282,11 +302,23 @@ var FRIC = 0.1,
             size: {x:360, y:20},
             offset: {x:210,y:-40}
         }));
+        this.animator.register("PFX_Laser_Boost_L", Animation(this, { 
+            img: game.images['PFX_Laser_L'],  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:360, y:20},
+            offset: {x:-220,y:-40}
+        }));
         this.animator.register("PFX_Laser_Fall_R", Animation(this, { 
             img: game.images['PFX_Laser_R'],  
             frames: [0,1,2,3,4,5,6],
             size: {x:360, y:20},
             offset: {x:180,y:-25}
+        }));
+        this.animator.register("PFX_Laser_Fall_L", Animation(this, { 
+            img: game.images['PFX_Laser_L'],  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:360, y:20},
+            offset: {x:-185,y:-25}
         }));
 
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
@@ -302,13 +334,68 @@ var FRIC = 0.1,
             update: function() { 
                 self.state.action = actions.PASSIVE;
                 self.state.status = status.FREE;
+
+                var vx = self.vel.x;
+                var vy = self.vel.y;
+                var absNewVx = Math.abs(vx);
+                if (vy > 0) {
+                    self.state.motion = motions.FALLING;
+                }  else if (vy < 0) {
+                    self.state.motion = motions.JUMP;
+                } else if (absNewVx <= WALK_X && absNewVx > 0) {
+                    self.state.motion = motions.WALK;
+                } else if (vx === 0 && vy === 0) {
+                    self.state.motion = motions.STAND;
+                }                                                             
+
             },
             children: {
-                Boost: { 
+                Boost_Horizontal: { 
                     duration : BOOST_CAST + BOOST_BCKSWNG,
                     children: {
                         Melee: {
-                            duration: BOOST_BCKSWNG,
+                            duration: BOOST_MELEE_CAST + BOOST_MELEE_BCKSWNG,
+                            active: function(time) {
+                                var isKeyDown = function(e) { return e.type === "keydown" };
+                                var noKeyDown = C.inputter.getEvents()
+                                                          .filter(isKeyDown)
+                                                          .length === 0;
+
+                                return noKeyDown || time > BOOST_MELEE_CAST
+                            },                            
+                            init: function() {
+                                self.state.action = actions.MELEE;
+                                self.state.status = status.BUSY;
+                                self.vel.x = self.vel.y = 0;
+                            },
+                            update: function(time) {
+                                if (time > BOOST_MELEE_CAST) {
+                                    self.state.status = status.BUSY;
+                                    self.vel.x = (self.vel.x > 0 ? BOOST_X : -BOOST_X);
+                                } else {
+                                    self.vel.x = (self.state.facing === facing.RIGHT ? 1 : -1);
+                                }
+                            },
+                            transition: function() {
+                                self.state.action = actions.PASSIVE;
+                                self.state.status = status.FREE;
+                                self.stater.toParent();
+                            }
+                        },
+                        Range: { 
+                            duration: LASER_CAST + LASER_BCKSWNG,
+                            init: function() {
+                                self.state.action = actions.RANGE;
+                            },
+                            transition: function() {
+                                self.state.action = actions.PASSIVE; 
+                                self.stater.toParent();
+
+                            //CHANGEEE
+
+                                self.animator.reset();
+                            }
+
                         }
                     }
                 }, 
@@ -336,10 +423,14 @@ var FRIC = 0.1,
                     init: function() {
                         self.state.action = actions.MELEE;
                     },
+                    update: function(time) {
+                        // hover or stand still
+                        self.vel.x = self.vel.y = 0;
+                    },
                     transition: function(time) { 
                         if (time < MELEE_CAST) {
                             self.stater.toParent();
-//                          self.animator.reset();
+                            self.animator.reset();
                         } else {
                             self.stater.toSibling("MeleeBckswng");
                         }
@@ -347,62 +438,53 @@ var FRIC = 0.1,
                 },
                 MeleeBckswng: {
                     duration: MELEE_BCKSWNG,
-                    transition: function() {
-                        if (C.inputter.isDown(C.inputter.J)) {
-                            self.stater.toSibling( "Charge");
-                        } else {
-                            self.stater.toParent();
-                        } 
-                    }
-                },
-                MeleeRvs: {
-                    duration: MELEE_CAST + MELEE_BCKSWNG,
                     init: function() {
-                        self.state.motion = motions.STAND;
-                        self.state.action = actions.MELEE_RVS;
-                        self.state.status = status.FREE;
+                        self.state.status = status.BUSY;
                     },
                     update: function(time) {
-                        if (time >= MELEE_CAST) {
-                            self.state.status = status.BUSY;
+                        if (MELEE_BCKSWNG - time < 200 && C.inputter.isDown(C.inputter.J)) {
+                            self.state.status = status.FREE;
                         }
-                        self.vel.x = (self.state.facing === facing.RIGHT ? WALK_X : -WALK_X);
-                    }
-                },
-                Charge: {
-                    duration: MAX_CHARGE,
-                    active: function(time) {
-                        return C.inputter.isDown(C.inputter.J);
+                        // hover or stand still
+                        self.vel.x = self.vel.y = 0;
                     },
-                    init: function() {
-                        self.state.motion = motions.STAND;
-                        self.state.action = actions.CHARGE;
-                        self.state.status = status.BUSY;
-                    },
-                    transition: function(time) {
-                        if (time < MIN_CHARGE_DUR) {
-                            self.stater.toParent();
-                            self.state.action = actions.PASSIVE;
-                            self.state.status = status.FREE; 
-                        } else {
-                            self.stater.toSibling("Swing");
+                    children: {
+                        Melee: {
+                            duration: MAX_CHARGE,
+                            active: function(time) {
+                                return C.inputter.isDown(C.inputter.J);
+                            },
+                            init: function() {
+                                self.state.motion = motions.STAND;
+                                self.state.action = actions.CHARGE;
+                                self.state.status = status.BUSY;
+                            },
+                            transition: function(time) {
+                                if (time < MIN_CHARGE_DUR) {
+                                    self.stater.toParent();
+                                    self.state.action = actions.PASSIVE;
+                                    self.state.status = status.FREE; 
+                                } else {
+                                    self.stater.toSibling("Swing");
+                                }
+                            }
+                        },
+                        Swing: {
+                            duration: RELEASE_BACKSWNG,
+                            init: function() {
+                                self.vel.x += BOOST_X;
+                                self.state.action = actions.SWING;
+                                self.state.status = status.BUSY;
+                            },
+                            transition: function() {
+                                self.state.action = actions.PASSIVE;
+                                self.state.status = status.FREE;
+                                self.state.motion = motions.STAND;
+                                self.stater.toParent();
+                            } 
                         }
                     }
-                },
-                Swing: {
-                    duration: RELEASE_BACKSWNG,
-                    init: function() {
-                        self.vel.x += BOOST_X;
-                        self.state.action = actions.SWING;
-                        self.state.status = status.BUSY;
-                    },
-                    transition: function() {
-                        self.state.action = actions.PASSIVE;
-                        self.state.status = status.FREE;
-                        self.state.motion = motions.STAND;
-                        self.stater.toParent();
-                    } 
-                } 
+                }
             }
         });
 
@@ -544,7 +626,7 @@ var FRIC = 0.1,
                     this.animator.push("Boost_Legs_R");
                     this.animator.push("Boost_Slash_R");
                     this.animator.push("PFX_Boost_R");
-                } else if (state.motion === motions.FALLING) {
+                } else if (state.motion === motions.FALLING || state.motion === motions.JUMP) {
                     if (state.facing === facing.RIGHT) {
                         this.animator.push("Falling_Slash_R");
                     } else {
@@ -559,7 +641,7 @@ var FRIC = 0.1,
                 if (state.motion === motions.BOOST_LEFT) {
                     this.animator.push("Boost_Legs_L");
                     this.animator.push("Boost_Laser_L");
-                    this.animator.push("PFX_Laser_Fall_R");
+                    this.animator.push("PFX_Laser_Boost_L");
                 } else if (state.motion === motions.BOOST_RIGHT) {
                     this.animator.push("Boost_Legs_R");
                     this.animator.push("Boost_Laser_R");
@@ -572,16 +654,27 @@ var FRIC = 0.1,
                     } else {
                         this.animator.push("Falling_Laser_Legs_L");
                         this.animator.push("Falling_Laser_Top_L");
+                        this.animator.push("PFX_Laser_Fall_L");
                     }
 
-                } else {
-                    if (state.facing === facing.RIGHT) {
-                        this.animator.push("PFX_Laser_Fall_R");
+                } else if (state.motion === motions.WALK) {
+                    if (state.facing === facing.RIGHT)
                         this.animator.push("Walk_R");
-                    } else {
+                    else
                         this.animator.push("Walk_L");
+                } else if (state.motion === motions.STAND) {
+                     if (state.facing === facing.RIGHT)
+                        this.animator.push("Stand_R");
+                    else
+                        this.animator.push("Stand_L");
+                } else if (state.motion === motions.JUMP) {
+                    if (state.facing === facing.RIGHT) {
+                        this.animator.push("Jump_R");
+                    } else {
+                        this.animator.push("Jump_L");
                     }
-                }
+               }
+
             } else if (state.action === actions.CHARGE) {
                 this.animator.push("Walk_Slash_Charge_R");
             } else if (state.action === actions.SWING) {
@@ -640,19 +733,19 @@ var FRIC = 0.1,
                 self.state.motion = motions.JUMP;
                 self.stater.emit("Boost");
             } else if (game.sequencer.isPressed("BOOST_DOWN")) { 
-                self.vel.y += BOOST_Y;
+                self.vel.y = BOOST_Y;
                 self.state.motion = motions.BOOST_DOWN;
                 self.stater.emit("Boost");
             } else if (game.sequencer.isPressed("BOOST_LEFT")) { 
                 self.vel.x += -BOOST_X;                   
                 self.state.motion = motions.BOOST_LEFT;   
                 self.state.facing = facing.LEFT;
-                self.stater.emit("Boost");
+                self.stater.emit("Boost_Horizontal");
             } else if (game.sequencer.isPressed("BOOST_RIGHT")) { 
                 self.vel.x += BOOST_X;
                 self.state.motion = motions.BOOST_RIGHT;
                 self.state.facing = facing.RIGHT;
-                self.stater.emit("Boost");
+                self.stater.emit("Boost_Horizontal");
             } else if (C.inputter.isDown(C.inputter.S)) { 
                 if (vy === 0) { self.state.motion = motions.CROUCH; } else if (vy > 0) { 
                    self.state.motion = motions.FALLING; 
@@ -665,6 +758,13 @@ var FRIC = 0.1,
                 }
             } else if (C.inputter.isDown(C.inputter.D)) {
                 if (self.state.facing === facing.LEFT) {
+                    if (self.state.motion === motions.BOOST_RIGHT) {
+                        self.state.motion = motions.BOOST_LEFT;
+                    } else if (self.state.motion === motions.BOOST_LEFT) {
+                        self.state.motion = motions.BOOST_RIGHT;
+                    } else {
+                        self.state.motion = motions.STAND;
+                    }
                     self.state.facing = facing.RIGHT;
                 } else if (vx > 0) {
                     self.vel.x = Math.max(WALK_X, vx);
@@ -673,7 +773,14 @@ var FRIC = 0.1,
                 }
             } else if (C.inputter.isDown(C.inputter.A)) {
                 if (self.state.facing === facing.RIGHT) {
-                    self.state.motion = motions.STAND;
+                    if (self.state.motion === motions.BOOST_RIGHT) {
+                        self.state.motion = motions.BOOST_LEFT;
+                    } else if (self.state.motion === motions.BOOST_LEFT) {
+                        self.state.motion = motions.BOOST_RIGHT;
+                    } else {
+                        self.state.motion = motions.STAND;
+                    }
+
                     self.state.facing = facing.LEFT;
                 } else if (vx < 0) {
                     self.vel.x = Math.min(-WALK_X, vx);
@@ -686,24 +793,8 @@ var FRIC = 0.1,
                 // Falling or not in air
                 self.resources.hover -= 1.5;
                 self.vel.y = -0.2;
-                self.state.motion = motions.HOVER;
-            }
-
-            // State modifications based on what was
-            // applied above
-
-            var newVx = self.vel.x;
-            var newVy = self.vel.y;
-            var absNewVx = Math.abs(newVx);
-            if (newVy > 0) {
-                self.state.motion = motions.FALLING;
-            } else if (newVy < 0) {
                 self.state.motion = motions.JUMP;
-            } else if (absNewVx <= WALK_X && absNewVx > 0) {
-                self.state.motion = motions.WALK;
-            } else if (newVx === 0 && newVy === 0) {
-                self.state.motion = motions.STAND;
-            }                                                             
+            }
 
             if (C.inputter.isPressed(C.inputter.J)) {
                 self.stater.emit("Melee");
