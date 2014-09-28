@@ -97,10 +97,6 @@ var FRIC = 0.1,
 
         this.vel = { x:0, y:0 }
 
-        this.actionTimer = Timer(this);
-        this.meleeTimer = Timer(this);
-        this.boostTimer = Timer(this);
-
         this.attackBox = { size: {x:10,y:50}
                          , center: this.center
                          , name: "attack"
@@ -109,187 +105,174 @@ var FRIC = 0.1,
 
         this.animator = Animator(this);
         this.animator.register("Boost_Legs_R", Animation(this, { 
-            img: game.images['Boost_Legs_R'],  
+            img: game.resourcer.get('images/Robot/Boost/124x106/Boot_legs_R.png'),
             frames: [0,1,2,3,4,5,6]
         }));
         this.animator.register("Boost_Legs_L", Animation(this, { 
-            img: game.images['Boost_Legs_L'],  
+            img: game.resourcer.get('images/Robot/Boost/124x106/Boot_legs_L.png'),
             frames: [0,1,2,3,4,5,6]
         }));
         this.animator.register("Boost_Top_R", Animation(this, { 
-            img: game.images['Boost_Top_R'],  
+            img: game.resourcer.get('images/Robot/Boost/124x106/Boost_Top_R.png'),  
             frames: [0,1,2,3,4,5,6]
         }));
         this.animator.register("Boost_Top_L", Animation(this, { 
-            img: game.images['Boost_Top_L'],  
+            img: game.resourcer.get('images/Robot/Boost/124x106/Boost_Top_L.png'),  
             frames: [0,1,2,3,4,5,6]
         }));
         this.animator.register("Boost_Slash_L", Animation(this, { 
-            img: game.images['Boost_Slash_L'],  
+            img: game.resourcer.get('images/Robot/Boost/162x106/Boost_slash_top_L.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:162, y:106},
             offset: {x:-28, y:0},
             fps:10
         }));
         this.animator.register("Boost_Slash_R", Animation(this, { 
-            img: game.images['Boost_Slash_R'],  
+            img: game.resourcer.get('images/Robot/Boost/162x106/Boost_slash_top_R.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:162, y:106},
             offset: {x:28, y:0},
             fps:10
         }));
-//      this.animator.register("Boost_Slash_L", Animation(this, { 
-//          img: game.images['Boost_Slash_L'],  
-//          frames: [0,1,2,3,4,5,6],
-//          size: {x:124, y:106},
-//          fps:10
-//      }));
-//      this.animator.register("Boost_Slash_R", Animation(this, { 
-//          img: game.images['Boost_Slash_R'],  
-//          frames: [0,1,2,3,4,5,6],
-//          size: {x:124, y:106},
-//          fps:10
-//      }));
-
         this.animator.register("Boost_Laser_L", Animation(this, { 
-            img: game.images['Boost_Laser_L'],  
+            img: game.resourcer.get('images/Robot/Boost/124x106/Boost_laser_L.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:124,y:106}
         }));
         this.animator.register("Boost_Laser_R", Animation(this, { 
-            img: game.images['Boost_Laser_R'],  
+            img: game.resourcer.get('images/Robot/Boost/124x106/Boost_laser_R.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:124,y:106}
         }));
         this.animator.register("Jump_L", Animation(this, { 
-            img: game.images['Jump_L'],  
+            img: game.resourcer.get('images/Robot/Jump/90x112/Jump_Left.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:90,y:112},
         }));
         this.animator.register("Jump_R", Animation(this, { 
-            img: game.images['Jump_R'],  
+            img: game.resourcer.get('images/Robot/Jump/90x112/Jump_Right.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:90,y:112},
         }));
         this.animator.register("Walk_L", Animation(this, { 
-            img: game.images['Walk_L'],  
+            img: game.resourcer.get('images/Robot/Walk/97x106/Walk_L.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:97,y:106},
         }));
         this.animator.register("Walk_R", Animation(this, { 
-            img: game.images['Walk_R'],  
+            img: game.resourcer.get('images/Robot/Walk/97x106/Walk_R.png'),  
+
             frames: [0,1,2,3,4,5,6],
             size: {x:97,y:106},
         }));
         this.animator.register("Walk_Slash_Swing_R", Animation(this, { 
-            img: game.images['Walk_Slash_Swing_R'],  
+            img: game.resourcer.get('images/Robot/Walk/192x106/Walk_slash_swing_R.png'),  
+            frames: [0,1,2,3,4,5,6,7,8,9,10],
+            fps:20,
+            size: {x:192,y:106}
+        }));
+        this.animator.register("Walk_Slash_Swing_L", Animation(this, { 
+            img: game.resourcer.get('images/Robot/Walk/192x106/Walk_slash_swing_L.png'),  
             frames: [0,1,2,3,4,5,6,7,8,9,10],
             fps:20,
             size: {x:192,y:106}
         }));
         this.animator.register("Walk_Slash_Charge_R", Animation(this, { 
-            img: game.images['Walk_Slash_Charge_R'],  
+            img: game.resourcer.get('images/Robot/Walk/192x106/Walk_slash_charge_R.png'),  
+            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
+            fps:20,
+            size: {x:192,y:106}
+        }));
+        this.animator.register("Walk_Slash_Charge_L", Animation(this, { 
+            img: game.resourcer.get('images/Robot/Walk/192x106/Walk_slash_charge_L.png'),
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
             fps:20,
             size: {x:192,y:106}
         }));
         this.animator.register("Walk_Slash_Release_R", Animation(this, { 
-            img: game.images['Walk_Slash_Release_R'],  
+            img: game.resourcer.get('images/Robot/Walk/192x106/Walk_slash_release_R.png'),  
             frames: [0,1,2,3,4,5,6,7],
             fps:20,
             size: {x:192,y:106}
         }));
-        this.animator.register("Walk_Slash_Swing_L", Animation(this, { 
-            img: game.images['Walk_Slash_Swing_L'],  
-            frames: [0,1,2,3,4,5,6,7,8,9,10],
-            fps:20,
-            size: {x:192,y:106}
-        }));
-        this.animator.register("Walk_Slash_Charge_L", Animation(this, { 
-            img: game.images['Walk_Slash_Charge_L'],  
-            frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28],
-            fps:20,
-            size: {x:192,y:106}
-        }));
         this.animator.register("Walk_Slash_Release_L", Animation(this, { 
-            img: game.images['Walk_Slash_Release_L'],  
+            img: game.resourcer.get('images/Robot/Walk/192x106/Walk_slash_release_L.png'),  
             frames: [0,1,2,3,4,5,6,7],
             fps:20,
             size: {x:192,y:106}
         }));
         this.animator.register("Stand_R", Animation(this, { 
-            img: game.images['Stand_R'],  
+            img: game.resourcer.get('images/Robot/Stand/76x104/Stand_R.png'),  
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
             size: {x:76,y:104},
             offset: {x:0, y:2}
         }));
         this.animator.register("Stand_L", Animation(this, { 
-            img: game.images['Stand_L'],  
+            img: game.resourcer.get('images/Robot/Stand/76x104/Stand_L.png'),  
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],
             size: {x:76,y:104},
             offset: {x:0, y:2}
         }));
         this.animator.register("Falling_Top_L", Animation(this, { 
-            img: game.images['Falling_Top_L'],  
+            img: game.resourcer.get('images/Robot/Fall/62x126/Falling_Body_L.png'),  
             frames: [0,1,2,3,4,5,6,7,8],
             size: {x:62,y:126}
         }));
         this.animator.register("Falling_Top_R", Animation(this, { 
-            img: game.images['Falling_Top_R'],  
+            img: game.resourcer.get('images/Robot/Fall/62x126/Falling_Body_R.png'),  
             frames: [0,1,2,3,4,5,6,7,8],
             size: {x:62,y:126}
         }));
         this.animator.register("Falling_Legs_L", Animation(this, { 
-            img: game.images['Falling_Legs_L'],  
+            img: game.resourcer.get('images/Robot/Fall/62x126/Falling_Legs_L.png'),  
             frames: [0,1,2,3,4,5,6,7,8],
             size: {x:62,y:126}
         }));
         this.animator.register("Falling_Legs_R", Animation(this, { 
-            img: game.images['Falling_Legs_R'],  
+            img: game.resourcer.get('images/Robot/Fall/62x126/Falling_Legs_R.png'),  
             frames: [0,1,2,3,4,5,6,7,8],
             size: {x:62,y:126}
         }));
         this.animator.register("Falling_Slash_L", Animation(this, { 
-            img: game.images['Falling_Slash_L'],  
+            img: game.resourcer.get('images/Robot/Fall/166x130/Falling_Slash_L.png'),  
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
             fps:20,
             size: {x:166,y:130}
         }));
         this.animator.register("Falling_Slash_R", Animation(this, { 
-            img: game.images['Falling_Slash_R'],  
+            img: game.resourcer.get('images/Robot/Fall/166x130/Falling_Slash_R.png'),  
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
             fps:20,
             size: {x:166,y:130}
         }));
         this.animator.register("Falling_Laser_Top_L", Animation(this, { 
-            img: game.images['Falling_Laser_Top_L'],  
+            img: game.resourcer.get('images/Robot/Fall/558x126/Falling_Laser_Body_L.png'),  
             frames: [0,1,2,3,4,5,6,7,8],
             size: {x:62,y:126}
         }));
         this.animator.register("Falling_Laser_Top_R", Animation(this, { 
-            img: game.images['Falling_Laser_Top_R'],  
+            img: game.resourcer.get('images/Robot/Fall/558x126/Falling_Laser_Body_R.png'),  
             frames: [0,1,2,3,4,5,6,7,8],
             size: {x:62,y:126}
         }));
         this.animator.register("Falling_Laser_Legs_L", Animation(this, { 
-            img: game.images['Falling_Laser_Legs_L'],  
+            img: game.resourcer.get('images/Robot/Fall/558x126/Falling_Laser_Legs_L.png'),  
             frames: [0,1,2,3,4,5,6,7,8],
             size: {x:62,y:126}
         }));
         this.animator.register("Falling_Laser_Legs_R", Animation(this, { 
-            img: game.images['Falling_Laser_Legs_R'],  
+            img: game.resourcer.get('images/Robot/Fall/558x126/Falling_Laser_Legs_R.png'),  
             frames: [0,1,2,3,4,5,6,7,8],
             size: {x:62,y:126}
         }));
-
-        this.animator.register("PFX_Boost_L", Animation(this, { 
-            img: game.images['PFX_Boost_L'],  
+        this.animator.register("PFX_Boost_L", Animation(this, {
+            img: game.resourcer.get('images/Robot/PFX/48x14/Boost_pfx_L.png'),  
             frames: [0,1,2,3,4],
             size: {x:48,y:14},
             offset: {x:10, y:-18}
         }));
         this.animator.register("PFX_Boost_R", Animation(this, { 
-            img: game.images['PFX_Boost_R'],  
+            img: game.resourcer.get('images/Robot/PFX/48x14/Boost_pfx_R.png'),  
             frames: [0,1,2,3,4],
             size: {x:48,y:14},
             offset: {x:-10, y:-18}
@@ -297,37 +280,37 @@ var FRIC = 0.1,
 
         var slashPFXObj = { center: {x:0,y:0}, size: {x:250,y:50} };
         this.animator.register("PFX_Boost_Slash_L", Animation(this, {//slashPFXObj, { 
-            img: game.images['PFX_Boost_Slash_L'],  
+            img: game.resourcer.get('images/Robot/PFX/250x50/Boost_slash_pfx_L.png'),  
             frames: [0,1,2,3,4,5,6,7],
             size: {x:250,y:50},
             fps:20
         }));
-        this.animator.register("PFX_Boost_Slash_R", Animation(this,{ //slashPFXObj, { 
-            img: game.images['PFX_Boost_Slash_R'],  
+        this.animator.register("PFX_Boost_Slash_R", Animation(this,{ //slashPFXObj, {
+            img: game.resourcer.get('images/Robot/PFX/250x50/Boost_slash_pfx_R.png'),  
             frames: [0,1,2,3,4,5,6,7],
             size: {x:250,y:50},
             fps:20
         }));
         this.animator.register("PFX_Laser_Boost_R", Animation(this, { 
-            img: game.images['PFX_Laser_R'],  
+            img: game.resourcer.get('images/Robot/PFX/362x20/Laser_PFX_R.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:360, y:20},
             offset: {x:210,y:-40}
         }));
         this.animator.register("PFX_Laser_Boost_L", Animation(this, { 
-            img: game.images['PFX_Laser_L'],  
+            img: game.resourcer.get('images/Robot/PFX/362x20/Laser_PFX_L.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:360, y:20},
             offset: {x:-220,y:-40}
         }));
         this.animator.register("PFX_Laser_Fall_R", Animation(this, { 
-            img: game.images['PFX_Laser_R'],  
+            img: game.resourcer.get('images/Robot/PFX/362x20/Laser_PFX_R.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:360, y:20},
             offset: {x:180,y:-25}
         }));
-        this.animator.register("PFX_Laser_Fall_L", Animation(this, { 
-            img: game.images['PFX_Laser_L'],  
+        this.animator.register("PFX_Laser_Fall_L", Animation(this, {
+            img: game.resourcer.get('images/Robot/PFX/362x20/Laser_PFX_L.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:360, y:20},
             offset: {x:-185,y:-25}
@@ -383,7 +366,7 @@ var FRIC = 0.1,
                             update: function(time) {
                                 if (time > BOOST_MELEE_CAST && time < BOOST_MELEE_CAST + 250) {
                                     self.state.status = status.BUSY;
-                                    self.vel.x = (self.vel.x > 0 ? BOOST_X * 2 : -BOOST_X * 2);
+                                    self.vel.x = (self.state.facing === facing.RIGHT ? BOOST_X * 2 : -BOOST_X * 2);
                                 } else {
                                     self.vel.x = (self.state.facing === facing.RIGHT ? 1 : -1);
                                 }
