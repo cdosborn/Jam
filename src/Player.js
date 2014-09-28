@@ -81,7 +81,7 @@ var FRIC = 0.1,
                       , PASSIVE:   4 
                       , STAGGER:   5 
                       , CHARGE:    6
-                      , SWING:     7}
+                      , SWING:     7 }
 
         var status =  { FREE: 0
                       , BUSY: 1 } 
@@ -217,7 +217,6 @@ var FRIC = 0.1,
             fps:20,
             size: {x:192,y:106}
         }));
-
         this.animator.register("Stand_R", Animation(this, { 
             img: game.images['Stand_R'],  
             frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],

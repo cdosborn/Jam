@@ -60,17 +60,12 @@
             return time;
         }
 
-        var boostBaseUrl = 'images/Robot/Boost/';
-        var walkBaseUrl = 'images/Robot/Walk/';
-        var standBaseUrl = 'images/Robot/Stand/';
         this.images['Boost_Legs_L'].src         = 'images/Robot/Boost/124x106/Boot_legs_L.png';
         this.images['Boost_Legs_R'].src         = 'images/Robot/Boost/124x106/Boot_legs_R.png';
         this.images['Boost_Top_L'].src          = 'images/Robot/Boost/124x106/Boost_Top_L.png';
         this.images['Boost_Top_R'].src          = 'images/Robot/Boost/124x106/Boost_Top_R.png';
         this.images['Boost_Slash_L'].src        = 'images/Robot/Boost/162x106/Boost_slash_top_L.png';
         this.images['Boost_Slash_R'].src        = 'images/Robot/Boost/162x106/Boost_slash_top_R.png';
-//      this.images['Boost_Slash_L'].src        = 'images/Robot/Boost/124x106/Boost_slash_L.png';
-//      this.images['Boost_Slash_R'].src        = 'images/Robot/Boost/124x106/Boost_slash_R.png';
         this.images['Boost_Laser_L'].src        = 'images/Robot/Boost/124x106/Boost_laser_L.png';
         this.images['Boost_Laser_R'].src        = 'images/Robot/Boost/124x106/Boost_laser_R.png';
         this.images['Jump_L'].src               = 'images/Robot/Jump/90x112/Jump_Left.png';
