@@ -46,9 +46,7 @@ var FRIC = 0.5,
                      , motion: motions.STAND 
                      , facing: facing.RIGHT } 
 
-        this.resources = { boost:  100
-                         , hover:  HOVER
-                         , health: 100 }
+        this.resources = { health: 100 }
 
         this.vel = { x:0, y:0 }
 
@@ -58,10 +56,21 @@ var FRIC = 0.5,
 
             this.interval = delta;
 
-            if (this.target.center.x > this.center.x) {
-                this.vel.x = 2;
-            } else {
-                this.vel.x = -2;
+            var diff = Math.abs(this.target.center.x - this.center.x);
+            if ( diff > 120 ) { 
+                if (this.target.center.x > this.center.x) {
+                    this.vel.x = 2;
+                } else {
+                    this.vel.x = -2;
+                }
+            }/* else if (diff < 100) {
+                if (this.target.center.x > this.center.x) {
+                    this.vel.x = -4;
+                } else {
+                    this.vel.x = 4;
+                } 
+            } */else {
+                this.vel.x = 0;
             }
 
             setState();
@@ -71,6 +80,8 @@ var FRIC = 0.5,
 
             // Gravity
             this.vel.y += GRAV * delta/DIV;
+
+            if (this.center.y > 1000) { self.respawn() };
         }; 
 
         this.stateToString = function() {
@@ -125,9 +136,23 @@ var FRIC = 0.5,
                 //console.log(other);
             } else {
                 self.color = "#c00";
+                self.resources.health -= 10;
+                if (self.resources.health <= 0) {
+                    console.log("WAL")
+                    self.respawn();
+
+                }
             }
         }
         this.boundingBox = C.collider.RECTANGLE;
+
+        this.respawn = function() {
+            game.c.entities.destroy(self);
+            game.c.entities.create(Enemy, { 
+                center: { x:10, y:110 },
+                size:   { x:60, y:100 }
+            });
+        }
 
         this.draw = function(ctx) { 
 
@@ -177,88 +202,7 @@ var FRIC = 0.5,
             return result;
         }
 
-        function handleInput() {
-            if (game.sequencer.isPressed("BOOST_UP")) {
-                self.vel.y += -BOOST_Y;
-            }
-
-            if (game.sequencer.isPressed("BOOST_DOWN")) {
-                self.vel.y += BOOST_Y;
-            }
-
-            if (game.sequencer.isPressed("BOOST_RIGHT")) {
-                self.vel.x += BOOST_X;
-            }
-
-            if (game.sequencer.isPressed("BOOST_LEFT")) {
-                self.vel.x += -BOOST_X;
-            }
-
-            if (C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
-                if (self.state.facing === facing.RIGHT) {
-                    self.vel.x = Math.max(WALK_X, self.vel.x);
-                } else {
-                    self.vel.x = Math.min(-WALK_X, self.vel.x);
-                }
-            } else if (C.inputter.isDown(C.inputter.D)) {
-                if (self.state.facing === facing.LEFT) {
-                    self.state.facing = facing.RIGHT;
-                } else if (self.vel.x > 0) {
-                    self.vel.x = Math.max(WALK_X, self.vel.x);
-                } else if (self.vel.x === 0) {
-                    self.vel.x = WALK_X;
-                }
-            } else if (C.inputter.isDown(C.inputter.A)) {
-                if (self.state.facing === facing.RIGHT) {
-                    self.state.facing = facing.LEFT;
-                } else if (self.vel.x < 0) {
-                    self.vel.x = Math.min(-WALK_X, self.vel.x);
-                } else if (self.vel.x === 0) {
-                    self.vel.x = -WALK_X;
-                } 
-            }
-
-      ///   if (!C.inputter.isDown(C.inputter.D) && C.inputter.isDown(C.inputter.A)) {
-      ///       self.state.facing = facing.LEFT;
-      ///   } else if (!C.inputter.isDown(C.inputter.A) && C.inputter.isDown(C.inputter.D)) {
-      ///       self.state.facing = facing.RIGHT;
-      ///   } 
-
-            if (C.inputter.isDown(C.inputter.W)) {
-                // Falling or not in air
-                if (self.vel.y >= 0 && self.resources.hover > 0) { 
-                    self.resources.hover -= 1.5;
-                    self.vel.y = -0.2;
-                }
-            } else {
-
-                // Recharge hover
-                self.resources.hover = Math.min(HOVER, self.resources.hover + HOVER_INCREMENT);
-            }
-
-            if (C.inputter.isPressed(C.inputter.J)) {
-                self.state.action = actions.MELEE;
-            } else if (C.inputter.isPressed(C.inputter.K)) {
-                self.state.action = actions.BLIP;
-            } else if (C.inputter.isPressed(C.inputter.L)) {
-                self.state.action = actions.RANGE;
-            }
-
-        }
-
         function setState() {
-          //var isBOOST_UP    = self.vel.y < -WALK_X
-          //  , isBOOST_DOWN  = self.vel.y > WALK_X
-          //  , isBOOST_RIGHT = self.vel.x > WALK_X
-          //  , isBOOST_LEFT  = self.vel.x < -WALK_X
-          //  , isHOVER       = self.vel.y < 0 && !isBOOST_UP
-          //  , isCROUCH      = false//self.center.y < self.height/2
-          //  , isWALK_RIGHT  = self.vel.x <= WALK_X && self.vel.x > 0 && !isBOOST_LEFT
-          //  , isWALK_LEFT   = self.vel.x >= -WALK_X && self.vel.x < 0 && !isBOOST_RIGHT
-          //  , isSTAND       = self.vel.x === 0 && self.vel.y === 0
-          //  , isFALLING     = false//self.vel.y <= 0 && self.center.y > self.size.height/2;
-          //  , isFACING_LEFT = C.inputter.isDown(C.inputter.A) || self.state.facing === facing.LEFT;
-
             if (self.vel.x > 0) {self.state.facing = facing.RIGHT;}   
             else                {self.state.facing = facing.LEFT;}
             self.state.motion = motions.WALK;

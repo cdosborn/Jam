@@ -101,6 +101,7 @@ var FRIC = 0.1,
                          , center: this.center
                          , name: "attack"
                          }
+
         C.entities._entities.push(this.attackBox);
 
         this.animator = Animator(this);
@@ -153,6 +154,44 @@ var FRIC = 0.1,
             img: game.resourcer.get('images/Robot/Jump/90x112/Jump_Right.png'),  
             frames: [0,1,2,3,4,5,6],
             size: {x:90,y:112},
+        }));
+        this.animator.register("Crouch_Laser_L", Animation(this, { 
+            img: game.resourcer.get('images/Robot/Crouch/Crouch_80x62/Crouch_Laser_L.png'),  
+            frames: [0,1,2,3,4,5,6,7],
+            size: {x:80,y:62},
+            offset: {x:0,y:22},
+        }));
+        this.animator.register("Crouch_Laser_R", Animation(this, { 
+            img: game.resourcer.get('images/Robot/Crouch/Crouch_80x62/Crouch_Laser_R.png'),  
+            frames: [0,1,2,3,4,5,6,7],
+            size: {x:80,y:62},
+            offset: {x:0,y:22},
+        }));
+        this.animator.register("Crouch_L", Animation(this, { 
+            img: game.resourcer.get('images/Robot/Crouch/Passive_80x62/Crouch_Passive_L.png'),  
+            frames: [0,1,2,3,4,5],
+            size: {x:80,y:62},
+            offset: {x:0,y:22},
+        }));
+        this.animator.register("Crouch_R", Animation(this, { 
+            img: game.resourcer.get('images/Robot/Crouch/Passive_80x62/Crouch_Passive_R.png'),  
+            frames: [0,1,2,3,4,5],
+            size: {x:80,y:62},
+            offset: {x:0,y:22},
+        }));
+        this.animator.register("Crouch_Stab_L", Animation(this, { 
+            img: game.resourcer.get('images/Robot/Crouch/Stab_134x62/Crouch_Stab_L.png'),  
+            frames: [0,1,2,3,4,5,6,7,8,9,10,11],
+            fps: 20,
+            size: {x:134,y:62},
+            offset: {x:0,y:22},
+        }));
+        this.animator.register("Crouch_Stab_R", Animation(this, { 
+            img: game.resourcer.get('images/Robot/Crouch/Stab_134x62/Crouch_Stab_R.png'),  
+            frames: [0,1,2,3,4,5,6,7,8,9,10,11],
+            fps: 20,
+            size: {x:134,y:62},
+            offset: {x:0,y:22},
         }));
         this.animator.register("Walk_L", Animation(this, { 
             img: game.resourcer.get('images/Robot/Walk/97x106/Walk_L.png'),  
@@ -315,6 +354,19 @@ var FRIC = 0.1,
             size: {x:360, y:20},
             offset: {x:-185,y:-25}
         }));
+        this.animator.register("PFX_Laser_Crouch_R", Animation(this, { 
+            img: game.resourcer.get('images/Robot/PFX/362x20/Laser_PFX_R.png'),  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:360, y:20},
+            offset: {x:173,y:3}
+        }));
+        this.animator.register("PFX_Laser_Crouch_L", Animation(this, { 
+            img: game.resourcer.get('images/Robot/PFX/362x20/Laser_PFX_L.png'),  
+            frames: [0,1,2,3,4,5,6],
+            size: {x:360, y:20},
+            offset: {x:-179,y:3}
+        }));
+
 
         game.sequencer.bind("BOOST_UP", [C.inputter.W, -C.inputter.W, C.inputter.W]);
         game.sequencer.bind("BOOST_DOWN", [C.inputter.S, -C.inputter.S, C.inputter.S]);
@@ -451,9 +503,13 @@ var FRIC = 0.1,
                                 return C.inputter.isDown(C.inputter.J);
                             },
                             init: function() {
-                                self.state.motion = motions.STAND;
-                                self.state.action = actions.CHARGE;
-                                self.state.status = status.BUSY;
+                                if (self.state.motion === motions.CROUCH) { 
+                                    self.stater.toParent(); 
+                                } else {
+                                    self.state.motion = motions.STAND;
+                                    self.state.action = actions.CHARGE;
+                                    self.state.status = status.BUSY;
+                                }
                             },
                             transition: function(time) {
                                 if (time < MIN_CHARGE_DUR) {
@@ -612,6 +668,12 @@ var FRIC = 0.1,
                     } else {
                         this.animator.push("Jump_L");
                     }
+               } else if (state.motion === motions.CROUCH) {
+                    if (state.facing === facing.RIGHT) {
+                       this.animator.push("Crouch_R");
+                    } else {
+                       this.animator.push("Crouch_L");
+                    }
                }
             } else if (state.action === actions.MELEE) {
                 if (state.motion === motions.BOOST_LEFT) {
@@ -633,6 +695,12 @@ var FRIC = 0.1,
                        this.animator.push("Walk_Slash_Swing_R");
                     } else {
                        this.animator.push("Walk_Slash_Swing_L");
+                    }
+               } else if (state.motion === motions.CROUCH) {
+                    if (state.facing === facing.RIGHT) {
+                       this.animator.push("Crouch_Stab_R");
+                    } else {
+                       this.animator.push("Crouch_Stab_L");
                     }
                }
             } else if (state.action === actions.MELEE_RVS) {
@@ -672,6 +740,14 @@ var FRIC = 0.1,
                         this.animator.push("Jump_R");
                     } else {
                         this.animator.push("Jump_L");
+                    }
+               } else if (state.motion === motions.CROUCH) {
+                    if (state.facing === facing.RIGHT) { 
+                        this.animator.push("Crouch_Laser_R");
+                        this.animator.push("PFX_Laser_Crouch_R");
+                    } else {
+                        this.animator.push("Crouch_Laser_L");
+                        this.animator.push("PFX_Laser_Crouch_L");
                     }
                }
             } else if (state.action === actions.CHARGE) {

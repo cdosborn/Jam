@@ -6,12 +6,13 @@
             count = 0,
             player;
 
-        this.c = new Coquette(this, "canvas", 1280, 1000, "#444");
-        //this.c = new Coquette(this, "canvas", 1280, 500, "#444");
+        //this.c = new Coquette(this, "canvas", 1280, 1000, "#444");
+          this.c = new Coquette(this, "canvas", 1280, 500, "#444");
+        //this.c = new Coquette(this, "canvas", 1280, 500)
 
-        this.c.renderer._ctx.imageSmoothingEnabled = false;
-        this.c.renderer._ctx.webkitImageSmoothingEnabled = false;
-        this.c.renderer._ctx.mozImageSmoothingEnabled = false;
+      //this.c.renderer._ctx.imageSmoothingEnabled = false;
+      //this.c.renderer._ctx.webkitImageSmoothingEnabled = false;
+      //this.c.renderer._ctx.mozImageSmoothingEnabled = false;
 
         this.getTime = function() {
             return time;
@@ -49,13 +50,18 @@
             , 'images/Robot/Fall/558x126/Falling_Laser_Body_R.png'
             , 'images/Robot/Fall/558x126/Falling_Laser_Legs_L.png'
             , 'images/Robot/Fall/558x126/Falling_Laser_Legs_R.png'
+            , 'images/Robot/Crouch/Crouch_80x62/Crouch_Laser_L.png'
+            , 'images/Robot/Crouch/Crouch_80x62/Crouch_Laser_R.png'
+            , 'images/Robot/Crouch/Passive_80x62/Crouch_Passive_L.png'
+            , 'images/Robot/Crouch/Passive_80x62/Crouch_Passive_R.png'
+            , 'images/Robot/Crouch/Stab_134x62/Crouch_Stab_L.png'
+            , 'images/Robot/Crouch/Stab_134x62/Crouch_Stab_R.png'
             , 'images/Robot/PFX/48x14/Boost_pfx_L.png'
             , 'images/Robot/PFX/48x14/Boost_pfx_R.png'
             , 'images/Robot/PFX/250x50/Boost_slash_pfx_L.png'
             , 'images/Robot/PFX/250x50/Boost_slash_pfx_R.png'
             , 'images/Robot/PFX/362x20/Laser_PFX_L.png'
             , 'images/Robot/PFX/362x20/Laser_PFX_R.png'
-            , 'images/Robot/september_cawein_lah_64kb.mp3'
             ], function(url, counter, total){
                 var name = /([^\/]*)\.[a-z3]+$/.exec(url)[1];
                 console.log("Loaded: " + name + " " + counter + "/" + total);
@@ -67,12 +73,12 @@
 
         this.c.entities.create(Player, { 
             center: { x:10, y:110 },
-            size: { x:124, y:106 }
+            size:   { x:124, y:106 }
         });
 
         this.c.entities.create(Enemy, { 
             center: { x:10, y:110 },
-            size: { x:60, y:100 }
+            size:   { x:60, y:100 }
         });
 
         this.c.entities.create(Platform, {
@@ -84,16 +90,7 @@
 
 //      this.scener.start(this, LoadScene);
         var update = function(interval) { 
-            if (count > 100) { 
-                logger = count = 0;
-            }
-            count += 1;
-            logger += interval;
             time += interval;
-            // if (count % 30 === 0) {
-            // //     console.log(count/logger * 1000 );
-            // // }
-            //
 //          this.scener.update(interval);
             this.sequencer.update(interval, this.c.inputter.getEvents());
             this.c.renderer.setViewCenter(player.center); 

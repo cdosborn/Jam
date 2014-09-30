@@ -30,9 +30,9 @@
             parent:     parent,
             children:   obj.children,
             transition: obj.transition === undefined ? null   : transition,
-            update:     obj.update === undefined ? doNothing  : update,
-            init:       obj.init   === undefined ? doNothing  : init,
-            active:     obj.active === undefined ? returnTrue : active, 
+            update:     obj.update     === undefined ? doNothing  : update,
+            init:       obj.init       === undefined ? doNothing  : init,
+            active:     obj.active     === undefined ? returnTrue : active, 
             finished:   finished,
         }
     }
