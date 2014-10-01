@@ -39,6 +39,7 @@
 
 
     var Stater = function(obj) {
+        var root;
         var cur;
 
         // transform obj into nested state objs
@@ -55,7 +56,7 @@
                 return state;
             }
 
-            cur = build(cur, "root", object);
+            root = cur = build(cur, "root", object);
             cur.init();
         })(obj)
 
@@ -63,11 +64,15 @@
         var checkCur = function() {
             var timeOver = cur.finished();
             var active = cur.active();
+            var old;
 
             if (cur.finished() || !active) { 
                 if (cur.transition) {
+                    old = cur;
                     cur.transition();
-                    cur.init();
+                    if (cur !== old.parent) {
+                        cur.init();
+                    }
                 } else {
                     toParent();
                 }
@@ -91,9 +96,15 @@
             }
         }
 
+        var toRoot = function() {
+            cur.timer.reset();
+            cur = root;
+        }
+
         return {
             toParent: toParent,
             toChild: toChild,
+            toRoot: toRoot,
             toSibling: function(name, delta) { 
                 toParent();
                 if (delta) { toChild(name, delta); }

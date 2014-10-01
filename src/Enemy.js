@@ -85,10 +85,11 @@ var FRIC = 0.5,
         }; 
 
         this.stateToString = function() {
+            var health = this.resources.health;
             var motionId = this.state.motion;
             var actionId = this.state.action;
             var facingId = this.state.facing;
-            var motion, action, dir;
+            var motion, action, dir, health;
 
             if (motionId === motions.BOOST_UP) {
                motion = "BOOST UP";
@@ -124,7 +125,7 @@ var FRIC = 0.5,
                 action = "PASSIVE";
             }
 
-            return [motion, action, dir];
+            return [health, motion, action, dir];
         }
 
         this.collision = function(other) { 
@@ -138,9 +139,7 @@ var FRIC = 0.5,
                 self.color = "#c00";
                 self.resources.health -= 10;
                 if (self.resources.health <= 0) {
-                    console.log("WAL")
                     self.respawn();
-
                 }
             }
         }
@@ -185,8 +184,9 @@ var FRIC = 0.5,
             var y = this.center.y;
             var w = this.size.x;
             ctx.fillText(this.stateToString()[0], x, y, w);
-            ctx.fillText(this.stateToString()[1],x, y + 10, w);
-            ctx.fillText(this.stateToString()[2],x, y + 20, w);
+            ctx.fillText(this.stateToString()[1], x, y + 10, w);
+            ctx.fillText(this.stateToString()[2], x, y + 20, w);
+            ctx.fillText(this.stateToString()[3], x, y + 30, w);
 
         }
 
