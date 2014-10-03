@@ -86,7 +86,7 @@
                             duration: C.MELEE_BCKSWNG,
                             init: function() {
                                 self.state.status = status.BUSY;
-                                self.attacker.trigger("Laser-Boost");
+                                self.attacker.trigger("Melee_Walk");
                             },
                             update: function(time) {
                                 if (C.MELEE_BCKSWNG - time < 200 && input.isDown(input.J)) {
@@ -211,7 +211,7 @@
                     duration: C.MELEE_BCKSWNG,
                     init: function() {
                         self.state.status = status.BUSY;
-                        self.attacker.trigger("Laser-Boost");
+                        self.attacker.trigger("Melee_Walk");
                     },
                     update: function(time) {
                         if (C.MELEE_BCKSWNG - time < 200 && input.isDown(input.J)) {
@@ -271,7 +271,7 @@
         game.sequencer.bind("BOOST_LEFT", [input.A, -input.A, input.A]);
 
         this.attacker = Attacker(game);
-        this.attacker.register("Laser-Boost", {
+        this.attacker.register("Melee_Walk", {
             duration: C.MELEE_BCKSWNG,
             damage: 50,
             init: function() {

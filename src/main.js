@@ -79,7 +79,14 @@ var p;
 
         this.c.entities.create(Enemy, { 
             center: { x:10, y:110 },
-            size:   { x:60, y:100 }
+            size:   { x:60, y:100 },
+            spawnPoint: { x:10, y:110 }
+        });
+
+        this.c.entities.create(Enemy, { 
+            center: { x:1200, y:110 },
+            size:   { x:60, y:100 },
+            spawnPoint: { x:1200, y:110 }
         });
 
         this.c.entities.create(Platform, {

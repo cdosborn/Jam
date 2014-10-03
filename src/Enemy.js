@@ -133,7 +133,7 @@ var FRIC = 0.5,
             if (type === Platform) {
                 self.vel.y = 0;
                 self.center.y = other.center.y - other.size.y/2 - self.size.y/2
-            } else if (type === Player) {
+            } else if (type === Player || type === Enemy) {
                 //console.log(other);
             } else {
                 self.color = "#c00";
@@ -148,8 +148,9 @@ var FRIC = 0.5,
         this.respawn = function() {
             game.c.entities.destroy(self);
             game.c.entities.create(Enemy, { 
-                center: { x:10, y:110 },
-                size:   { x:60, y:100 }
+                center: {x: self.spawnPoint.x, y: self.spawnPoint.y},
+                size:   { x:60, y:100 },
+                spawnPoint: self.spawnPoint
             });
         }
 
