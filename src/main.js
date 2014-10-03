@@ -1,3 +1,4 @@
+var p;
 ;(function(exports) {
     var Game = function() {
 
@@ -64,14 +65,14 @@
             , 'images/Robot/PFX/362x20/Laser_PFX_R.png'
             ], function(url, counter, total){
                 var name = /([^\/]*)\.[a-z3]+$/.exec(url)[1];
-                console.log("Loaded: " + name + " " + counter + "/" + total);
+                //console.log("Loaded: " + name + " " + counter + "/" + total);
             }
         );
 
 
         this.sequencer = ButtonSequencer(this);
 
-        this.c.entities.create(Player, { 
+        p = this.c.entities.create(Player, { 
             center: { x:10, y:110 },
             size:   { x:124, y:106 }
         });

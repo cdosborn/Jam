@@ -4,16 +4,16 @@
     // img - ref to img to be split across frames
     // frames - list of img frames composing anim
 
-    Animation = function(obj, settings) {
-
+    Animation = function(obj) {
         var curFrame = 0,
-            timeLeftOver = 0,
-            img    = settings.img,
-            frames = settings.frames,
-            fps    = (settings.fps    === undefined ? 10            : settings.fps),
-            size   = (settings.size   === undefined ? obj.size      : settings.size),
-            center = (settings.center === undefined ? obj.center    : settings.center),
-            offset = (settings.offset === undefined ? { x: 0, y: 0} : settings.offset);
+            timeLeftOver = 0;
+
+        var img    = obj.img,
+            frames = obj.frames,
+            fps    = obj.fps,
+            size   = obj.size,
+            center = obj.center,
+            offset = obj.offset;
 
         return {
             next: function(delta) {
@@ -47,10 +47,68 @@
         }
     }
 
-    Animator = function(obj, ctx) {
+    Animator = function(owner, game, arr) {
         var activeQueue = [],
             passiveQueue = [],
-            anims = {};
+            anims = {}
+            defaultFps = 10;
+
+        // construct animations
+        (function() {
+            var i, img, jsonObj, size, offset,
+                frames, animObj;
+                len = arr.length;
+                
+            for (i = 0; i < len; i++) {
+                jsonObj = arr[i];
+                frames = [];
+                animObj = {};
+
+                // extend animObj from JSON
+
+                animObj.img = game.resourcer.get(jsonObj.rsc);
+
+                // set size
+                if (jsonObj.sizex !== undefined && jsonObj.sizey !== undefined) {
+                    animObj.size = {x:jsonObj.sizex, y:jsonObj.sizey};
+                } else {
+                    animObj.size = owner.size;
+                }
+
+                // set offset
+                if (jsonObj.offsetx !== undefined && jsonObj.offsety !== undefined) {
+                    animObj.offset = {x:jsonObj.offsetx, y:jsonObj.offsety};
+                } else {
+                    animObj.offset = {x:0, y:0};
+                }
+
+                // set center
+                if (jsonObj.centerx !== undefined && jsonObj.centery !== undefined) {
+                    animObj.center = {x:jsonObj.centerx, y:jsonObj.centery};
+                } else {
+                    animObj.center = owner.center;
+                }
+
+                if (jsonObj.frames instanceof Array) {
+                    animObj.frames = jsonObj.frames;
+                } else {
+                    for (var j = 0; j < jsonObj.frames; j++) {
+                        frames.push(j);
+                    }
+                    animObj.frames = frames;
+                }
+
+                if (jsonObj.fps !== undefined) {
+                    animObj.fps = jsonObj.fps;
+                } else {
+                    animObj.fps = defaultFps;
+                }
+
+                // Construct animation from animObj
+                passiveQueue.push(jsonObj.name)
+                anims[jsonObj.name] = Animation(animObj);
+            }   
+        })();
 
         return {
             update: function(delta) {
@@ -103,7 +161,6 @@
         }
     }
 
-    exports.Animation = Animation;
     exports.Animator = Animator;
 
 })(this);

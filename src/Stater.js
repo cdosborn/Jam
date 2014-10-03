@@ -10,9 +10,9 @@
     }
 
     var State = function(parent, name, obj) {
-        var duration = obj.duration;
         var timer    = Timer();
 
+        var duration = obj.duration;
         var doNothing = function(){};
         var returnTrue = function(){ return true; };
 
@@ -38,25 +38,27 @@
     }
 
 
-    var Stater = function(obj) {
+    var Stater = function(owner, obj) {
         var root;
         var cur;
 
         // transform obj into nested state objs
         (function(object) {
-            var build = function(parent, name, node) {
-                var state = new State(parent, name, node);
+            var build = function(parent, name, node, indent) {
+                var state = State(parent, name, node);
 
                 var children = state.children;
-                for (var name in children) {
-                    if (state.children.hasOwnProperty(name)) {
-                        state.children[name] = build(state, name, state.children[name]);
-                    }
-                }
-                return state;
-            }
 
-            root = cur = build(cur, "root", object);
+                if (children !== undefined) {
+                    for (var name in children) {
+                        children[name] = build(state, name, children[name], indent + indent);
+                    }
+                };
+
+                return state;
+            };
+
+            root = cur = build(cur, "root", object, " ");
             cur.init();
         })(obj)
 
