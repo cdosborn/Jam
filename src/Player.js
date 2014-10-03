@@ -99,6 +99,7 @@
                             duration: C.LASER_CAST + C.LASER_BCKSWNG,
                             init: function() {
                                 self.state.action = actions.RANGE;
+                                self.attacker.trigger("Range_Attack");
                             },
                             transition: function() {
                                 self.state.action = actions.PASSIVE; 
@@ -109,7 +110,7 @@
                         }
                     }
                 },
-                Boost_Horizontal: { 
+                Boost_Horizontal: {
                     duration : C.BOOST_CAST + C.BOOST_BCKSWNG,
                     init: function() {
                         self.vel.x = (self.vel.x > 0 ? C.BOOST_X : -C.BOOST_X);
@@ -131,10 +132,11 @@
                             init: function() {
                                 self.state.action = actions.MELEE;
                                 self.state.status = status.BUSY;
+                                self.attacker.trigger("Melee_Dash");
                                 self.vel.y = 0;
                             },
                             update: function(time) {
-                                if (time > C.BOOST_MELEE_CAST && time < C.BOOST_MELEE_CAST + 250) {
+                                if (time > C.BOOST_MELEE_CAST && time < C.BOOST_MELEE_CAST + 150) {
                                     self.state.status = status.BUSY;
                                     self.vel.x = (self.state.facing === facing.RIGHT ? C.BOOST_X * 2 : -C.BOOST_X * 2);
                                 } else {
@@ -155,6 +157,7 @@
                             init: function() {
                                 self.state.action = actions.RANGE;
                                 self.vel.y = 0;
+                                self.attacker.trigger("Range_Boost_Attack");
                             },
                             update: function(time) {
                                 self.vel.y = 0;
@@ -176,6 +179,7 @@
                     init: function() {
                         self.state.action = actions.RANGE;
                         self.animator.reset();
+                        self.attacker.trigger("Range_Attack");
                     },
                     update: function() {
                         self.vel.y = 0;
@@ -196,7 +200,9 @@
                     },
                     update: function(time) {
                         // hover or stand still
-                        //self.vel.x = self.vel.y = 0;
+                        if (self.state.motion !== motions.CROUCH) {
+                            self.vel.x = (self.state.facing === facing.RIGHT ? C.WALK_X : -C.WALK_X);
+                        }
                     },
                     transition: function(time) { 
                         if (time < C.MELEE_CAST) {
@@ -248,6 +254,7 @@
                         Swing: {
                             duration: C.RELEASE_BACKSWNG,
                             init: function() {
+                                self.attacker.trigger("Melee_Power");
                                 self.vel.x = (self.state.facing === facing.RIGHT ? C.BOOST_X : -C.BOOST_X);
                                 self.state.action = actions.SWING;
                                 self.state.status = status.BUSY;
@@ -263,7 +270,6 @@
                 }
             } 
         });
-      //this.attacker = Attacker(this, config.Player.Attacks);
 
         game.sequencer.bind("BOOST_UP", [input.W, -input.W, input.W]);
         game.sequencer.bind("BOOST_DOWN", [input.S, -input.S, input.S]);
@@ -287,7 +293,132 @@
                }
             }
         });
-        
+        this.attacker.register("Melee_Dash", {
+            duration: C.MELEE_BCKSWNG*2,
+            damage: 50,
+            init: function() {
+                this.size.x = 60;
+                this.size.y = 100;
+            },
+            update: function(time) {
+               this.center.y = self.center.y;
+               if (self.state.facing === facing.RIGHT) {
+                    this.center.x = self.center.x + self.size.x/2; 
+               } else {
+                    this.center.x = self.center.x - self.size.x/2; 
+               }
+            }
+        });
+        this.attacker.register("Melee_Power", {
+            duration: C.MELEE_BCKSWNG*2,
+            damage: 200,
+            init: function() {
+                this.size.x = 60;
+                this.size.y = 100;
+            },
+            update: function(time) {
+               this.center.y = self.center.y;
+               if (self.state.facing === facing.RIGHT) {
+                    this.center.x = self.center.x + self.size.x/2; 
+               } else {
+                    this.center.x = self.center.x - self.size.x/2; 
+               }
+            }
+        });
+        this.attacker.register("Range_Attack", {
+            duration: C.LASER_BCKSWNG,
+            damage: 2,
+            init: function() {
+                this.size.y = 10;
+            },
+            update: function(time) {
+               var part = time/this.duration;
+               this.size.x = Math.min(360, 2 * time * part);
+
+
+               if (self.state.facing === facing.RIGHT) {
+                    this.center.x = self.center.x + self.size.x/2 + this.size.x/2 - 35; 
+               } else {
+                    this.center.x = self.center.x - self.size.x/2 - this.size.x/2 + 50;  
+               }
+               if (self.state.motion === motions.CROUCH) {
+                   this.center.y = self.center.y; 
+               } else {
+                   this.center.y = self.center.y - 40; 
+               }
+            }
+        });
+        this.attacker.register("Range_Boost_Attack", {
+            duration: C.LASER_BCKSWNG,
+            damage: 2,
+            init: function() {
+                this.size.y = 10;
+            },
+            update: function(time) {
+               var part = time/this.duration;
+               this.size.x = Math.min(360, 2 * time * part);
+
+               if (self.state.facing === facing.RIGHT) {
+                    this.center.x = self.center.x + self.size.x/2 + this.size.x/2; 
+               } else {
+                    this.center.x = self.center.x - self.size.x/2 - this.size.x/2;  
+               }
+               if (self.state.motion === motions.CROUCH) {
+                   this.center.y = self.center.y; 
+               } else {
+                   this.center.y = self.center.y - 40; 
+               }
+
+            }
+        });
+        this.attacker.register("Range_Crouch_Attack", {
+            duration: C.LASER_BCKSWNG,
+            damage: 2,
+            init: function() {
+                this.size.y = 10;
+            },
+            update: function(time) {
+               var part = time/this.duration;
+               this.size.x = Math.min(360, 2 * time * part);
+
+               this.center.y = self.center.y; 
+
+               if (self.state.facing === facing.RIGHT) {
+                    this.center.x = self.center.x + self.size.x/2 + this.size.x/2; 
+               } else {
+                    this.center.x = self.center.x - self.size.x/2 - this.size.x/2;  
+               }
+            }
+        });
+
+//             if (self.state.motion === motions.CROUCH) { 
+//             } else {
+//                 this.center.y = self.center.y - 40; 
+//             }
+
+//             if (self.state.motion === motions.STAND || self.state.motions === motions.WALK) {
+//                 this.center.x = reduce(this.center.x, 50);
+//             }
+//          }
+//      });
+
+//          frames: 7,
+//          sizex: 360, 
+//          sizey: 20,
+//          offsetx:210,
+//          offsety:-40
+//      },
+//      {
+//          name: "PFX_Laser_Boost_L",
+//          rsc: "images/Robot/PFX/362x20/Laser_PFX_L.png",
+//          frames: 7,
+//          sizex: 360, 
+//          sizey: 20,
+//          offsetx:-220,
+//          offsety:-40
+//      },
+
+
 
         this.update = function(delta) {
 

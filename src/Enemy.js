@@ -137,7 +137,7 @@ var FRIC = 0.5,
                 //console.log(other);
             } else {
                 self.color = "#c00";
-                self.resources.health -= 10;
+                self.resources.health -= other.damage;
                 if (self.resources.health <= 0) {
                     self.respawn();
                 }

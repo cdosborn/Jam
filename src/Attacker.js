@@ -43,12 +43,14 @@
         var doNothing = function(){};
 
         this.boundingBox = game.c.collider.RECTANGLE;
+        this.damage = damage;
+        this.duration = duration;
         this.center = {x:0,y:0};
         this.size = {x:0,y:0};
         this.update = update;
         this.active = active;
         this.init = (obj.init ? init : doNothing);
-        this.draw = draw;
+        //this.draw = draw;
     }
 
 
