@@ -66,7 +66,7 @@
 
                 // extend animObj from JSON
 
-                animObj.img = game.resourcer.get(jsonObj.rsc);
+                animObj.img = game.resourcer.get(jsonObj.name);
 
                 // set size
                 if (jsonObj.sizex !== undefined && jsonObj.sizey !== undefined) {

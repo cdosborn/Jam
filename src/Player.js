@@ -54,17 +54,12 @@
 
             },
             children: {
-                Boost_Up: { 
+                Boost_Up: {
                     duration : C.BOOST_CAST + C.BOOST_BCKSWNG,
                     children: {
                         Melee: {
                             duration: C.MELEE_CAST,
                             active: function(time) {
-                                var isKeyDown = function(e) { return e.type === "keydown" };
-                                var noKeyDown = input.getEvents()
-                                                          .filter(isKeyDown)
-                                                          .length === 0;
-
                                 return noKeyDown;
                             },
                             init: function() {

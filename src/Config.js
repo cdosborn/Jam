@@ -1,28 +1,210 @@
 (function(exports){
+    var player_resources = [
+        {
+            name: "Boost_Legs_R",
+            url: "images/Robot/Boost/124x106/Boot_legs_R.png",
+        },
+        {
+            name: "Boost_Legs_L", 
+            url: "images/Robot/Boost/124x106/Boot_legs_L.png", 
+        },
+        {
+            name: "Boost_Top_R",
+            url: "images/Robot/Boost/124x106/Boost_Top_R.png",
+        },
+        {
+            name: "Boost_Top_L",
+            url: "images/Robot/Boost/124x106/Boost_Top_L.png",
+        },
+        { 
+            name: "Boost_Slash_L",
+            url: "images/Robot/Boost/162x106/Boost_slash_top_L.png",
+        },   
+        { 
+            name: "Boost_Slash_R",
+            url: "images/Robot/Boost/162x106/Boost_slash_top_R.png",
+        },
+        {
+            name: "Boost_Laser_L",
+            url: "images/Robot/Boost/124x106/Boost_laser_L.png",
+        },
+        {
+            name: "Boost_Laser_R",
+            url: "images/Robot/Boost/124x106/Boost_laser_R.png",
+        },
+        {
+            name: "Jump_L",
+            url: "images/Robot/Jump/90x112/Jump_Left.png",
+        },
+        {
+            name: "Jump_R",
+            url: "images/Robot/Jump/90x112/Jump_Right.png",
+        },
+        {
+            name: "Crouch_Laser_L",
+            url: "images/Robot/Crouch/Crouch_80x62/Crouch_Laser_L.png",
+        },
+        {
+            name: "Crouch_Laser_R",
+            url: "images/Robot/Crouch/Crouch_80x62/Crouch_Laser_R.png",
+        },
+        {
+            name: "Crouch_L",
+            url: "images/Robot/Crouch/Passive_80x62/Crouch_Passive_L.png",
+        },
+        {
+            name: "Crouch_R",
+            url: "images/Robot/Crouch/Passive_80x62/Crouch_Passive_R.png",
+        },
+        { 
+            name: "Crouch_Stab_L",
+            url: "images/Robot/Crouch/Stab_134x62/Crouch_Stab_L.png",
+        },
+        { 
+            name: "Crouch_Stab_R",
+            url: "images/Robot/Crouch/Stab_134x62/Crouch_Stab_R.png",
+        },
+        {
+            name: "Walk_L", 
+            url: "images/Robot/Walk/97x106/Walk_L.png",
+        },
+        {
+            name: "Walk_R", 
+            url: "images/Robot/Walk/97x106/Walk_R.png",
+        },
+        {
+            name: "Walk_Slash_Swing_R",
+            url: 'images/Robot/Walk/186x106/Walk_Slash_Swing_R.png',
+        },
+        {
+            name: "Walk_Slash_Swing_L",
+            url: "images/Robot/Walk/192x106/Walk_slash_swing_L.png",
+        },
+        {
+            name: "Walk_Slash_Charge_R",
+            url: "images/Robot/Walk/192x106/Walk_slash_charge_R.png",
+        },
+        {
+            name: "Walk_Slash_Charge_L",
+            url: "images/Robot/Walk/192x106/Walk_slash_charge_L.png",
+        },
+        {
+            name: "Walk_Slash_Release_R",
+            url: "images/Robot/Walk/192x106/Walk_slash_release_R.png",
+        },
+        {
+            name: "Walk_Slash_Release_L",
+            url: "images/Robot/Walk/192x106/Walk_slash_release_L.png",
+        },
+        {
+            name: "Stand_R",
+            url: "images/Robot/Stand/76x104/Stand_R.png",
+        },
+        {
+            name: "Stand_L",
+            url: "images/Robot/Stand/76x104/Stand_L.png",
+        },
+        {
+            name: "Falling_Top_L",
+            url: "images/Robot/Fall/62x126/Falling_Body_L.png",
+        },
+        {
+            name: "Falling_Top_R",
+            url: "images/Robot/Fall/62x126/Falling_Body_R.png",
+        },
+        {
+            name: "Falling_Legs_L",
+            url: "images/Robot/Fall/62x126/Falling_Legs_L.png",
+        },
+        {
+            name: "Falling_Legs_R",
+            url: "images/Robot/Fall/62x126/Falling_Legs_R.png",
+        },
+        {
+            name: "Falling_Slash_L",
+            url: "images/Robot/Fall/166x130/Falling_Slash_L.png",
+        },
+        {
+            name: "Falling_Slash_R",
+            url: "images/Robot/Fall/166x130/Falling_Slash_R.png",
+        },
+        {
+            name: "Falling_Laser_Top_L",
+            url: "images/Robot/Fall/558x126/Falling_Laser_Body_L.png",
+        },
+        {
+            name: "Falling_Laser_Top_R",
+            url: "images/Robot/Fall/558x126/Falling_Laser_Body_R.png",
+        },
+        {
+            name: "Falling_Laser_Legs_L",
+            url: "images/Robot/Fall/558x126/Falling_Laser_Legs_L.png",
+        },
+        {
+            name: "Falling_Laser_Legs_R",
+            url: "images/Robot/Fall/558x126/Falling_Laser_Legs_R.png",
+        },
+        {
+            name: "PFX_Boost_L",
+            url: "images/Robot/PFX/48x14/Boost_pfx_L.png",
+        },
+        {
+            name: "PFX_Boost_R",
+            url: "images/Robot/PFX/48x14/Boost_pfx_R.png",
+        },
+        {
+            name: "PFX_Boost_Slash_L",
+            url: "images/Robot/PFX/250x50/Boost_slash_pfx_L.png",
+        },
+        {
+            name: "PFX_Boost_Slash_R",
+            url: "images/Robot/PFX/250x50/Boost_slash_pfx_R.png",
+        },
+        {
+            name: "PFX_Laser_Boost_R",
+            url: "images/Robot/PFX/362x20/Laser_PFX_R.png",
+        },
+        {
+            name: "PFX_Laser_Boost_L",
+            url: "images/Robot/PFX/362x20/Laser_PFX_L.png",
+        },
+        {
+            name: "PFX_Laser_Fall_R",
+            url: "images/Robot/PFX/362x20/Laser_PFX_R.png",
+        },
+        {
+            name: "PFX_Laser_Fall_L",
+            url: "images/Robot/PFX/362x20/Laser_PFX_L.png",
+        },
+        {
+            name: "PFX_Laser_Crouch_R",
+            url: "images/Robot/PFX/362x20/Laser_PFX_R.png",
+        },
+        {
+            name: "PFX_Laser_Crouch_L",
+            url: "images/Robot/PFX/362x20/Laser_PFX_L.png",
+        }
+    ];
+
     var player_anims = [
         {
             name: "Boost_Legs_R",
-            rsc: "images/Robot/Boost/124x106/Boot_legs_R.png",
             frames: 7
         },
         {
             name: "Boost_Legs_L", 
-            rsc: "images/Robot/Boost/124x106/Boot_legs_L.png", 
             frames: 7
         },
         {
             name: "Boost_Top_R",
-            rsc: "images/Robot/Boost/124x106/Boost_Top_R.png",
             frames: 7
         },
         {
             name: "Boost_Top_L",
-            rsc: "images/Robot/Boost/124x106/Boost_Top_L.png",
             frames: 7
         },
         { 
             name: "Boost_Slash_L",
-            rsc: "images/Robot/Boost/162x106/Boost_slash_top_L.png",
             frames: 7,
             sizex: 162,
             sizey: 106,
@@ -32,7 +214,6 @@
         },   
         { 
             name: "Boost_Slash_R",
-            rsc: "images/Robot/Boost/162x106/Boost_slash_top_R.png",
             frames: 7,
             sizex: 162,
             sizey: 106,
@@ -42,35 +223,30 @@
         },
         {
             name: "Boost_Laser_L",
-            rsc: "images/Robot/Boost/124x106/Boost_laser_L.png",
             frames: 7,
             sizex: 124,
             sizey: 106
         },
         {
             name: "Boost_Laser_R",
-            rsc: "images/Robot/Boost/124x106/Boost_laser_R.png",
             frames: 7,
             sizex: 124,
             sizey: 106
         },
         {
             name: "Jump_L",
-            rsc: "images/Robot/Jump/90x112/Jump_Left.png",
             frames: 7,
             sizex: 90,
             sizey: 112,
         },
         {
             name: "Jump_R",
-            rsc: "images/Robot/Jump/90x112/Jump_Right.png",
             frames: 7,
             sizex: 90,
             sizey: 112,
         },
         {
             name: "Crouch_Laser_L",
-            rsc: "images/Robot/Crouch/Crouch_80x62/Crouch_Laser_L.png",
             frames: 8,
             sizex: 80,
             sizey: 62,
@@ -79,7 +255,6 @@
         },
         {
             name: "Crouch_Laser_R",
-            rsc: "images/Robot/Crouch/Crouch_80x62/Crouch_Laser_R.png",
             frames: 8,
             sizex: 80,
             sizey: 62,
@@ -88,7 +263,6 @@
         },
         {
             name: "Crouch_L",
-            rsc: "images/Robot/Crouch/Passive_80x62/Crouch_Passive_L.png",
             frames: 6,
             sizex: 80,
             sizey: 62,
@@ -97,7 +271,6 @@
         },
         {
             name: "Crouch_R",
-            rsc: "images/Robot/Crouch/Passive_80x62/Crouch_Passive_R.png",
             frames: 6,
             sizex: 80,
             sizey: 62,
@@ -106,7 +279,6 @@
         },
         { 
             name: "Crouch_Stab_L",
-            rsc: "images/Robot/Crouch/Stab_134x62/Crouch_Stab_L.png",
             frames: 12,
             fps: 20,
             sizex: 134,
@@ -116,7 +288,6 @@
         },
         { 
             name: "Crouch_Stab_R",
-            rsc: "images/Robot/Crouch/Stab_134x62/Crouch_Stab_R.png",
             frames: 12,
             fps: 20,
             sizex: 134,
@@ -126,29 +297,25 @@
         },
         {
             name: "Walk_L", 
-            rsc: "images/Robot/Walk/97x106/Walk_L.png",
             frames: 7,
             sizex: 97,
             sizey: 106,
         },
         {
             name: "Walk_R", 
-            rsc: "images/Robot/Walk/97x106/Walk_R.png",
             frames: 7,
             sizex: 97,
             sizey: 106,
         },
         {
             name: "Walk_Slash_Swing_R",
-            rsc: 'images/Robot/Walk/192x106/Walk_slash_swing_R.png',
-            frames: 11,
+            frames: 14,
             fps:20,
-            sizex: 192,
+            sizex: 186,
             sizey: 106
         },
         {
             name: "Walk_Slash_Swing_L",
-            rsc: "images/Robot/Walk/192x106/Walk_slash_swing_L.png",
             frames: 11,
             fps:20,
             sizex: 192,
@@ -156,7 +323,6 @@
         },
         {
             name: "Walk_Slash_Charge_R",
-            rsc: "images/Robot/Walk/192x106/Walk_slash_charge_R.png",
             frames: 29,
             fps:20,
             sizex: 192,
@@ -164,7 +330,6 @@
         },
         {
             name: "Walk_Slash_Charge_L",
-            rsc: "images/Robot/Walk/192x106/Walk_slash_charge_L.png",
             frames: 29,
             fps:20,
             sizex: 192,
@@ -172,7 +337,6 @@
         },
         {
             name: "Walk_Slash_Release_R",
-            rsc: "images/Robot/Walk/192x106/Walk_slash_release_R.png",
             frames: 8,
             fps:20,
             sizex: 192,
@@ -180,7 +344,6 @@
         },
         {
             name: "Walk_Slash_Release_L",
-            rsc: "images/Robot/Walk/192x106/Walk_slash_release_L.png",
             frames: 8,
             fps:20,
             sizex: 192,
@@ -188,7 +351,6 @@
         },
         {
             name: "Stand_R",
-            rsc: "images/Robot/Stand/76x104/Stand_R.png",
             frames: 26,
             sizex: 76,
             sizey: 104,
@@ -197,7 +359,6 @@
         },
         {
             name: "Stand_L",
-            rsc: "images/Robot/Stand/76x104/Stand_L.png",
             frames: 26,
             sizex: 76,
             sizey: 104,
@@ -206,35 +367,30 @@
         },
         {
             name: "Falling_Top_L",
-            rsc: "images/Robot/Fall/62x126/Falling_Body_L.png",
             frames: 9,
             sizex: 62,
             sizey: 126
         },
         {
             name: "Falling_Top_R",
-            rsc: "images/Robot/Fall/62x126/Falling_Body_R.png",
             frames: 9,
             sizex: 62,
             sizey: 126
         },
         {
             name: "Falling_Legs_L",
-            rsc: "images/Robot/Fall/62x126/Falling_Legs_L.png",
             frames: 9,
             sizex: 62,
             sizey: 126
         },
         {
             name: "Falling_Legs_R",
-            rsc: "images/Robot/Fall/62x126/Falling_Legs_R.png",
             frames: 9,
             sizex: 62,
             sizey: 126
         },
         {
             name: "Falling_Slash_L",
-            rsc: "images/Robot/Fall/166x130/Falling_Slash_L.png",
             frames: 16,
             fps:20,
             sizex: 166,
@@ -242,7 +398,6 @@
         },
         {
             name: "Falling_Slash_R",
-            rsc: "images/Robot/Fall/166x130/Falling_Slash_R.png",
             frames: 16,
             fps:20,
             sizex: 166,
@@ -250,35 +405,30 @@
         },
         {
             name: "Falling_Laser_Top_L",
-            rsc: "images/Robot/Fall/558x126/Falling_Laser_Body_L.png",
             frames: 9,
             sizex: 62,
             sizey: 126
         },
         {
             name: "Falling_Laser_Top_R",
-            rsc: "images/Robot/Fall/558x126/Falling_Laser_Body_R.png",
             frames: 9,
             sizex: 62,
             sizey: 126
         },
         {
             name: "Falling_Laser_Legs_L",
-            rsc: "images/Robot/Fall/558x126/Falling_Laser_Legs_L.png",
             frames: 9,
             sizex: 62,
             sizey: 126
         },
         {
             name: "Falling_Laser_Legs_R",
-            rsc: "images/Robot/Fall/558x126/Falling_Laser_Legs_R.png",
             frames: 9,
             sizex: 62,
             sizey: 126
         },
         {
             name: "PFX_Boost_L",
-            rsc: "images/Robot/PFX/48x14/Boost_pfx_L.png",
             frames: 5,
             sizex: 48,
             sizey: 14,
@@ -287,7 +437,6 @@
         },
         {
             name: "PFX_Boost_R",
-            rsc: "images/Robot/PFX/48x14/Boost_pfx_R.png",
             frames: 5,
             sizex: 48,
             sizey: 14,
@@ -296,7 +445,6 @@
         },
         {
             name: "PFX_Boost_Slash_L",
-            rsc: "images/Robot/PFX/250x50/Boost_slash_pfx_L.png",
             frames: 8,
             sizex: 250,
             sizey: 50,
@@ -304,7 +452,6 @@
         },
         {
             name: "PFX_Boost_Slash_R",
-            rsc: "images/Robot/PFX/250x50/Boost_slash_pfx_R.png",
             frames: 8,
             sizex: 250,
             sizey: 50,
@@ -312,7 +459,6 @@
         },
         {
             name: "PFX_Laser_Boost_R",
-            rsc: "images/Robot/PFX/362x20/Laser_PFX_R.png",
             frames: 7,
             sizex: 360, 
             sizey: 20,
@@ -321,7 +467,6 @@
         },
         {
             name: "PFX_Laser_Boost_L",
-            rsc: "images/Robot/PFX/362x20/Laser_PFX_L.png",
             frames: 7,
             sizex: 360, 
             sizey: 20,
@@ -330,7 +475,6 @@
         },
         {
             name: "PFX_Laser_Fall_R",
-            rsc: "images/Robot/PFX/362x20/Laser_PFX_R.png",
             frames: 7,
             sizex: 360, 
             sizey: 20,
@@ -339,7 +483,6 @@
         },
         {
             name: "PFX_Laser_Fall_L",
-            rsc: "images/Robot/PFX/362x20/Laser_PFX_L.png",
             frames: 7,
             sizex: 360, 
             sizey: 20,
@@ -348,7 +491,6 @@
         },
         {
             name: "PFX_Laser_Crouch_R",
-            rsc: "images/Robot/PFX/362x20/Laser_PFX_R.png",
             frames: 7,
             sizex: 360, 
             sizey: 20,
@@ -357,7 +499,6 @@
         },
         {
             name: "PFX_Laser_Crouch_L",
-            rsc: "images/Robot/PFX/362x20/Laser_PFX_L.png",
             frames: 7,
             sizex: 360, 
             sizey: 20,
@@ -396,12 +537,12 @@
         // The duration where the melee can be cancelled
         // while walking
 
-        MELEE_CAST: 200,
+        MELEE_CAST: 300,
 
         // The duration of vulnerability following the
         // cast point
 
-        MELEE_BCKSWNG: 350,    //550 total
+        MELEE_BCKSWNG: 400,    //550 total
 
         WALK_MELEE_CHARGE_WAIT: 200,
         RELEASE_BACKSWNG  : 350,
@@ -452,7 +593,16 @@
         SWING:     7
     }
 
+    var player_state_tree = {
 
+    }
+
+//  var player_no_key_down = function() {
+//      return input.getEvents().filter(function(e) {
+//      return e.type === "keydown" }).length === 0;
+//  }
+
+//  var addEnv(
     var config = {
         Player: {
             Animations: player_anims,
@@ -461,6 +611,11 @@
             Actions: player_actions,
             Status: player_status,
             Facing: player_facing,
+            StateTree: player_state_tree,
+            Resources: player_resources,
+            Utils: {
+//              noKeyDown: player_no_key_down;
+            }
     //      Attacks: {
     //      }
         }

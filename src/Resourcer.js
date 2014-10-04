@@ -1,63 +1,57 @@
 ;(function(exports) {
 
-    var Resourcer = function() {
+    // resourcer private vars;
+    var resources = {};
+    var finished = false;
+    var counter = 1;
 
-        var finished = true;
-        var resources = {};
+    var Resourcer = function(arr, callback) {
+        var cb, name, url;
 
-        var get = function(url) { 
-            return resources[url];
+        for (var i = 0, len = arr.length; i < len; i++) {
+
+            name = arr[i].name;
+            url = arr[i].url;
+
+            // function called when rsc is ready
+            cb = (function(name,index,total) {
+                return function(){ 
+                    finished = counter === arr.length;
+                    return callback(name,counter++,total);
+                };
+            })(name, i, len);
+
+            // bind load event to function
+            if (isPng(url)) {
+                rsc = new Image();
+                rsc.addEventListener('load', cb, false);
+            } else {
+                rsc = new Audio();
+                rsc.addEventListener('canplaythrough', cb, false);
+            }
+
+            rsc.src = url;
+            rsc.name = name;
+            resources[name] = rsc;
         }
 
-        var isPng = function(url) {
-            return /\.png$/.test(url);
+        // edge case when no resources passed
+        if (arr.length === 0) {
+            finished = true;
         }
+    }
 
-        var isReady = function() { 
+    Resourcer.prototype = {
+        get: function(name) {
+            return resources[name];
+        },
+        isReady: function() {
             return finished;
         }
+    }
 
-        var load = function(urls, callback) { 
-            var rsc, url, counter;
-
-            counter = 0;
-            finished = urls.length === 0 ? true : false;
-
-            for (var i = 0, len = urls.length; i < len; i++) {
-
-                url = urls[i];
-
-
-                // cb is a wrapper around the callback
-                // passed as an argument
-                //  1) calls callback with the url,index,total
-                //  2) updates whether resourcer is finished
-
-                var cb = (function(url,index,total) {
-                    return function(){ 
-                        finished = total - 1 === index;
-                        return callback(url,++counter,total);
-                    };
-                })(url, i, len);
-
-                if (isPng(url)) {
-                    rsc = new Image()
-                    rsc.addEventListener('load', cb, false);
-                } else {
-                    rsc = new Audio();
-                    rsc.addEventListener('canplaythrough', cb, false);
-                }
-
-                rsc.src = url;
-                resources[url] = rsc;
-            }
-        }
-
-        return {
-            load: load,
-            get: get,
-            isReady: isReady
-        }
+    var isPng = function(url) {
+        return /\.png$/.test(url);
     }
 
     exports.Resourcer = Resourcer;
