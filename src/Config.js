@@ -596,7 +596,7 @@
     var LoadingBox = function(game) {
         var innerBox = {
             center: { x:0, y:0 },
-            size: { x:5, y:30 }
+            size: { x:0, y: 30 }
         }
 
         this.fgColor = "#aaa";
