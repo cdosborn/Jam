@@ -74,7 +74,7 @@
         },
         {
             name: "Walk_Slash_Swing_R",
-            url: 'images/Robot/Walk/186x106/Walk_Slash_Swing_R.png',
+            url: "images/Robot/Walk/186x106/Walk_Slash_Swing_R.png",
         },
         {
             name: "Walk_Slash_Swing_L",
@@ -309,7 +309,7 @@
         },
         {
             name: "Walk_Slash_Swing_R",
-            frames: 14,
+            frames: [13,12,11,10,9,8,7,6,5,4,3,2,1,0],
             fps:20,
             sizex: 186,
             sizey: 106
@@ -559,8 +559,7 @@
         HOVER_INCREMENT   : 1,
         DIV               : 17,
         DEBUG             : false,
-    }
-
+    };
     var player_motions = { 
         WALK:        0,
         STAND:       1, 
@@ -571,18 +570,15 @@
         BOOST_DOWN:  6,
         BOOST_LEFT:  7,
         BOOST_RIGHT: 8
-    }
-
+    };
     var player_facing = { 
         LEFT:  0,
         RIGHT: 1 
-    }
-
+    };
     var player_status = { 
         BUSY: 0,
         FREE: 1
-    }
-    var player_actions = { 
+    };    var player_actions = { 
         BLIP:      0,
         MELEE:     1,
         MELEE_RVS: 2,
@@ -591,18 +587,107 @@
         STAGGER:   5, 
         CHARGE:    6,
         SWING:     7
-    }
+    };
 
     var player_state_tree = {
 
+    };
+
+    var LoadingBox = function(game) {
+        var innerBox = {
+            center: { x:0, y:0 },
+            size: { x:5, y:30 }
+        }
+
+        this.fgColor = "#aaa";
+        this.bgColor = "#333";
+
+        this.center = game.c.renderer.getViewCenter();
+        this.size = { x:1000, y:40 };
+        this.notify = function(index, total) {
+            console.log(innerBox);
+            var percent = index / total;
+            innerBox.size.x = percent * this.size.x;
+            innerBox.center.x = this.center.x - this.size.x/2 + innerBox.size.x/2  + 5;
+            innerBox.center.y = this.center.y;
+        };
+        this.draw = function(ctx) {
+            ctx.fillStyle = this.bgColor;
+            ctx.fillRect(this.center.x - this.size.x/2
+                       , this.center.y - this.size.y/2
+                       , this.size.x
+                       , this.size.y);
+
+            ctx.fillStyle = this.fgColor;
+            ctx.fillRect(innerBox.center.x - innerBox.size.x/2
+                       , innerBox.center.y - innerBox.size.y/2
+                       , innerBox.size.x
+                       , innerBox.size.y);
+        }; 
     }
+
+    var game_scenes = [
+        {
+            name: "Load",
+            init: function(game) {
+                var box;
+                game.c.renderer.setBackground("#000");
+                box = game.c.entities.create(LoadingBox);
+                game.resourcer.load( function(name, counter, total) { 
+                    box.notify(counter, total);
+                });
+            },
+            active:function(game, time) {
+                return !game.resourcer.isReady();
+            },
+            exit: function(game, time) {
+                console.log("EXITING LOAD");
+                game.scener.start("Main");
+            }
+        },
+        {
+            name: "Main",
+            init: function(game) {
+                console.log("START MAIN");
+                game.p = game.c.entities.create(Player, { 
+                    center: { x:10, y:110 },
+                    size:   { x:124, y:106 }
+                });
+
+                game.c.entities.create(Enemy, { 
+                    center: { x:10, y:110 },
+                    size:   { x:60, y:100 },
+                    spawnPoint: { x:10, y:110 }
+                });
+
+                game.c.entities.create(Enemy, { 
+                    center: { x:1200, y:110 },
+                    size:   { x:60, y:100 },
+                    spawnPoint: { x:1200, y:110 }
+                });
+
+                game.c.entities.create(Platform, {
+                    size:   { x: 1280, y: 30 },
+                    center: { x: 640, y: 400 }
+                });
+
+                game.c.renderer.setBackground("#444");
+            },
+            update: function(game, time) {
+                game.c.renderer.setViewCenter(game.p.center); 
+            },
+            exit: function(game, time) {
+              //game.scener.start("Credits");
+            }
+        }
+    ];
 
 //  var player_no_key_down = function() {
 //      return input.getEvents().filter(function(e) {
-//      return e.type === "keydown" }).length === 0;
-//  }
+//          return e.type === "keydown";
+//      }).length === 0;
+//  };
 
-//  var addEnv(
     var config = {
         Player: {
             Animations: player_anims,
@@ -618,9 +703,11 @@
             }
     //      Attacks: {
     //      }
+        },
+        Game: {
+            Scenes: game_scenes
         }
-    }
-
+    };
     exports.config = config;
 
 })(this)

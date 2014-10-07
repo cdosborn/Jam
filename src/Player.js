@@ -194,10 +194,6 @@
                         self.state.action = actions.MELEE;
                     },
                     update: function(time) {
-                        // hover or stand still
-                        if (self.state.motion !== motions.CROUCH) {
-                            self.vel.x = (self.state.facing === facing.RIGHT ? C.WALK_X : -C.WALK_X);
-                        }
                     },
                     transition: function(time) { 
                         if (time < C.MELEE_CAST) {
@@ -218,6 +214,11 @@
                         if (C.MELEE_BCKSWNG - time < 200 && input.isDown(input.J)) {
                             self.state.status = status.FREE;
                         }
+                        // hover or stand still
+                        if (self.state.motion !== motions.CROUCH) {
+                            self.vel.x = (self.state.facing === facing.RIGHT ? C.WALK_X : -C.WALK_X);
+                        }
+
                         // hover or stand still
                         //self.vel.x = self.vel.y = 0;
                     },

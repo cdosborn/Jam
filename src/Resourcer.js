@@ -2,53 +2,57 @@
 
     // resourcer private vars;
     var resources = {};
+    var queue = []; // unloaded resources
     var finished = false;
-    var counter = 1;
+    var counter = 0;
 
-    var Resourcer = function(arr, callback) {
-        var cb, name, url;
+    var Resourcer = function(arr) {
+        queue = arr;
+    
+        this.get = function(name) {
+            return resources[name];
+        };
+        this.isReady = function() {
+            return finished;
+        };
+        this.load = function(callback) {
+            var i, len, onLoad, name, url;
+            len = queue.length; 
 
-        for (var i = 0, len = arr.length; i < len; i++) {
+            for (i = 0; i < len; i++) {
 
-            name = arr[i].name;
-            url = arr[i].url;
+                name = queue[i].name;
+                url = queue[i].url;
 
-            // function called when rsc is ready
-            cb = (function(name,index,total) {
-                return function(){ 
-                    finished = counter === arr.length;
-                    return callback(name,counter++,total);
-                };
-            })(name, i, len);
+                // function called when rsc is ready
+                onLoad = (function(name,index,total) {
+                    return function(){ 
+                        counter++;
+                        finished = counter === total;
+                        return callback(name,counter,total);
+                    };
+                })(name, i, len);
 
-            // bind load event to function
-            if (isPng(url)) {
-                rsc = new Image();
-                rsc.addEventListener('load', cb, false);
-            } else {
-                rsc = new Audio();
-                rsc.addEventListener('canplaythrough', cb, false);
+                // bind load event to function
+                if (isPng(url)) {
+                    rsc = new Image();
+                    rsc.addEventListener('load', onLoad, false);
+                } else {
+                    rsc = new Audio();
+                    rsc.addEventListener('canplaythrough', onLoad, false);
+                }
+
+                rsc.src = url;
+                rsc.name = name;
+                resources[name] = rsc;
             }
 
-            rsc.src = url;
-            rsc.name = name;
-            resources[name] = rsc;
+            // edge case when no resources passed
+            if (len === 0) {
+                finished = true;
+            }
         }
-
-        // edge case when no resources passed
-        if (arr.length === 0) {
-            finished = true;
-        }
-    }
-
-    Resourcer.prototype = {
-        get: function(name) {
-            return resources[name];
-        },
-        isReady: function() {
-            return finished;
-        }
-    }
+    };
 
     var isPng = function(url) {
         return /\.png$/.test(url);

@@ -1,50 +1,76 @@
 ;(function(exports) {
 
-    Scene = function(game) {
-        var actors = [];
-        return {
-            init: function() {
-            }
-            start: function() {
-            },
-            update: function() {
-            },
-            exit: function() {
-            }
-        }
-    }
+    Scene = function(game, obj) {
+        var self = this;
+        var timer = Timer();
 
-    Scener = function() {
-        var paused = false;
+        var doNothing = function() {};
+        var getTrue = function() { return true; };
+
+        var funs = ["init", "active", "update", "exit"];
+
+        // bind funs if they exist to scene
+        funs.forEach(function(fun) {
+            if (obj[fun] !== undefined) {
+                self[fun] = obj[fun].bind(null, game, timer.getTime());
+            } else if (fun === "active") {
+                self[fun] = getTrue;
+            } else {
+                self[fun] = doNothing;
+            }
+        });
+
+        this.timer = timer;
+    };
+
+    var paused = false;
+
+    Scener = function(game, arr) {
         var scenes = {};
-        var cur; 
+        var cur;
 
-        return { 
-            register: function(name, scene) {
-                scenes[name] = scene;
-            }, 
-            update: function(delta) { 
-                curScene.update(delta);
-                curScene.draw();
-            },
-            pause: function() {
-                paused = true;
-            },
-            unpause: function() {
-                paused = false;
-            },
-            transition: function(name) {
-                if (cur !== undefined) {
+        // construct from json obj
+        (function() { 
+            var i, obj,
+            len = arr.length;
+            for (i = 0; i < len; i++) {
+                obj = arr[i];
+                scenes[obj.name] = new Scene(game, obj);
+            };
+        })()
+
+        this.start = function(name) {
+            cur = scenes[name];
+            cur.init();
+        };
+
+        this.update = function(delta) {
+            if (!paused) {
+                cur.timer.add(delta);
+                if (cur.active()){
+                    cur.update(delta);
+                } else {
+                    console.log("FUCK");
+                    game.c.entities.destroyAll();
                     cur.exit();
                 }
-                cur = scenes[name];
-                cur.init();
-                cur.start();
-            },
+            } 
+
+        };
+
+        this.pause = function() {
+            paused = true;
+        };
+
+        this.unPause = function() {
+            paused = false;
+        };
+
+        this.isPaused = function() {
+            return paused;
         }
     }
 
-    exports.Scene = Scene;
     exports.Scener = Scener;
 
 })(this);
