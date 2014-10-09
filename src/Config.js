@@ -78,7 +78,7 @@
         },
         {
             name: "Walk_Slash_Swing_L",
-            url: "images/Robot/Walk/192x106/Walk_slash_swing_L.png",
+            url: "images/Robot/Walk/186x106/Walk_Slash_Swing_L.png",
         },
         {
             name: "Walk_Slash_Charge_R",
@@ -316,9 +316,9 @@
         },
         {
             name: "Walk_Slash_Swing_L",
-            frames: 11,
+            frames: [13,12,11,10,9,8,7,6,5,4,3,2,1,0],
             fps:20,
-            sizex: 192,
+            sizex: 186,
             sizey: 106
         },
         {
@@ -355,7 +355,7 @@
             sizex: 76,
             sizey: 104,
             offsetx:0,
-            offsety:2
+            offsety:3
         },
         {
             name: "Stand_L",
@@ -363,7 +363,7 @@
             sizex: 76,
             sizey: 104,
             offsetx:0,
-            offsety:2
+            offsety:3
         },
         {
             name: "Falling_Top_L",
