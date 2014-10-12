@@ -19,3 +19,9 @@
 
     exports.Game = Game;
 }(this));
+
+//      this.parallaxer = new Parallaxer(this, "bg_canvas", config.Game.Layers);
+//      this.parallaxer.push("LayerName");
+//      this.parallaxer.clear();
+//      parallaxer 
+//      
