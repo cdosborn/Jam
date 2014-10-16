@@ -383,35 +383,6 @@
             }
         });
 
-//             if (self.state.motion === motions.CROUCH) { 
-//             } else {
-//                 this.center.y = self.center.y - 40; 
-//             }
-
-//             if (self.state.motion === motions.STAND || self.state.motions === motions.WALK) {
-//                 this.center.x = reduce(this.center.x, 50);
-//             }
-//          }
-//      });
-
-//          frames: 7,
-//          sizex: 360, 
-//          sizey: 20,
-//          offsetx:210,
-//          offsety:-40
-//      },
-//      {
-//          name: "PFX_Laser_Boost_L",
-//          rsc: "images/Robot/PFX/362x20/Laser_PFX_L.png",
-//          frames: 7,
-//          sizex: 360, 
-//          sizey: 20,
-//          offsetx:-220,
-//          offsety:-40
-//      },
-
-
-
         this.update = function(delta) {
 
             this.stater.update(delta);
@@ -499,7 +470,7 @@
         }
         this.boundingBox = coq.collider.RECTANGLE;
 
-        this.draw = function(ctx) { 
+        this.draw = function(ctx) {
             var state = this.state;
 
 //          console.log(self.state.motion === motions.WALK);

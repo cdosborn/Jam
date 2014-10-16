@@ -185,6 +185,12 @@
             url: "images/Robot/PFX/362x20/Laser_PFX_L.png",
         }
     ];
+    var game_resources = [ 
+        { 
+            name: "Mountains",
+            url: "images/mountains.png"
+        }
+    ];
 
     var player_anims = [
         {
@@ -588,11 +594,6 @@
         CHARGE:    6,
         SWING:     7
     };
-
-    var player_state_tree = {
-
-    };
-
     var LoadingBox = function(game) {
         var innerBox = {
             center: { x:0, y:0 },
@@ -605,7 +606,6 @@
         this.center = game.c.renderer.getViewCenter();
         this.size = { x:1000, y:40 };
         this.notify = function(index, total) {
-            console.log(innerBox);
             var percent = index / total;
             innerBox.size.x = percent * this.size.x;
             innerBox.center.x = this.center.x - this.size.x/2 + innerBox.size.x/2  + 5;
@@ -631,7 +631,6 @@
             name: "Load",
             init: function(game) {
                 var box;
-                game.c.renderer.setBackground("#000");
                 box = game.c.entities.create(LoadingBox);
                 game.resourcer.load( function(name, counter, total) { 
                     box.notify(counter, total);
@@ -641,14 +640,12 @@
                 return !game.resourcer.isReady();
             },
             exit: function(game, time) {
-                console.log("EXITING LOAD");
                 game.scener.start("Main");
             }
         },
         {
             name: "Main",
             init: function(game) {
-                console.log("START MAIN");
                 game.p = game.c.entities.create(Player, { 
                     center: { x:10, y:110 },
                     size:   { x:124, y:106 }
@@ -670,23 +667,50 @@
                     size:   { x: 1280, y: 30 },
                     center: { x: 640, y: 400 }
                 });
+              //game.layerer.include(["blck"], "bg_canvas");
 
-                game.c.renderer.setBackground("#444");
+                  game.c.renderer.setBackground("#444");
             },
             update: function(game, time) {
                 game.c.renderer.setViewCenter(game.p.center); 
             },
             exit: function(game, time) {
               //game.scener.start("Credits");
-            }
+            },
+            draw: function(game) {
+                game.scener.background.draw();
+                if (game.scener.isPaused()) {
+                    game.scener.foreground.draw();
+                }
+            },
         }
     ];
 
-//  var player_no_key_down = function() {
-//      return input.getEvents().filter(function(e) {
-//          return e.type === "keydown";
-//      }).length === 0;
-//  };
+    var game_drawables = {
+//      sky: { 
+//          img:name,
+//          layer: 0,
+//          delta: 0.3
+//      },
+//      clouds:{},
+        blck: {
+            color: "#000",
+            delta: 0.3,
+        }, 
+        mountains:{
+            rsc: "Mountains",
+            delta: 0.3,
+        },
+        pause: {
+            color: "#000",
+        },
+//      ground: {},
+//      start: {
+//          img:   name,
+//          layer: 0,
+//          delta: 0
+//      },
+    }
 
     var config = {
         Player: {
@@ -696,16 +720,16 @@
             Actions: player_actions,
             Status: player_status,
             Facing: player_facing,
-            StateTree: player_state_tree,
-            Resources: player_resources,
-            Utils: {
-//              noKeyDown: player_no_key_down;
-            }
     //      Attacks: {
     //      }
         },
         Game: {
-            Scenes: game_scenes
+            Scenes: game_scenes,
+            Drawables: game_drawables,
+            Canvases: ["bg_canvas", "canvas", "fg_canvas"],
+            Resources: game_resources.concat(player_resources),
+            Width: 1280,
+            Height: 500
         }
     };
     exports.config = config;
