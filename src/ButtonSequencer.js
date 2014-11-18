@@ -44,20 +44,15 @@
             },
 
             updateSequences: function(button) {
-                for (var i in sequences) {
-                    var seq = sequences[i];
+                for (var name in sequences) {
+                    var seq = sequences[name];
 
-                // Might be an unecessary check
-                // to see if instanceof
+                    if (game.timer.getTime() - seq.timestamp > inBetweenTime) { // not updated recently
+                       seq.reset();
+                    } 
 
-                    if (seq instanceof Sequence) {
-                        if (game.timer.getTime() - seq.timestamp > inBetweenTime) { // not updated recently
-                           seq.reset();
-                        } 
-
-                        if (seq.check(button)) {
-                            seq.next();
-                        }
+                    if (seq.check(button)) {
+                        seq.next();
                     }
                 }
             },
