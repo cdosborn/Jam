@@ -50,7 +50,6 @@
                 if (cur.active()){
                     cur.update(delta);
                 } else {
-                    console.log("FUCK");
                     game.c.entities.destroyAll();
                     cur.exit();
                 }

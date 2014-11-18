@@ -9,15 +9,15 @@
             }
         </style>
     </head>
-    <body>
+    <body style="position:relative">
         <canvas id="bg_canvas" style="z-index:-1;position:absolute;"></canvas>
-        <canvas id="canvas"    style="z-index:0;position:relative;display:hidden" ></canvas>
+        <canvas id="canvas"    style="z-index:0;position:absolute;" ></canvas>
         <canvas id="fg_canvas" style="z-index:1;position:absolute;"></canvas>
     </body>
     <script src="lib/coquette.js"></script>
     <script src="src/Config.js"></script>
     <script src="src/Timer.js"></script>
-    <!--<script src="src/Layerer.js"></script>-->
+    <script src="src/Layerer.js"></script>
     <script src="src/Resourcer.js"></script>
     <script src="src/Stater.js"></script>
     <script src="src/Attacker.js"></script>

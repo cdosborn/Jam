@@ -667,11 +667,12 @@
                     size:   { x: 1280, y: 30 },
                     center: { x: 640, y: 400 }
                 });
-              //game.layerer.include(["blck"], "bg_canvas");
+                //game.layerer.include(["blck"], "bg_canvas");
+                game.layerer.include(["blck","mountains"], "bg_canvas");
 
-                  game.c.renderer.setBackground("#444");
+              //  game.c.renderer.setBackground("#444");
             },
-            update: function(game, time) {
+            update: function(game, time) { 
                 game.c.renderer.setViewCenter(game.p.center); 
             },
             exit: function(game, time) {
@@ -695,11 +696,11 @@
 //      clouds:{},
         blck: {
             color: "#000",
-            delta: 0.3,
         }, 
         mountains:{
             rsc: "Mountains",
-            delta: 0.3,
+            delta: .1,
+ //         y: 0
         },
         pause: {
             color: "#000",

@@ -184,10 +184,11 @@ var FRIC = 0.5,
             var x = this.center.x - this.size.x/2;
             var y = this.center.y;
             var w = this.size.x;
-            ctx.fillText(this.stateToString()[0], x, y, w);
-            ctx.fillText(this.stateToString()[1], x, y + 10, w);
-            ctx.fillText(this.stateToString()[2], x, y + 20, w);
-            ctx.fillText(this.stateToString()[3], x, y + 30, w);
+            var state = this.stateToString();
+            ctx.fillText(state[0], x, y, w);
+            ctx.fillText(state[1], x, y + 10, w);
+            ctx.fillText(state[2], x, y + 20, w);
+            ctx.fillText(state[3], x, y + 30, w);
 
         }
 

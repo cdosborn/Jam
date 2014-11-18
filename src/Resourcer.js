@@ -10,7 +10,9 @@
         queue = arr;
     
         this.get = function(name) {
-            return resources[name];
+            var thing = resources[name];
+            //if (!thing) {throw  (name + " was not found")};
+            return thing;
         };
         this.isReady = function() {
             return finished;
