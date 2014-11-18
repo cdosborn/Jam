@@ -6,10 +6,10 @@
         this.c = new Coquette(this, "canvas", config.Game.Width, config.Game.Height);
 
         // Project specific modules
-        this.timer     = Timer();
+        this.timer     = new Timer();
         this.resourcer = new Resourcer(config.Game.Resources);
         this.scener    = new Scener(this, config.Game.Scenes);
-        this.sequencer = ButtonSequencer(this);
+        this.sequencer = new ButtonSequencer(this);
         this.layerer   = new Layerer(this, config.Game.Drawables, config.Game.Canvases);
 
         this.update = function(delta) { 
