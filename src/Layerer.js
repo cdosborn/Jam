@@ -82,60 +82,61 @@
         }
     }
 
-    var ifDefined = function(value, backup) {
-        return (value === undefined ? backup : value)
-    } 
-
     Drawable = function(game, json) {
-        var width  = ifDefined(json.width, config.Game.Width);
-        var height = ifDefined(json.height, config.Game.Height);
-        var x      = ifDefined(json.x,     0);
-        var y      = ifDefined(json.y,     0);
-        var oldX   = x;
-        var oldY   = y;
-        var delta  = ifDefined(json.delta, 0);
-        var rendr = game.c.renderer;
-        var oldViewX = rendr.getViewCenter().x - rendr.getViewSize().x/2;
-        var oldViewY = rendr.getViewCenter().x - rendr.getViewSize().y/2;
-        var viewX = oldViewX;
-        var viewY = oldViewY;
-        var deltaX = 0;
-        var deltaY = 0;
+        var delta  = json.delta || 0;
+        var rendr  = game.c.renderer;
+        var width  = json.width  || config.Game.Width;
+        var height = json.height || config.Game.Height;
+
+        var recent = {
+            x      : json.x      || 0,
+            y      : json.y      || 0,
+            viewX  : rendr.getViewCenter().x - rendr.getViewSize().x/2,
+            viewY  : rendr.getViewCenter().y - rendr.getViewSize().y/2,
+        }
+
+        var old =  {
+            x      : recent.x,
+            y      : recent.y,    
+            viewX  : recent.viewX,
+            viewY  : recent.viewY,
+        }
 
         var img, draw;
         if (json.rsc !== undefined) {
             img = game.resourcer.get(json.rsc);
             draw = function(ctx) { 
-                ctx.drawImage(img, x, y, width, height);
+                ctx.drawImage(img, recent.x, recent.y, width, height);
             }
         } else {
             draw = function(ctx) {
                 ctx.fillStyle = json.color;
-                ctx.fillRect(x, y, width, height);
+                ctx.fillRect(recent.x, recent.y, width, height);
             }
         }
 
         this.draw = draw;
 
         this.update = function() {
-            if (delta !== 0) {
-                oldX = x;
-                oldY = y;
-                viewx = rendr.getViewCenter().x - rendr.getViewSize().x/2
-                viewy = rendr.getViewCenter().y - rendr.getViewSize().y/2
-                deltax = viewx - oldViewX;
-                deltay = viewy - oldViewY;
-                x += delta * deltax;
-                y -= delta * deltay;
-                oldViewX = viewx;
-                oldViewY = viewy;
+            // update old
+            old.x = recent.x;
+            old.y = recent.y;
+            old.viewX = recent.viewX;
+            old.viewY = recent.viewY;
 
+            if (delta !== 0) {
+                // update new
+                recent.viewX = rendr.getViewCenter().x - rendr.getViewSize().x/2;
+                recent.viewY = rendr.getViewCenter().y - rendr.getViewSize().y/2;
+
+                recent.x -= delta * (recent.viewX - old.viewX)
+                recent.y -= delta * (recent.viewY - old.viewY);
             }
         };
 
         this.changed = function() {
-            var changeXGreaterThanOne = ((x | 0) - (oldX | 0) !== 0)
-            var changeYGreaterThanOne = ((y | 0) - (oldY | 0) !== 0)
+            var changeXGreaterThanOne = ((recent.x | 0) - (old.x | 0) !== 0)
+            var changeYGreaterThanOne = ((recent.y | 0) - (old.y | 0) !== 0)
             return changeXGreaterThanOne || changeYGreaterThanOne;
         }
     }
