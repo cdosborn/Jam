@@ -106,7 +106,6 @@
         if (json.rsc !== undefined) {
             img = game.resourcer.get(json.rsc);
             draw = function(ctx) { 
-                console.log("Undefined?", img === undefined, 'rsc', json.rsc);
                 ctx.drawImage(img, x, y, width, height);
             }
         } else {

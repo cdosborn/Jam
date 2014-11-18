@@ -8,8 +8,6 @@
 
     var Resourcer = function(arr) {
         queue = arr;
-
-        console.log('#ofRsc', arr.length);
     
         this.get = function(name) {
             var thing = resources[name];
@@ -33,7 +31,6 @@
                     return function(){ 
                         counter++;
                         finished = counter === total;
-                        console.log('#', counter, 'finished?', finished);
                         return callback(name,counter,total);
                     };
                 })(name, i, len);

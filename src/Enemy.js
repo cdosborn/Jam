@@ -134,7 +134,6 @@ var FRIC = 0.5,
                 self.vel.y = 0;
                 self.center.y = other.center.y - other.size.y/2 - self.size.y/2
             } else if (type === Player || type === Enemy) {
-                //console.log(other);
             } else {
                 self.color = "#c00";
                 self.resources.health -= other.damage;
