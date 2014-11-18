@@ -667,10 +667,9 @@
                     size:   { x: 1280, y: 30 },
                     center: { x: 640, y: 400 }
                 });
-                //game.layerer.include(["blck"], "bg_canvas");
+
                 game.layerer.include(["blck","mountains"], "bg_canvas");
 
-              //  game.c.renderer.setBackground("#444");
             },
             update: function(game, time) { 
                 game.c.renderer.setViewCenter(game.p.center); 

@@ -6,11 +6,6 @@
         var lookup = {};
         var drawbjects = {};
           
-        // Create drawable parts of layers
-        for (var name in drawables) {
-            drawbjects[name] = new Drawable(game, drawables[name]);
-        }
-
         // initialize a layer for each canvas
         canvases.forEach(function(name, index) {
            // canvas initialiation should happen in main
@@ -25,6 +20,13 @@
         });
 
         this.include = function(drawbleNames, canvas_name) {
+            // Create drawables that haven't been created before
+            drawbleNames.forEach(function(name) {
+                if (!drawbjects[name]) {
+                    drawbjects[name] = new Drawable(game, drawables[name]);
+                }
+            });
+
             var layer = layers[lookup[canvas_name]];
             layer.include(drawbleNames);
             layer.draw();
@@ -40,17 +42,7 @@
                 };
             });
         };
-//      this.draw = function() {
-//          var changed = this.included.some(function(datum) {
-//              return datum.changed();
-//          }).length === this.included.length;
 
-//          if (changed) {
-//              this.included.forEach(function(drawable) {
-//                  drawable.draw();
-//              }
-//          }
-//      };
         this.remove= function(drawable, canvas) {
             layers[lookup[canvas]].remove(drawable);
         };
@@ -59,12 +51,6 @@
                 layer.clear();
             });
         };
-        // layerer.include(["sky","mountains","clouds"], "fg_canvas");
-        // layerer.update();
-        //      for each layer
-        //          update()
-        //          if changed? (erase/draw)
-        // layerer.reset();
     }
 
     var Layer = function(ctx, drawables) {
@@ -120,6 +106,7 @@
         if (json.rsc !== undefined) {
             img = game.resourcer.get(json.rsc);
             draw = function(ctx) { 
+                console.log("Undefined?", img === undefined, 'rsc', json.rsc);
                 ctx.drawImage(img, x, y, width, height);
             }
         } else {
