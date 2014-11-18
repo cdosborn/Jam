@@ -698,8 +698,9 @@
         }, 
         mountains:{
             rsc: "Mountains",
-            delta: .1,
- //         y: 0
+            delta: 0.2,
+            x:0,
+            y:0
         },
         pause: {
             color: "#000",
