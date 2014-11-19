@@ -461,11 +461,18 @@
         this.collision = function(other) { 
             var type = other.constructor;
             if (type === Platform) {
-                self.vel.y = 0;
-                self.center.y = other.center.y - other.size.y/2 - self.size.y/2
+                bottomPlayerEdge =  self.center.y + self.size.y/2;
+                topPlayerEdge    =  self.center.y - self.size.y/2;
+                topPlatformEdge  =  other.center.y - other.size.y/2;
+                if (topPlayerEdge > topPlatformEdge) { // below
+                    self.center.y = other.center.y + other.size.y/2 + self.size.y/2 + 1;
+                } else {
+                    self.center.y = other.center.y - other.size.y/2 - self.size.y/2;
+                }
                       
                 // Recharge hover
                 self.resources.hover = 100;
+                self.vel.y = 0;
             }
         }
         this.boundingBox = coq.collider.RECTANGLE;

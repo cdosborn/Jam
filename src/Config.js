@@ -663,10 +663,12 @@
                     spawnPoint: { x:1200, y:110 }
                 });
 
-                game.c.entities.create(Platform, {
-                    size:   { x: 1280, y: 30 },
-                    center: { x: 640, y: 400 }
-                });
+                for (var i = 0; i < 10; i++) {
+                    game.c.entities.create(Platform, {
+                        size:   { x: 600, y: 30 },
+                        center: { x: 400 + i * 1000, y: 400 }
+                    });
+                }
 
                 game.layerer.include(["blck","mountains"], "bg_canvas");
 
