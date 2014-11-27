@@ -34,7 +34,7 @@
         this.stater = Stater(this, {
             init: function() { 
                 self.state.action = actions.PASSIVE;
-                self.state.state = status.FREE;
+                self.state.status = status.FREE;
             },
             update: function() { 
                 self.state.action = actions.PASSIVE;
