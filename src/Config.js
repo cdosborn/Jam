@@ -304,13 +304,13 @@
         {
             name: "Walk_L", 
             frames: 7,
-            sizex: 97,
+            sizex: 96,
             sizey: 106,
         },
         {
             name: "Walk_R", 
             frames: 7,
-            sizex: 97,
+            sizex: 96,
             sizey: 106,
         },
         {
@@ -521,7 +521,7 @@
         GRAV: 0.5, 
         BOOST_X: 20, 
         BOOST_Y: 15, 
-        WALK_X : 10,
+        WALK_X : 5,
 
         // After BOOST_CAST actions no longer combined
         // with BOOST
