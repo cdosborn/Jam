@@ -521,7 +521,7 @@
         GRAV: 0.5, 
         BOOST_X: 20, 
         BOOST_Y: 15, 
-        WALK_X : 5,
+        WALK_X : 10,
 
         // After BOOST_CAST actions no longer combined
         // with BOOST
@@ -584,7 +584,9 @@
     var player_status = { 
         BUSY: 0,
         FREE: 1
-    };    var player_actions = { 
+    };    
+
+    var player_actions = { 
         BLIP:      0,
         MELEE:     1,
         MELEE_RVS: 2,
@@ -672,7 +674,6 @@
 
             },
             update: function(game, time) { 
-                game.c.renderer.setViewCenter(game.p.center); 
             },
             exit: function(game, time) {
               //game.scener.start("Credits");
@@ -700,7 +701,9 @@
             rsc: "Mountains",
             delta: 0.2,
             x:0,
-            y:0
+            y:240,
+            width: 1777,
+            height: 172
         },
         pause: {
             color: "#000",
@@ -729,7 +732,7 @@
             Drawables: game_drawables,
             Canvases: ["bg_canvas", "canvas", "fg_canvas"],
             Resources: game_resources.concat(player_resources),
-            Width: 1280,
+            Width: 1270,
             Height: 500
         }
     };

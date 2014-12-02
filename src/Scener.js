@@ -48,7 +48,6 @@
                     cur.exit();
                 }
             } 
-
         };
 
         this.pause = function() {

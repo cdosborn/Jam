@@ -400,6 +400,8 @@
             
             // Friction
             this.vel.x = reduce(this.vel.x, C.FRIC * delta/C.DIV);
+
+            game.c.renderer.setViewCenter(this.center); 
         }; 
 
         this.stateToStringList = function() {

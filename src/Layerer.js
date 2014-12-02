@@ -29,7 +29,6 @@
 
             var layer = layers[lookup[canvas_name]];
             layer.include(drawbleNames);
-            layer.draw();
         };
 
         // layerer.include(["sky","mountains","clouds"], "fg_canvas");
@@ -106,7 +105,38 @@
         if (json.rsc !== undefined) {
             img = game.resourcer.get(json.rsc);
             draw = function(ctx) { 
-                ctx.drawImage(img, recent.x, recent.y, width, height);
+                var thisx, thisy, viewx, viexy, vieww, viewh, center, size;
+                center = rendr.getViewCenter();
+                size = rendr.getViewSize();
+                viewx = center.x - size.x/2; // relative to world
+                viewy = center.y - size.y/2;
+                vieww = size.x;
+                viewh = size.y;
+                thisx = recent.x + viewx;
+                thisy = recent.y + viewy;
+                thisw = width;
+                thish = height;
+
+                var x, y, w, h;
+                x = Math.min(Math.max(viewx, thisx), viewx + vieww);
+                y = Math.min(Math.max(viewy, thisy), viewy + viewh);
+                w = Math.min(viewx + vieww - x,  thisx + width - x); 
+                h = Math.min(viewy + viewh - y,  thisy + height - y);
+
+                var sx,sy,sh,sw,dx,dy,dh,dw;
+                sx = ((x - viewx) - recent.x) | 0;
+                sy = ((y - viewy) - recent.y) | 0;
+                sw = w | 0;
+                sh = h | 0;
+
+                dx = (x - viewx) | 0;
+                dy = (y - viewy) | 0;
+                dw = sw
+                dh = sh
+
+                if (sh > 0 && sw > 0) { 
+                    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
+                }
             }
         } else {
             draw = function(ctx) {
@@ -137,7 +167,9 @@
         this.changed = function() {
             var changeXGreaterThanOne = ((recent.x | 0) - (old.x | 0) !== 0)
             var changeYGreaterThanOne = ((recent.y | 0) - (old.y | 0) !== 0)
-            return changeXGreaterThanOne || changeYGreaterThanOne;
+            var result = changeXGreaterThanOne || changeYGreaterThanOne;
+            //console.log("It changed? ", result);
+            return result;
         }
     }
     exports.Layerer = Layerer;
