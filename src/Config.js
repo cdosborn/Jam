@@ -675,11 +675,6 @@
                 game.layerer.include(["blck","mountains"], "bg_canvas");
 
             },
-            update: function(game, time) { 
-            },
-            exit: function(game, time) {
-              //game.scener.start("Credits");
-            },
             draw: function(game) {
                 game.scener.background.draw();
                 if (game.scener.isPaused()) {
