@@ -1,4 +1,5 @@
 ;(function(exports) {
+    //TODO: change callback >> onLoad = function(name, total)
 
     // resourcer private vars;
     var resources = {};

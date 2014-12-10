@@ -68,7 +68,8 @@
         };
         this.changed = function() {
             return included.some(function(name) {
-                return drawables[name].changed();
+                var d = drawables[name]; 
+                return d.changed();
             });
         };
         this.update = function() {
@@ -168,7 +169,7 @@
             var changeXGreaterThanOne = ((recent.x | 0) - (old.x | 0) !== 0)
             var changeYGreaterThanOne = ((recent.y | 0) - (old.y | 0) !== 0)
             var result = changeXGreaterThanOne || changeYGreaterThanOne;
-            //console.log("It changed? ", result);
+            console.log("It changed? ", result);
             return result;
         }
     }

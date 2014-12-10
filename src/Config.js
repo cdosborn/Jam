@@ -183,13 +183,38 @@
         {
             name: "PFX_Laser_Crouch_L",
             url: "images/Robot/PFX/362x20/Laser_PFX_L.png",
-        }
-    ];
+        },
+   ];
     var game_resources = [ 
-        { 
-            name: "Mountains",
-            url: "images/mountains.png"
-        }
+        {
+            name: "clouds7",
+            url: "images/World/clouds7.png",
+        },
+        {
+            name: "clouds6",
+            url: "images/World/clouds6.png",
+        },
+        {
+            name: "clouds5",
+            url: "images/World/clouds5.png",
+        },
+        {
+            name: "mount4",
+            url: "images/World/mount4.png",
+        },
+        {
+            name: "mount3",
+            url: "images/World/mount3.png",
+        },
+        {
+            name: "ground2",
+            url: "images/World/ground2.png",
+        },
+        {
+            name: "ground1",
+            url: "images/World/ground1.png",
+        },
+
     ];
 
     var player_anims = [
@@ -633,6 +658,7 @@
             name: "Load",
             init: function(game) {
                 var box;
+                game.c.renderer.setBackground("#000");;
                 box = game.c.entities.create(LoadingBox);
                 game.resourcer.load( function(name, counter, total) { 
                     box.notify(counter, total);
@@ -648,8 +674,8 @@
         {
             name: "Main",
             init: function(game) {
-                game.p = game.c.entities.create(Player, { 
-                    center: { x:10, y:110 },
+                var p = game.c.entities.create(Player, { 
+                    center: { x:400, y:290 },
                     size:   { x:124, y:106 }
                 });
 
@@ -665,14 +691,25 @@
                     spawnPoint: { x:1200, y:110 }
                 });
 
-                for (var i = 0; i < 10; i++) {
-                    game.c.entities.create(Platform, {
-                        size:   { x: 600, y: 30 },
-                        center: { x: 400 + i * 1000, y: 400 }
-                    });
+                // MUST BE SET BEFORE LAYERS ARE MADE :.<
+                game.c.renderer.setViewCenter({x: p.center.x, y: p.center.y - 90}); 
+
+                for (var i = 0; i < config.Game.Layers.length; i++) {
+                    yo = game.c.entities.create(Layer, config.Game.Layers[i]); 
                 }
 
-                game.layerer.include(["blck","mountains"], "bg_canvas");
+              //for (var i = 0; i < 10; i++) {
+                    game.c.entities.create(Platform, {
+                        size:   { x: 4324, y: 30 },
+                        center: { x: 4324/2, y: p.center.y + 53 + 15 }
+                      //center: { x: 400 + i * 1000, y: 400 }
+                    });
+              //}
+
+                game.c.renderer.setBackground("#c5e8ef");
+              //  game.layerer.include(["blck","mountains"], "bg_canvas");
+              //    game.c.renderer.follow(p.center);
+
 
             },
             draw: function(game) {
@@ -684,34 +721,86 @@
         }
     ];
 
-    var game_drawables = {
-//      sky: { 
-//          img:name,
-//          layer: 0,
-//          delta: 0.3
-//      },
-//      clouds:{},
-        blck: {
-            color: "#000",
-        }, 
-        mountains:{
-            rsc: "Mountains",
-            delta: 0.2,
-            x:0,
-            y:240,
-            width: 1777,
-            height: 172
+    var game_layers = [
+        {
+            rsc: "clouds7",
+            delta:                  { x:     -1, y: -634 / 536.4 },
+            y: 400 - 742 - 738,
+            width: 4324,
+            height: 742,
+            zindex: -7,
+            update: function(view) {
+                if (view.center.y > 536.4) {
+                    this.delta.y =  -429 / 357.6;
+                } else {
+                    this.delta.y = -634 / 536.4;
+                }
+            }
         },
-        pause: {
-            color: "#000",
+        {
+            rsc: "clouds6",
+            delta:                  { x:     -1, y: -643 / 536.4 },
+            y: 400 - 614 - 802,
+            width: 4324,
+            height: 614,
+            zindex: -6,
+            update: function(view) {
+                if (view.center.y > 536.4) {
+                    this.delta.y =  -378 / 357.6;
+                } else {
+                    this.delta.y = -634 / 536.4;
+                }
+            }
         },
-//      ground: {},
-//      start: {
-//          img:   name,
-//          layer: 0,
-//          delta: 0
-//      },
-    }
+        {
+            rsc: "clouds5",
+            delta:                  { x:     -1, y: -503 / 536.4 },
+            y: 400 - 370 - 924,
+            width: 4324,
+            height: 370,
+            zindex: -5,
+            update: function(view) {
+                if (view.center.y > 536.4) {
+                    this.delta.y =  -390 / 357.6;
+                } else {
+                    this.delta.y = -634 / 536.4;
+                }
+            }
+
+        },
+        {
+            rsc: "mount4", 
+            delta:                  { x:     -1, y: -462 / 536.4 },
+            y: 400 - 524 + 57 ,
+            width: 4324,
+            height: 524,
+            zindex: -4,
+        },
+        {
+            rsc: "mount3",
+            delta:                  { x:     -1, y: -367 / 536.4 },
+            y: 400 - 448 + 82,
+            width: 4324,
+            height: 448,
+            zindex: -3,
+        },
+        {
+            rsc: "ground2",
+            delta:                  { x:     -1, y: -248 / 536.4 },
+            y: 400 - 690 + 57,
+            width: 4324,
+            height: 690,
+            zindex: -2,
+        },
+        {
+            rsc: "ground1",
+            delta:                  { x:     -1, y: -144 / 536.4 },
+            y: 400 - 128,
+            width: 4324,
+            height: 128,
+            zindex: -1,
+        },
+    ]
 
     var config = {
         Player: {
@@ -721,16 +810,13 @@
             Actions: player_actions,
             Status: player_status,
             Facing: player_facing,
-    //      Attacks: {
-    //      }
         },
         Game: {
             Scenes: game_scenes,
-            Drawables: game_drawables,
-            Canvases: ["bg_canvas", "canvas", "fg_canvas"],
+            Layers: game_layers,
             Resources: game_resources.concat(player_resources),
-            Width: 1270,
-            Height: 500
+            Width: 800,
+            Height: 400
         }
     };
     exports.config = config;

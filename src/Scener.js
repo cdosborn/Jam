@@ -44,7 +44,8 @@
                 if (cur.active()){
                     cur.update(delta);
                 } else {
-                    game.c.entities.destroyAll();
+                    var dest = game.c.entities.destroy.bind(game.c.entities);
+                    game.c.entities.all().forEach(dest);
                     cur.exit();
                 }
             } 

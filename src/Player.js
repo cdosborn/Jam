@@ -392,8 +392,8 @@
                 handleInput();
             } 
 
-            this.center.y += this.vel.y * delta/C.DIV;
-            this.center.x += this.vel.x * delta/C.DIV;
+            this.center.y += (this.vel.y * delta/C.DIV) | 0;
+            this.center.x += (this.vel.x * delta/C.DIV) | 0;
               
             // Gravity
             this.vel.y += C.GRAV * delta/C.DIV
@@ -401,7 +401,10 @@
             // Friction
             this.vel.x = reduce(this.vel.x, C.FRIC * delta/C.DIV);
 
-            game.c.renderer.setViewCenter(this.center); 
+            // UGLY AND NEEDS TO CHANGE
+            var view = {x: Math.min(Math.max(400, this.center.x), 3924), 
+                        y: Math.max(Math.min(200, this.center.y - 90), -656)}
+            game.c.renderer.setViewCenter(view); 
         }; 
 
         this.stateToStringList = function() {
@@ -721,7 +724,7 @@
                         && vy >= 0) {
                 // Falling or not in air
                 self.resources.hover -= 1.5;
-                self.vel.y = -0.2;
+                self.vel.y = -0.8;
                 self.state.motion = motions.HOVER;
             }
 
