@@ -48,7 +48,7 @@
                     self.state.motion = motions.JUMP;
                 } else if (Math.abs(vx) <= C.WALK_X && vx !== 0) {
                     self.state.motion = motions.WALK;
-                } else if (vy === 0 && vx === 0){
+                } else if (vy === 0 && vx === 0 && !input.isDown(input.A) && !input.isDown(input.D)) {
                     self.state.motion = motions.STAND;
                 }                                                             
 
