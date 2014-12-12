@@ -96,7 +96,7 @@
             // issues of .0000000001 :C and all sx, sy, sw, sh must be legal
             try {
                 sw && sh && ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-                drawRect(layer, ctx, "#00f");
+           //   drawRect(layer, ctx, "#00f");
 
             } catch (e) {
                 console.log(sx, sy, sw, sh, dx, dy, dw, dh);

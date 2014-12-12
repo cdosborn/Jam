@@ -403,7 +403,7 @@
 
             // UGLY AND NEEDS TO CHANGE
             var view = {x: Math.min(Math.max(400, this.center.x), 3924), 
-                        y: Math.max(Math.min(200, this.center.y - 90), -656)}
+                        y: Math.max(Math.min(200, this.center.y - 90), -694)}
             game.c.renderer.setViewCenter(view); 
         }; 
 

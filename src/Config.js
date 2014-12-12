@@ -730,7 +730,7 @@
             height: 742,
             zindex: -7,
             update: function(view) {
-                if (view.center.y > 536.4) {
+                if (view.center.y < -336.4) {
                     this.delta.y =  -429 / 357.6;
                 } else {
                     this.delta.y = -634 / 536.4;
@@ -745,10 +745,10 @@
             height: 614,
             zindex: -6,
             update: function(view) {
-                if (view.center.y > 536.4) {
+                if (view.center.y < -336.4) {
                     this.delta.y =  -378 / 357.6;
                 } else {
-                    this.delta.y = -634 / 536.4;
+                    this.delta.y = -643 / 536.4;
                 }
             }
         },
@@ -760,10 +760,10 @@
             height: 370,
             zindex: -5,
             update: function(view) {
-                if (view.center.y > 536.4) {
+                if (view.center.y < -336.4) {
                     this.delta.y =  -390 / 357.6;
                 } else {
-                    this.delta.y = -634 / 536.4;
+                    this.delta.y = -503 / 536.4;
                 }
             }
 
