@@ -263,10 +263,10 @@
             } 
         });
 
-        game.sequencer.bind("BOOST_UP", [input.W, -input.W, input.W]);
-        game.sequencer.bind("BOOST_DOWN", [input.S, -input.S, input.S]);
-        game.sequencer.bind("BOOST_RIGHT", [input.D, -input.D, input.D]); 
-        game.sequencer.bind("BOOST_LEFT", [input.A, -input.A, input.A]);
+      //game.sequencer.bind("BOOST_UP", [input.W, -input.W, input.W]);
+      //game.sequencer.bind("BOOST_DOWN", [input.S, -input.S, input.S]);
+      //game.sequencer.bind("BOOST_RIGHT", [input.D, -input.D, input.D]); 
+      //game.sequencer.bind("BOOST_LEFT", [input.A, -input.A, input.A]);
 
         this.attacker = Attacker(game);
         this.attacker.register("Melee_Walk", {
@@ -664,26 +664,30 @@
             var vx = self.vel.x;
             var vy = self.vel.y;
 
-            if (game.sequencer.isPressed("BOOST_UP")) { 
+            var shift = input.isPressed(input.SHIFT);
+
+          //if (game.sequencer.isPressed("BOOST_UP")) { 
+            if (input.isDown(input.W)) { 
                 self.vel.y = -C.BOOST_Y;
                 self.state.motion = motions.JUMP;
                 self.stater.toRoot();
                 self.stater.emit("Boost_Up");
-            } else if (game.sequencer.isPressed("BOOST_DOWN")) { 
-            } else if (game.sequencer.isPressed("BOOST_LEFT")) { 
+            } else if (input.isDown(input.A) && shift) { 
                 self.vel.x += -C.BOOST_X;                   
                 self.state.motion = motions.BOOST_LEFT;   
                 self.state.facing = facing.LEFT;
                 self.stater.toRoot();
                 self.stater.emit("Boost_Horizontal");
-            } else if (game.sequencer.isPressed("BOOST_RIGHT")) { 
+            } else if (input.isDown(input.D) && shift) { 
                 self.vel.x += C.BOOST_X;
                 self.state.motion = motions.BOOST_RIGHT;
                 self.state.facing = facing.RIGHT;
                 self.stater.toRoot();
                 self.stater.emit("Boost_Horizontal");
             } else if (input.isDown(input.S)) { 
-                if (vy === 0) { self.state.motion = motions.CROUCH; } else if (vy > 0) { 
+                if (vy === 0) { 
+                    self.state.motion = motions.CROUCH; 
+                } else if (vy > 0) { 
                    self.state.motion = motions.FALLING; 
                 }
             } else if (input.isDown(input.D) && input.isDown(input.A)) {

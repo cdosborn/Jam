@@ -66,11 +66,11 @@
         },
         {
             name: "Walk_L", 
-            url: "images/Robot/Walk/97x106/Walk_L.png",
+            url: "images/Robot/Walk/Walk_L_90x106.png",
         },
         {
             name: "Walk_R", 
-            url: "images/Robot/Walk/97x106/Walk_R.png",
+            url: "images/Robot/Walk/Walk_R_90x106.png",
         },
         {
             name: "Walk_Slash_Swing_R",
@@ -329,13 +329,13 @@
         {
             name: "Walk_L", 
             frames: 7,
-            sizex: 96,
+            sizex: 90,
             sizey: 106,
         },
         {
             name: "Walk_R", 
             frames: 7,
-            sizex: 96,
+            sizex: 90,
             sizey: 106,
         },
         {

@@ -1,0 +1,47 @@
+ROBOT animation specification
+
+
+DIRECTORY / FILE NAME CONVENTIONS
+=================================
+
+ex. Boost/Melee/124x106/Boost_Melee_Top_Left.png
+
+<animation_url> ::= <filepath><motion>_<action>_<part>_<facing>.<ext>
+
+<filepath>      ::= <motion>/<action>/<dimensions>/
+<dimensions>    ::= <width>x<height>
+
+<action>        ::= Blip | Melee | Range | Passive | Stagger
+<motion>        ::= Boost_Up | Boost_Down | Boost_Right | Boost_Left | Walk | Stand | Fall | Hover | Crouch
+<part>          ::= Top | Legs
+<facing>        ::= Left | Right
+<ext>           ::= png
+
+ANIMATION LIST
+==============
+
+List various animations. Left and Right are assumed to be identical. Frames
+per second defaults to 10 if not specified. `frames` defines the animation
+sequence. In the example below, cast refers to the 3rd frame in the sequence
+not the 3rd frame of the animation. cast is the frame at which the animation
+is "locked in". off(set)X and off(set)Y are optional and refer to the pixel
+offset with respect to the player's top left corner.
+
+ex.
+name:   Boost Melee Top
+frames: [0,1,1,2,4,5,5,5]
+fps:    10 
+cast:   3
+width:  124  
+height: 106
+url:    -
+offX:   -
+offY:   -
+
+===========
+
+name:   Boost Passive Top
+frames: [0-6]
+width:  124  
+height: 106
+url:    Boost\ \ 124x106/Boost_Top\ \ 124x106/Boost_Top_L.png
